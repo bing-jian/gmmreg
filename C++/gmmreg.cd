@@ -1,0 +1,123 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="gmmreg_base" Collapsed="true">
+    <Position X="5.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>wAAEAopJACBAQAAAQAmEgNBAAQAECAAUE4QAQACIAAI=</HashCode>
+      <FileName>D:\bjian\programs\GMMReg\C++\gmmreg_base.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="gmmreg_cpd" Collapsed="true">
+    <Position X="2" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>wAABAAIAAgBAAAAgQKiAhEhQAQAIIAAAAAAAAADAAAA=</HashCode>
+      <FileName>D:\bjian\programs\GMMReg\C++\gmmreg_cpd.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="gmmreg_cpd_tps" Collapsed="true">
+    <Position X="0.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAAAAAAAAAAAAAAAAUAgAQAAAAAQAAAAgADAAAAQA=</HashCode>
+      <FileName>D:\bjian\programs\GMMReg\C++\gmmreg_cpd.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="gmmreg_cpd_grbf" Collapsed="true">
+    <Position X="3" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAAAAAAAAAAAAAAAQABAAQAABAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>D:\bjian\programs\GMMReg\C++\gmmreg_cpd.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="gmmreg_rigid" Collapsed="true">
+    <Position X="9.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>wAABFAIAAABQQoEwAAgAgEBAIQEAAAEAAgAgAQCAQAA=</HashCode>
+      <FileName>D:\bjian\programs\GMMReg\C++\gmmreg_rigid.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="gmmreg_rigid_func" Collapsed="true">
+    <Position X="5.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAgAAAIAAAAggAgQAEAAAACAAAAAAAUAgAgCAAAAAA=</HashCode>
+      <FileName>D:\bjian\programs\GMMReg\C++\gmmreg_rigid_func.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="gmmreg_tps" Collapsed="true">
+    <Position X="6.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>wAADEAIAAABSAoEgQAmAgEBAAQEAACEAAAAgAACAAAA=</HashCode>
+      <FileName>D:\bjian\programs\GMMReg\C++\gmmreg_tps.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="gmmreg_tps_L2" Collapsed="true">
+    <Position X="5.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAA=</HashCode>
+      <FileName>D:\bjian\programs\GMMReg\C++\gmmreg_tps.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="gmmreg_tps_KC" Collapsed="true">
+    <Position X="7.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAA=</HashCode>
+      <FileName>D:\bjian\programs\GMMReg\C++\gmmreg_tps.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="gmmreg_tps_func" Collapsed="true">
+    <Position X="1.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IBAiAAAIAAAAggAgQAAIAAACAAAEAAAUEgAiCAAAAAA=</HashCode>
+      <FileName>D:\bjian\programs\GMMReg\C++\gmmreg_tps_func.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="gmmreg_tps_L2_func" Collapsed="true">
+    <Position X="0.5" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>D:\bjian\programs\GMMReg\C++\gmmreg_tps_func.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="gmmreg_tps_KC_func" Collapsed="true">
+    <Position X="2.75" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>D:\bjian\programs\GMMReg\C++\gmmreg_tps_func.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Typedef Name="gmmreg_cpd_tps_Ptr" Collapsed="true">
+    <Position X="14" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>D:\bjian\programs\GMMReg\C++\gmmreg_api.cpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="gmmreg_cpd_grbf_Ptr" Collapsed="true">
+    <Position X="12.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>D:\bjian\programs\GMMReg\C++\gmmreg_api.cpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="gmmreg_tps_L2_Ptr" Collapsed="true">
+    <Position X="14" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>D:\bjian\programs\GMMReg\C++\gmmreg_api.cpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="gmmreg_tps_KC_Ptr" Collapsed="true">
+    <Position X="12.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>D:\bjian\programs\GMMReg\C++\gmmreg_api.cpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="gmmreg_rigid_Ptr" Collapsed="true">
+    <Position X="15.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>D:\bjian\programs\GMMReg\C++\gmmreg_api.cpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Font Name="Tahoma" Size="8.25" />
+</ClassDiagram>

@@ -1,10 +1,3 @@
-##=====================================================================
-## $RCSfile: readme.txt,v $
-## $Author: bing.jian@gmail.com $
-## $Date: 2010-05-10 01:32:09 -0400 (Mon, 10 May 2010) $
-## $Revision: 127 $
-##=====================================================================
-
 This directory contains the C++ code for rigid and non-rigid point set
 registration algorithms described in the following papers:
 
@@ -29,4 +22,3 @@ from http://vxl.sourceforge.net/
 
 To build the execuatables from the source code, please use the CMake
 which can be obtained from http://www.cmake.org/
-

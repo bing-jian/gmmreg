@@ -1,14 +1,3 @@
-/*=========================================================================
-$Author: bingjian $
-$Date: 2011-09-06 01:51:56 -0400 (Tue, 06 Sep 2011) $
-$Revision: 141 $
-=========================================================================*/
-
-/**
- * \file gmmreg_tps_func.cpp
- * \brief  The definition of the class gmmreg_tps_func
- */
-
 #include "gmmreg_tps_func.h"
 #include "gmmreg_utils.h"
 

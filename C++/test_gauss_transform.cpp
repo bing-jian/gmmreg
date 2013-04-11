@@ -1,14 +1,3 @@
-/*=========================================================================
-$Author: bingjian $
-$Date: 2011-09-06 01:51:56 -0400 (Tue, 06 Sep 2011) $
-$Revision: 141 $
-=========================================================================*/
-
-/**
- * \file test_gauss_transform.cpp
- * \brief  testing the Gauss transform
- */
-
 #include <assert.h>
 
 #include <cstdlib>
@@ -22,11 +11,12 @@ $Revision: 141 $
 using namespace std;
 
 int main(int argc, char* argv[]) {
-  if (argc<4) {
-    cerr<<"Usage: "<< argv[0]<<" pts1 pts2 scale [gradient]" << endl;
-    cerr<<"  pts1, pts2, gradient(optional) -- ascii text files " << endl;
-    cerr<<"  scale -- numerical scalar value" << endl;
-    cerr<<"Example: " << argv[0] << " pts1.txt pts2.txt 1.0 gradient.txt"<<endl;
+  if (argc < 4) {
+    cerr << "Usage: "<< argv[0]<<" pts1 pts2 scale [gradient]" << endl;
+    cerr << "  pts1, pts2, gradient(optional) -- ascii text files " << endl;
+    cerr << "  scale -- numerical scalar value" << endl;
+    cerr << "Example: " << argv[0] << " pts1.txt pts2.txt 1.0 gradient.txt"
+         << endl;
     return -1;
   }
   vnl_matrix<double> A;
@@ -56,11 +46,12 @@ int main(int argc, char* argv[]) {
   cost = GaussTransform(A, B, scale, gradient);
   end = clock();
   elapsed = 1000*((double) (end - start)) / CLOCKS_PER_SEC;
-  cout << "Evaluate Gauss Transform: " << cost << " in " <<  elapsed << " ms." << endl;
-  if (argc>4) {
+  cout << "Evaluate Gauss Transform: " << cost
+       << " in " <<  elapsed << " ms." << endl;
+  if (argc > 4) {
     ofstream outfile(argv[4],ios_base::out);
     gradient.print(outfile);
   }
-  //    system("pause");
+  // system("pause");
   return 0;
 }

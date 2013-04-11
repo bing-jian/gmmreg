@@ -1,8 +1,3 @@
-/*=========================================================================
-$Date: 2013-01-04 01:39:25 -0500 (Fri, 04 Jan 2013) $
-$Revision: 145 $
-=========================================================================*/
-
 #include <fstream>
 #include <iostream>
 #include <vector>
@@ -19,7 +14,7 @@ double estimate_scale(vnl_matrix<double> pts) {
   int m = pts.rows();
   int d = pts.cols();
   double scale = vnl_determinant(pts.transpose() * pts / (m * 1.0));
-  for (int i = 0; i < d; ++i){
+  for (int i = 0; i < d; ++i) {
     scale = sqrt(scale);
   }
   return scale;
@@ -38,7 +33,8 @@ def compute_index(pos, x):
 */
 
 void compute_index(unsigned long pos,
-    vnl_vector<unsigned long>& v, vnl_vector<int>& index) {
+                   vnl_vector<unsigned long>& v,
+                   vnl_vector<int>& index) {
   int d = v.size(); //assert index.size() = d;
   for (int i = d - 1; i >= 0; --i) {
     index[i] =  pos / v[i];
@@ -95,7 +91,7 @@ void nd_grid(vnl_vector<double>& min_pos, vnl_vector<double>& max_pos,
 }
 
 int main(int argc, char* argv[]) {
-  if (argc<3) {
+  if (argc < 3) {
     cerr << "Usage: " << argv[0] << " InputPtsFile CtrlPtsFile" << endl;
     return -1;
   }
@@ -106,7 +102,7 @@ int main(int argc, char* argv[]) {
   int n = input_pts.rows();
   int d = input_pts.cols();
 
-  cout << n<< " "<< d << "-d points loaded from " << argv[1] << endl;
+  cout << n << " "<< d << "-d points loaded from " << argv[1] << endl;
   cout << "estimated scale: " << estimate_scale(input_pts) << endl;
   vnl_vector<double> min_row,max_row;
   min_row.set_size(d);

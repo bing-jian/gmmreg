@@ -73,7 +73,8 @@ int gmmreg_base::set_scene(const char* filename) {
       assert(scene.cols()==d);
       return s;
     } else {
-      std::cerr << "unable to parse input file " << filename << " as a matrix." <<std::endl;
+      std::cerr << "unable to parse input file " << filename
+                << " as a matrix." << std::endl;
       return -1;
     }
   } else {
@@ -84,7 +85,8 @@ int gmmreg_base::set_scene(const char* filename) {
 
 int gmmreg_base::set_ctrl_pts(const char* filename) {
   if (strlen(filename) == 0) {
-    std::cout << "The control point set is not specified, the model points are used as control points." << std::endl;
+    std::cout << "The control point set is not specified, "
+                 "the model points are used as control points." << std::endl;
     ctrl_pts = model;
     n = ctrl_pts.rows();
     // std::cout << m << "," << n << std::endl;
@@ -97,7 +99,8 @@ int gmmreg_base::set_ctrl_pts(const char* filename) {
       n = ctrl_pts.rows();
       return n;
     } else {
-      std::cerr << "unable to open control points file " << filename << std::endl;
+      std::cerr << "unable to open control points file "
+                << filename << std::endl;
       return -1;
     }
   }
@@ -119,12 +122,16 @@ void gmmreg_base::save_transformed(const char* filename,
   transformed_model.print(outfile);
 
   char section_correspondence[256] = "CORRESPONDENCE";
-  int num = GetPrivateProfileInt(section_correspondence, "num_of_thresholds", 0, f_config);
+  int num = GetPrivateProfileInt(section_correspondence,
+                                 "num_of_thresholds", 0, f_config);
   if (num > 0) {
     char s_min[256], s_max[256], s_pairs[256];
-    GetPrivateProfileString(section_correspondence, "min_threshold", NULL, s_min, 255, f_config);
-    GetPrivateProfileString(section_correspondence, "max_threshold", NULL, s_max, 255, f_config);
-    GetPrivateProfileString(section_correspondence, "matched_pairs", NULL, s_pairs, 255, f_config);
+    GetPrivateProfileString(section_correspondence,
+        "min_threshold", NULL, s_min, 255, f_config);
+    GetPrivateProfileString(section_correspondence,
+        "max_threshold", NULL, s_max, 255, f_config);
+    GetPrivateProfileString(section_correspondence,
+        "matched_pairs", NULL, s_pairs, 255, f_config);
     std::ofstream f_pair(s_pairs,std::ios_base::out);
     double min_threshold, max_threshold, interval;
     min_threshold = atof(s_min);
@@ -140,7 +147,8 @@ void gmmreg_base::save_transformed(const char* filename,
     ComputeSquaredDistanceMatrix(transformed_model, scene, dist);
     for (int i = 0; i < num; ++i) {
       double threshold  = min_threshold + i*interval;
-      //int n_match = find_working_pair(model, scene,transformed_model, threshold, working_M, working_S);
+      //int n_match = find_working_pair(model, scene, transformed_model,
+      //                                threshold, working_M, working_S);
       pick_indices(dist, pairs, threshold*threshold);
       //printf("%f : %d\n",threshold, n_match);
       f_pair << "distance threshold : " << threshold << std::endl;
@@ -158,7 +166,8 @@ void gmmreg_base::save_transformed(const char* filename,
       f_pair << std::endl;
     }
   }
-  std::cout<<"Please find the transformed model set in " << filename <<std::endl;
+  std::cout << "Please find the transformed model set in "
+            << filename <<std::endl;
 }
 
 void gmmreg_base::prepare_common_options(const char* f_config) {
@@ -177,13 +186,14 @@ void gmmreg_base::multi_scale_options(const char* f_config) {
   GetPrivateProfileString(section, "sigma", NULL, s_scale, 255, f_config);
   parse_tokens(s_scale, delims, v_scale);
   if (v_scale.size() < level) {
-    std::cerr<< " too many levels " << std::endl;
+    std::cerr << " too many levels " << std::endl;
     exit(1);
   }
-  GetPrivateProfileString(section, "max_function_evals", NULL, s_func_evals, 255, f_config);
+  GetPrivateProfileString(section, "max_function_evals", NULL,
+      s_func_evals, 255, f_config);
   parse_tokens(s_func_evals, delims, v_func_evals);
   if (v_func_evals.size() < level) {
-    std::cerr<< " too many levels " << std::endl;
+    std::cerr << " too many levels " << std::endl;
     exit(1);
   }
 }

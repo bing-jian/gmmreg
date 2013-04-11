@@ -1,13 +1,3 @@
-/*=========================================================================
-$Author: bingjian $
-$Date: 2013-01-04 01:39:25 -0500 (Fri, 04 Jan 2013) $
-$Revision: 145 $
-=========================================================================*/
-
-/**
- * \file gmmreg_api.cpp
- * \brief  The implementation of gmmreg_api interface
- */
 #include <cstdlib>
 #include <iostream>
 #include <memory>

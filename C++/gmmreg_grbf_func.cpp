@@ -1,14 +1,3 @@
-/*=========================================================================
-$Author: bjian $
-$Date: 2010/02/24 04:51:29 $
-$Revision: 1.1 $
-=========================================================================*/
-
-/**
- * \file gmmreg_grbf_func.cpp
- * \brief The implementation of the class gmmreg_grbf_func
- */
-
 #include "gmmreg_grbf_func.h"
 #include "gmmreg_utils.h"
 
@@ -43,7 +32,7 @@ double gmmreg_grbf_func::f(const vnl_vector<double>& x) {
 
 void gmmreg_grbf_func::gradf(const vnl_vector<double>& x,
     vnl_vector<double>& g) {
-  gmmreg->compute_gradient(lambda,gradient, grad_all);
+  gmmreg->compute_gradient(lambda, gradient, grad_all);
   int rows_x = grad_all.rows();
   int start_row = 0;
   for (int i = start_row, k = 0; i < rows_x; ++i) {

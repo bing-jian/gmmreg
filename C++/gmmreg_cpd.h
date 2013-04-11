@@ -1,30 +1,12 @@
-/*=========================================================================
-$Author: bingjian $
-$Date: 2013-01-04 01:39:25 -0500 (Fri, 04 Jan 2013) $
-$Revision: 145 $
-=========================================================================*/
-
-/**
- * \file gmmreg_cpd.h
- * \brief  The declaration of the class gmmreg_cpd
- */
-
-
 #ifndef gmmreg_cpd_h
 #define gmmreg_cpd_h
 
-
 #include "gmmreg_base.h"
-
-/**
- * \class gmmreg_cpd
- * \brief  non-rigid registration by coherent point drifting
- */
 
 class gmmreg_cpd : public gmmreg_base {
  public:
   gmmreg_cpd(): eps(0.0000000001) {
-    strcpy(section,"GMMREG_EM");
+    strcpy(section, "GMMREG_EM");
   }
   virtual ~gmmreg_cpd() {}
 
@@ -55,13 +37,12 @@ class gmmreg_cpd : public gmmreg_base {
   double eps;
 };
 
-
 class gmmreg_cpd_tps: public gmmreg_cpd {
  private:
   vnl_matrix<double> tps;
   vnl_matrix<double> affine;
   vnl_matrix<double> nP;
-  vnl_matrix<double> G,Q1,Q2,R,invR,invG;
+  vnl_matrix<double> G, Q1, Q2, R, invR, invG;
 
   void prepare_basis_kernel();
   double update_param();
@@ -77,5 +58,4 @@ class gmmreg_cpd_grbf: public gmmreg_cpd {
   double update_param();
 };
 
-
-#endif //#ifndef gmmreg_cpd_h
+#endif // #ifndef gmmreg_cpd_h

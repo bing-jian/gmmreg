@@ -1,14 +1,3 @@
-/*=========================================================================
-  $Author: bingjian $
-  $Date: 2013-01-04 01:39:25 -0500 (Fri, 04 Jan 2013) $
-  $Revision: 145 $
-  =========================================================================*/
-
-/**
- * \file gmmreg_utils.cpp
- * \brief  The definition of supporting functions
- */
-
 #include <vcl_iostream.h>
 #include <vnl/vnl_matrix.h>
 #include <vnl/vnl_vector.h>
@@ -28,7 +17,7 @@
  *  space should be arranged in the memory such that the j-th coordinate of i-th point
  *  is at location  (i*d + j), i.e., the input matrix in MATLAB should
  *  be of size (d, n) since MATLAB is column-major while the input array
- *  in NumPy should be of size (n, d) since NumPy is row-major
+ *  in NumPy should be of size (n, d) since NumPy is row-major.
  */
 
 double GaussTransform(const double* A, const double* B,

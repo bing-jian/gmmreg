@@ -44,9 +44,8 @@ class gmmreg_base {
   std::vector<double> v_scale;
   std::vector<int> v_func_evals;
 
-  virtual int prepare_input(const char* input_config); // load input data from files
-  int set_model(const char* filename);
-  int set_scene(const char* filename);
+  // load input data from files
+  virtual int prepare_input(const char* input_config);
   int set_ctrl_pts(const char* filename);
   void save_transformed(const char* filename,
       const vnl_vector<double>&, const char* f_config);
@@ -60,8 +59,9 @@ class gmmreg_base {
   virtual void prepare_own_options(const char* f_config) = 0;
   virtual void prepare_basis_kernel() = 0;
   virtual int set_init_params(const char* filename) = 0;
-  virtual void save_results(const char* filename, const vnl_vector<double>&) = 0;
+  virtual void save_results(const char* filename,
+      const vnl_vector<double>&) = 0;
   virtual void start_registration(vnl_vector<double>& params) = 0;
 };
 
-#endif //#ifndef gmmreg_base_h
+#endif // #ifndef gmmreg_base_h

@@ -34,7 +34,14 @@ extern "C"
 #endif
 
 void print_usage() {
-  cerr << "The following methods are currently available:" << endl;
+  cerr << "C++ implementation of the generic point set registration framework "
+          "proposed in Bing Jian and Baba C. Vemuri, "
+          "Robust Point Set Registration Using Gaussian Mixture Models, "
+          "IEEE Trans. Pattern Anal. Mach. Intell., 2011(33), 1633-1645."
+       << endl;
+  cerr << "The following methods are currently available as special cases "
+          "of the proposed framework: "
+       << endl;
   cerr << " 'EM_TPS': "
           "Haili Chui and Anand Rangarajan, "
           "A new point matching algorithm for non-rigid registration, "

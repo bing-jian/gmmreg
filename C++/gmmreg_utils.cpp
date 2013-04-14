@@ -12,6 +12,22 @@
 
 #include "gmmreg_utils.h"
 
+int LoadMatrixFromTxt(const char* filename, vnl_matrix<double>& matrix) {
+  std::ifstream infile(filename, std::ios_base::in);
+  if (infile.is_open()) {
+    if (matrix.read_ascii(infile)) {
+      return matrix.rows();
+    } else {
+      std::cerr << "unable to parse input file " << filename
+                << " as a matrix." << std::endl;
+      return -1;
+    }
+  } else {
+    std::cerr << "unable to open model file " << filename << std::endl;
+    return -1;
+  }
+}
+
 /*
  *  Note: The input point set containing 'n' points in 'd'-dimensional
  *  space should be arranged in the memory such that the j-th coordinate of i-th point

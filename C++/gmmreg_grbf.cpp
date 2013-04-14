@@ -34,7 +34,6 @@ void gmmreg_grbf::start_registration(vnl_vector<double>& params) {
   for (unsigned int k = 0; k < level; ++k) {
     func->set_scale(v_scale[k]);
     func->set_lambda(v_lambda[k]);
-    //func->set_beta(v_beta[k]);
     func->prepare_param_gradient();
     set_param(params);
     int n_max_func_evals = v_func_evals[k];
@@ -42,16 +41,9 @@ void gmmreg_grbf::start_registration(vnl_vector<double>& params) {
     // For more options, see
     // http://public.kitware.com/vxl/doc/release/core/vnl/html/vnl__nonlinear__minimizer_8h-source.html
     minimizer.minimize(params);
-    //vcl_cout <<  "ReturnCode: "<< minimizer.get_failure_code()<< vcl_endl;
     if (minimizer.get_failure_code() < 0) {
       break;
     }
-    //double        fxval = func->f( params );
-    /* vcl_cout << "Minimized to " << fxval << vcl_endl
-       << "Iterations: " << minimizer.get_num_iterations() << "; "
-       << "Evaluations: " << minimizer.get_num_evaluations() << vcl_endl;
-    //vcl_cout << func->param_all << vcl_endl;
-    */
   }
 }
 
@@ -66,7 +58,6 @@ int gmmreg_grbf::set_init_params(const char* f_config) {
 
 int gmmreg_grbf::set_init_grbf(const char* filename) {
   if (strlen(filename) == 0) {
-    //printf("m=%d,n=%d,d=%d\n",m,n,d);
     assert(n > 0);
     assert(d > 0);
     param_grbf.set_size(n, d);
@@ -96,7 +87,6 @@ double gmmreg_grbf::bending_energy() {
 
 void gmmreg_grbf::compute_gradient(double lambda,
     const vnl_matrix<double>& gradient, vnl_matrix<double>& grad_all) {
-  //grad_all.fill(0);
   grad_all = basis.transpose() * gradient;
   if (lambda > 0) {
     grad_all += 2 * lambda * kernel * param_grbf;
@@ -112,7 +102,6 @@ void gmmreg_grbf::save_results(const char* f_config,
   GetPrivateProfileString(common_section, "transformed_model", NULL,
       f_transformed, 255, f_config);
   save_transformed( f_transformed, params, f_config );
-  //func->save_params(f_save_params,  params);
   save_matrix(f_final_grbf, param_grbf);
 }
 
@@ -137,7 +126,6 @@ void gmmreg_grbf::set_param(vnl_vector<double>& x0) {
       x0[k] = param_grbf(i, j);
     }
   }
-  //std::cout<<"Params: initialized from default grbf/Affine\n\n";
 }
 
 void gmmreg_grbf::set_grbf(const vnl_vector<double>& x) {

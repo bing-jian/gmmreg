@@ -11,23 +11,6 @@
 #include "port_ini.h"
 #endif
 
-
-int LoadMatrixFromTxt(const char* filename, vnl_matrix<double>& matrix) {
-  std::ifstream infile(filename, std::ios_base::in);
-  if (infile.is_open()) {
-    if (matrix.read_ascii(infile)) {
-      return matrix.rows();
-    } else {
-      std::cerr << "unable to parse input file " << filename
-                << " as a matrix." <<std::endl;
-      return -1;
-    }
-  } else {
-    std::cerr << "unable to open model file " << filename << std::endl;
-    return -1;
-  }
-}
-
 int gmmreg_tps_transform(const char* f_config) {
   vnl_matrix<double> model, scene, ctrl_pts, source, transformed_source;
   char f_model[256] = {0}, f_scene[256] = {0};

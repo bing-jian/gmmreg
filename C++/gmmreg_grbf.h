@@ -21,8 +21,6 @@ class gmmreg_grbf: public gmmreg_base {
  private:
   vnl_matrix<double> param_grbf;
   vnl_matrix<double> after_grbf, basis, param_all;
-  //unsigned int level;
-  //std::vector<int> v_func_evals;
   std::vector<double> v_beta;
   double beta;
   std::vector<double> v_lambda;
@@ -59,4 +57,4 @@ class gmmreg_grbf_KC: public gmmreg_grbf {
   }
 };
 
-#endif //#ifndef gmmreg_grbf_h
+#endif  // #ifndef gmmreg_grbf_h

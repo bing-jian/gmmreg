@@ -6,14 +6,13 @@
 #include <iostream>
 #include <fstream>
 
-#include <vnl/vnl_random.h>
 #include "gmmreg_base.h"
 #include "gmmreg_rigid_func.h"
 
 class gmmreg_rigid: public gmmreg_base {
  public:
   gmmreg_rigid() {
-    strcpy(section,"GMMREG_OPT");
+    strcpy(section, "GMMREG_OPT");
     func = new gmmreg_rigid_func;
   }
   ~gmmreg_rigid(){
@@ -43,4 +42,4 @@ class gmmreg_rigid: public gmmreg_base {
   void prepare_own_options(const char*);
 };
 
-#endif //#ifndef gmmreg_rigid_h
+#endif  // #ifndef gmmreg_rigid_h

@@ -11,6 +11,8 @@
 
 #define BUFSIZE 4096
 
+int LoadMatrixFromTxt(const char* filename, vnl_matrix<double>& matrix);
+
 double GaussTransform(const vnl_matrix<double>& A,
                       const vnl_matrix<double>& B,
                       double scale);
@@ -64,7 +66,6 @@ void compute_P(const vnl_matrix<double>& x,
                const vnl_matrix<double>& y,
                vnl_matrix<double>& P, double &E, double sigma, int outliers);
 
-//template<class T>
 void quaternion2rotation(vnl_vector<double> q,
                          vnl_matrix<double>& R,
                          vnl_matrix<double>& g1,
@@ -72,7 +73,6 @@ void quaternion2rotation(vnl_vector<double> q,
                          vnl_matrix<double>& g3,
                          vnl_matrix<double>& g4);
 
-//template<class T>
 void quaternion2rotation(vnl_vector<double> q, vnl_matrix<double>& R);
 
 #ifndef WIN32

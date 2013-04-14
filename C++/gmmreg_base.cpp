@@ -32,55 +32,22 @@ int gmmreg_base::prepare_input(const char* f_config) {
   char f_model[256] = {0}, f_scene[256] = {0};
   GetPrivateProfileString(common_section, "model", NULL,
       f_model, 256, f_config);
-  if (set_model(f_model) < 0) {
+  if (LoadMatrixFromTxt(f_model, model) < 0) {
     return -1;
   }
   GetPrivateProfileString(common_section, "scene", NULL,
       f_scene, 256, f_config);
-  if (set_scene(f_scene) < 0) {
+  if (LoadMatrixFromTxt(f_scene, scene) < 0) {
     return -1;
   }
+
+  m = model.rows();
+  d = model.cols();
+  transformed_model.set_size(m, d);
+  s = scene.rows();
+  assert(scene.cols() == d);
+
   return 0;
-}
-
-// load model point set
-int gmmreg_base::set_model(const char* filename) {
-  std::ifstream infile(filename, std::ios_base::in);
-  if (infile.is_open()) {
-    if (model.read_ascii(infile)) {
-      m = model.rows();
-      d = model.cols();
-      transformed_model.set_size(m, d);
-      //std::cout << m << "," << d << std::endl;
-      return m;
-    } else {
-      std::cerr << "unable to parse input file " << filename
-                << " as a matrix." << std::endl;
-      return -1;
-    }
-  } else {
-    std::cerr << "unable to open model file " << filename << std::endl;
-    return -1;
-  }
-}
-
-// load scene point set
-int gmmreg_base::set_scene(const char* filename) {
-  std::ifstream infile(filename, std::ios_base::in);
-  if (infile.is_open()) {
-    if (scene.read_ascii(infile)) {
-      s = scene.rows();
-      assert(scene.cols()==d);
-      return s;
-    } else {
-      std::cerr << "unable to parse input file " << filename
-                << " as a matrix." << std::endl;
-      return -1;
-    }
-  } else {
-    std::cerr << "unable to open scene file " << filename << std::endl;
-    return -1;
-  }
 }
 
 int gmmreg_base::set_ctrl_pts(const char* filename) {
@@ -89,20 +56,14 @@ int gmmreg_base::set_ctrl_pts(const char* filename) {
                  "the model points are used as control points." << std::endl;
     ctrl_pts = model;
     n = ctrl_pts.rows();
-    // std::cout << m << "," << n << std::endl;
     return n;
   } else {
-    std::ifstream infile(filename, std::ios_base::in);
-    if (infile.is_open()) {
-      ctrl_pts.read_ascii(infile);
-      assert(ctrl_pts.cols()==d);
-      n = ctrl_pts.rows();
-      return n;
-    } else {
-      std::cerr << "unable to open control points file "
-                << filename << std::endl;
+    if (LoadMatrixFromTxt(filename, ctrl_pts) < 0) {
       return -1;
     }
+    assert(ctrl_pts.cols() == d);
+    n = ctrl_pts.rows();
+    return n;
   }
 }
 
@@ -132,7 +93,7 @@ void gmmreg_base::save_transformed(const char* filename,
         "max_threshold", NULL, s_max, 255, f_config);
     GetPrivateProfileString(section_correspondence,
         "matched_pairs", NULL, s_pairs, 255, f_config);
-    std::ofstream f_pair(s_pairs,std::ios_base::out);
+    std::ofstream f_pair(s_pairs, std::ios_base::out);
     double min_threshold, max_threshold, interval;
     min_threshold = atof(s_min);
     max_threshold = atof(s_max);
@@ -167,7 +128,7 @@ void gmmreg_base::save_transformed(const char* filename,
     }
   }
   std::cout << "Please find the transformed model set in "
-            << filename <<std::endl;
+            << filename << std::endl;
 }
 
 void gmmreg_base::prepare_common_options(const char* f_config) {

@@ -42,4 +42,4 @@ class gmmreg_rigid_func : public vnl_cost_function {
   int m, d;
 };
 
-#endif //#ifndef gmmreg_rigid_func_h_
+#endif  // #ifndef gmmreg_rigid_func_h_

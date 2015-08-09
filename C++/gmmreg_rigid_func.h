@@ -1,45 +1,51 @@
-#ifndef gmmreg_rigid_func_h
-#define gmmreg_rigid_func_h
+#ifndef GMMREG_RIGID_FUNC_H_
+#define GMMREG_RIGID_FUNC_H_
 
 #include <vnl/vnl_cost_function.h>
 #include "gmmreg_base.h"
 
-class gmmreg_rigid_func : public vnl_cost_function {
+namespace gmmreg {
+
+class RigidFunc : public vnl_cost_function {
  public:
-  gmmreg_rigid_func(): vnl_cost_function() {}
+  RigidFunc(): vnl_cost_function() {}
 
-  double eval(double &, vnl_matrix<double> &);
-  double f(const vnl_vector<double>& x);
-  void gradf(const vnl_vector<double>& x, vnl_vector<double>& g);
+  double Eval(const double &, vnl_matrix<double>*);
 
-  inline void set_scale(double scale) {
-    this->scale = scale;
+  double f(const vnl_vector<double>& x) override;
+  void gradf(const vnl_vector<double>& x, vnl_vector<double>& g) override;
+
+  inline void SetScale(const double scale) {
+    this->scale_ = scale;
   }
-  inline double get_scale() const {
-    return this->scale;
+  inline double GetScale() const {
+    return this->scale_;
   }
 
-  gmmreg_base* gmmreg;
-  inline void set_gmmreg(gmmreg_base* gmmreg) {
-    this->gmmreg = gmmreg;
-    this->m = gmmreg->m;
-    this->d = gmmreg->d;
-    if (d == 2) {
+
+  inline void SetBase(Base* base) {
+    this->base_ = base;
+    this->m_ = base->m_;
+    this->d_ = base->d_;
+    if (d_ == 2) {
       set_number_of_unknowns(3);
-    } else if (d == 3) {
+    } else if (d_ == 3) {
       set_number_of_unknowns(7);
     }
-    gradient.set_size(m, d);
+    gradient_.set_size(m_, d_);
   }
 
-  ~gmmreg_rigid_func() {}
-
- protected:
-  vnl_matrix<double> gradient;
+  ~RigidFunc() {}
 
  private:
-  double scale, lambda;
-  int m, d;
+  Base* base_;
+  vnl_matrix<double> gradient_;
+
+ private:
+  double scale_;
+  int m_, d_;
 };
 
-#endif  // #ifndef gmmreg_rigid_func_h_
+}  // namespace gmmreg
+
+#endif  // #ifndef GMMREG_RIGID_FUNC_H__

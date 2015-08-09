@@ -1,16 +1,17 @@
+#include "gmmreg_utils.h"
+
+#include <cmath>
+#include <cstdlib>
+#include <cstring>
+#include <fstream>
+#include <iostream>
+#include <vector>
+
 #include <vcl_iostream.h>
 #include <vnl/vnl_matrix.h>
 #include <vnl/vnl_vector.h>
 
 #define SQR(X)  ((X)*(X))
-#include <cmath>
-#include <vector>
-#include <iostream>
-#include <fstream>
-#include <cstring>
-#include <cstdlib>
-
-#include "gmmreg_utils.h"
 
 int LoadMatrixFromTxt(const char* filename, vnl_matrix<double>& matrix) {
   std::ifstream infile(filename, std::ios_base::in);
@@ -343,7 +344,7 @@ void save_vector( const char * filename, const vnl_vector<double>& x) {
   }
 }
 
-void normalize(vnl_matrix<double>& x,
+void Normalize(vnl_matrix<double>& x,
     vnl_vector<double>& centroid, double& scale) {
   int n = x.rows();
   if (n==0) return;
@@ -362,7 +363,7 @@ void normalize(vnl_matrix<double>& x,
   x = x / scale;
 }
 
-void denormalize(vnl_matrix<double>& x, const vnl_vector<double>& centroid, const double scale) {
+void Denormalize(vnl_matrix<double>& x, const vnl_vector<double>& centroid, const double scale) {
   int n = x.rows();
   if (n==0) return;
   int d = x.cols();

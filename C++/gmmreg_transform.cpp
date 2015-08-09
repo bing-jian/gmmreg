@@ -80,11 +80,11 @@ int gmmreg_tps_transform(const char* f_config) {
   vnl_vector<double> ctrl_centroid, model_centroid, scene_centroid;
 
   if (b_normalize) {
-    normalize(ctrl_pts, ctrl_centroid, ctrl_scale);
-    normalize(model, model_centroid, model_scale);
-    normalize(scene, scene_centroid, scene_scale);
+    Normalize(ctrl_pts, ctrl_centroid, ctrl_scale);
+    Normalize(model, model_centroid, model_scale);
+    Normalize(scene, scene_centroid, scene_scale);
     // perform normalization to source w.r.t to model space
-    denormalize(source, -model_centroid/model_scale, 1.0/model_scale);
+    Denormalize(source, -model_centroid/model_scale, 1.0/model_scale);
   }
 
   vnl_matrix<double> K, U;
@@ -109,7 +109,7 @@ int gmmreg_tps_transform(const char* f_config) {
 
   transformed_source = basis * param_all;
   if (b_normalize) {
-    denormalize(transformed_source, scene_centroid, scene_scale);
+    Denormalize(transformed_source, scene_centroid, scene_scale);
   }
   char f_transformed_source[256] = {0};
   GetPrivateProfileString(common_section, "transformed_source", NULL,

@@ -1,60 +1,64 @@
-#ifndef gmmreg_grbf_h
-#define gmmreg_grbf_h
+#ifndef GMMREG_GRBF_H_
+#define GMMREG_GRBF_H_
 
 #include <vector>
 
 #include "gmmreg_base.h"
 #include "gmmreg_grbf_func.h"
 
-class gmmreg_grbf: public gmmreg_base {
+namespace gmmreg {
+
+class GrbfRegistration: public Base {
  public:
-  gmmreg_grbf() {
-    strcpy(section, "GMMREG_OPT");
+  GrbfRegistration() {
+    strcpy(section_, "GMMREG_OPT");
   }
-  virtual ~gmmreg_grbf() {
-    delete func;
+  virtual ~GrbfRegistration() {
+    delete func_;
   }
 
  protected:
-  gmmreg_grbf_func *func;
+  GaussianRadialBasisFunc *func_;
 
  private:
-  vnl_matrix<double> param_grbf;
-  vnl_matrix<double> after_grbf, basis, param_all;
+  vnl_matrix<double> param_grbf_;
+  vnl_matrix<double> after_grbf, basis_, param_all_;
   std::vector<double> v_beta;
-  double beta;
+  double beta_;
   std::vector<double> v_lambda;
   std::vector<int> v_affine;
 
-  void start_registration(vnl_vector<double>&);
-  int set_init_grbf(const char* filename);
-  void set_param(vnl_vector<double>& x0);
-  void set_grbf(const vnl_vector<double>&);
-  int set_init_params(const char* filename);
-  void save_results(const char* f_config, const vnl_vector<double>&);
+  void StartRegistration(vnl_vector<double>&) override;
+  int SetInitGrbf(const char* filename);
+  void SetParam(vnl_vector<double>& x0);
+  void SetGrbf(const vnl_vector<double>&);
+  int SetInitParams(const char* filename) override;
+  void SaveResults(const char* f_config, const vnl_vector<double>&) override;
 
-  int prepare_input(const char* input_config);
-  void prepare_basis_kernel();
-  void prepare_param_gradient(bool);
-  void perform_transform(const vnl_vector<double>&);
-  double bending_energy();
-  void compute_gradient(double lambda, const vnl_matrix<double>& gradient,
-      vnl_matrix<double>& grad_all);
-  void prepare_own_options(const char* f_config);
+  int PrepareInput(const char* input_config) override;
+  void PrepareBasisKernel();
+  void PrepareParamGradient(bool);
+  void PerformTransform(const vnl_vector<double>&) override;
+  double BendingEnergy() override;
+  void ComputeGradient(const double lambda, const vnl_matrix<double>& gradient,
+      vnl_matrix<double>& grad_all) override;
+  void PrepareOwnOptions(const char* f_config) override;
 };
 
-class gmmreg_grbf_L2: public gmmreg_grbf {
+class GrbfRegistration_L2: public GrbfRegistration {
  public:
-  gmmreg_grbf_L2(): gmmreg_grbf() {
-    func = new gmmreg_grbf_L2_func;
+  GrbfRegistration_L2(): GrbfRegistration() {
+    func_ = new GaussianRadialBasisFunc_L2;
   }
 };
 
-class gmmreg_grbf_KC: public gmmreg_grbf {
+class GrbfRegistration_KC: public GrbfRegistration {
  public:
-  gmmreg_grbf_KC(): gmmreg_grbf() {
-    func = new gmmreg_grbf_KC_func;
+  GrbfRegistration_KC(): GrbfRegistration() {
+    func_ = new GaussianRadialBasisFunc_KC;
   }
 };
 
-#endif  // #ifndef gmmreg_grbf_h
+}  // namespace gmmreg
+
+#endif  // GMMREG_GRBF_H_

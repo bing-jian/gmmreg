@@ -1,5 +1,5 @@
-#ifndef vnl_gmmreg_h_
-#define vnl_gmmreg_h_
+#ifndef GMMREG_UTILS_H_
+#define GMMREG_UTILS_H_
 
 #include <vnl/vnl_vector.h>
 #include <vnl/vnl_matrix.h>
@@ -56,10 +56,10 @@ void save_vector( const char * filename, const vnl_vector<double>& x);
 
 //void normalize(const vnl_matrix<double>& x, vnl_vector<double>& centroid, double& scale, vnl_matrix<double>& normalized_x);
 //void denormalize(const vnl_matrix<double>& x, const vnl_vector<double>& centroid, const double scale, vnl_matrix<double>& denormalized_x);
-void normalize(vnl_matrix<double>& x,
+void Normalize(vnl_matrix<double>& x,
                vnl_vector<double>& centroid,
                double& scale);
-void denormalize(vnl_matrix<double>& x,
+void Denormalize(vnl_matrix<double>& x,
                  const vnl_vector<double>& centroid,
                  const double scale);
 void compute_P(const vnl_matrix<double>& x,
@@ -80,4 +80,4 @@ char *strupr(char *string);
 char *strlwr(char *string);
 #endif
 
-#endif //#ifndef vnl_gmmreg_h_
+#endif // GMMREG_UTILS_H_

@@ -1,59 +1,62 @@
-#ifndef gmmreg_tps_h
-#define gmmreg_tps_h
+#ifndef GMMREG_TPS_H_
+#define GMMREG_TPS_H_
 
 #include <vector>
 
 #include "gmmreg_base.h"
 #include "gmmreg_tps_func.h"
 
-class gmmreg_tps: public gmmreg_base {
+namespace gmmreg {
+
+class TpsRegistration: public Base {
  public:
-  gmmreg_tps() {
-    strcpy(section, "GMMREG_OPT");
+  TpsRegistration() {
+    strcpy(section_, "GMMREG_OPT");
   }
-  virtual ~gmmreg_tps() {
-    delete func;
+  virtual ~TpsRegistration() {
+    delete func_;
   }
 
  protected:
-  gmmreg_tps_func *func;
+  ThinPlateSplineFunc* func_;
 
  private:
-  vnl_matrix<double> param_affine, param_tps;
-  vnl_matrix<double> after_tps, basis, param_all;
-  std::vector<double> v_lambda;
-  std::vector<int> v_affine;
+  vnl_matrix<double> param_affine_, param_tps_;
+  vnl_matrix<double> after_tps_, basis_, param_all_;
+  std::vector<double> v_lambda_;
+  std::vector<int> v_affine_;
 
-  void start_registration(vnl_vector<double>&);
-  int set_init_affine(const char* filename);
-  int set_init_tps(const char* filename);
-  void set_param(vnl_vector<double>& x0);
-  void set_affine_and_tps(const vnl_vector<double>&);
-  int set_init_params(const char* filename);
-  void save_results(const char* f_config, const vnl_vector<double>&);
+  void StartRegistration(vnl_vector<double>&) override;
+  int SetInitAffine(const char* filename);
+  int SetInitTps(const char* filename);
+  void SetParam(vnl_vector<double>& x0);
+  void SetAffineAndTps(const vnl_vector<double>&);
+  int SetInitParams(const char* filename) override;
+  void SaveResults(const char* f_config, const vnl_vector<double>&) override;
 
-  int prepare_input(const char* input_config);
-  void prepare_basis_kernel();
-  void prepare_param_gradient(bool);
-  void perform_transform(const vnl_vector<double>&);
-  double bending_energy();
-  void compute_gradient(double lambda, const vnl_matrix<double>& gradient,
-      vnl_matrix<double>& grad_all);
-  void prepare_own_options(const char* f_config);
+  int PrepareInput(const char* input_config) override;
+  void PrepareBasisKernel() override;
+  void PrepareParamGradient(bool);
+  void PerformTransform(const vnl_vector<double>&) override;
+  double BendingEnergy() override;
+  void ComputeGradient(const double lambda, const vnl_matrix<double>& gradient,
+      vnl_matrix<double>& grad_all) override;
+  void PrepareOwnOptions(const char* f_config) override;
 };
 
-class gmmreg_tps_L2: public gmmreg_tps {
+class TpsRegistration_L2: public TpsRegistration {
  public:
-  gmmreg_tps_L2(): gmmreg_tps() {
-    func = new gmmreg_tps_L2_func;
+  TpsRegistration_L2(): TpsRegistration() {
+    func_ = new ThinPlateSplineFunc_L2;
   }
 };
 
-class gmmreg_tps_KC: public gmmreg_tps {
+class TpsRegistration_KC: public TpsRegistration {
  public:
-  gmmreg_tps_KC(): gmmreg_tps() {
-    func = new gmmreg_tps_KC_func;
+  TpsRegistration_KC(): TpsRegistration() {
+    func_ = new ThinPlateSplineFunc_KC;
   }
 };
 
-#endif //#ifndef gmmreg_tps_h
+}  // namespace gmmreg
+#endif  // GMMREG_TPS_H_

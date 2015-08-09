@@ -1,3 +1,5 @@
+#include "gmmreg_api.h"
+
 #include <cstdlib>
 #include <iostream>
 #include <memory>
@@ -9,7 +11,6 @@
 #include "port_ini.h"
 #endif
 
-#include "gmmreg_api.h"
 #include "gmmreg_cpd.h"
 #include "gmmreg_grbf.h"
 #include "gmmreg_rigid.h"
@@ -19,15 +20,6 @@
 using std::cerr;
 using std::cout;
 using std::endl;
-
-// Note that auto_ptr is made deprecated by the current standard C++11.
-typedef std::auto_ptr<gmmreg_cpd_tps> gmmreg_cpd_tps_Ptr;
-typedef std::auto_ptr<gmmreg_cpd_grbf> gmmreg_cpd_grbf_Ptr;
-typedef std::auto_ptr<gmmreg_tps_L2> gmmreg_tps_L2_Ptr;
-typedef std::auto_ptr<gmmreg_tps_KC> gmmreg_tps_KC_Ptr;
-typedef std::auto_ptr<gmmreg_grbf_L2> gmmreg_grbf_L2_Ptr;
-typedef std::auto_ptr<gmmreg_grbf_KC> gmmreg_grbf_KC_Ptr;
-typedef std::auto_ptr<gmmreg_rigid> gmmreg_rigid_Ptr;
 
 #ifdef __cplusplus
 extern "C"
@@ -71,31 +63,25 @@ extern "C"
 #endif
 int gmmreg_api(const char* input_config, const char* method) {
   cout << "Robust Point Set Registration Using Gaussian Mixture Models" << endl;
-  cout << "Compiled on " << __TIME__ << "," << __DATE__ << endl;
+  cout << "Compiled on " << __DATE__ << ", " << __TIME__ << endl;
   cout << "Copyright Bing Jian & Baba C. Vemuri " << endl;
   char f_config[BUFSIZE];
   get_config_fullpath(input_config, f_config);
+
   if (!strcmp(strupr((char*)method), "EM_TPS")) {
-    gmmreg_cpd_tps_Ptr gmmreg(new gmmreg_cpd_tps);
-    gmmreg->run(f_config);
+    gmmreg::CoherentPointDriftTps().Run(f_config);
   } else if (!strcmp(strupr((char*)method), "EM_GRBF")) {
-    gmmreg_cpd_grbf_Ptr gmmreg(new gmmreg_cpd_grbf);
-    gmmreg->run(f_config);
+    gmmreg::CoherentPointDriftGrbf().Run(f_config);
   } else if (!strcmp(strupr((char*)method), "TPS_L2")) {
-    gmmreg_tps_L2_Ptr gmmreg(new gmmreg_tps_L2);
-    gmmreg->run(f_config);
+    gmmreg::TpsRegistration_L2().Run(f_config);
   } else if (!strcmp(strupr((char*)method), "TPS_KC")) {
-    gmmreg_tps_KC_Ptr gmmreg(new gmmreg_tps_KC);
-    gmmreg->run(f_config);
+    gmmreg::TpsRegistration_KC().Run(f_config);
   } else if (!strcmp(strupr((char*)method), "GRBF_L2")) {
-    gmmreg_grbf_L2_Ptr gmmreg(new gmmreg_grbf_L2);
-    gmmreg->run(f_config);
+    gmmreg::GrbfRegistration_L2().Run(f_config);
   } else if (!strcmp(strupr((char*)method), "GRBF_KC")) {
-    gmmreg_grbf_KC_Ptr gmmreg(new gmmreg_grbf_KC);
-    gmmreg->run(f_config);
+    gmmreg::GrbfRegistration_KC().Run(f_config);
   } else if (!strcmp(strlwr((char*)method), "rigid")) {
-    gmmreg_rigid_Ptr gmmreg(new gmmreg_rigid);
-    gmmreg->run(f_config);
+    gmmreg::RigidRegistration().Run(f_config);
   } else {
     print_usage();
     return -1;

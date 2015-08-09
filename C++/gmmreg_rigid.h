@@ -1,5 +1,5 @@
-#ifndef gmmreg_rigid_h
-#define gmmreg_rigid_h
+#ifndef GMMREG_RIGID_H_
+#define GMMREG_RIGID_H_
 
 #include <assert.h>
 
@@ -9,37 +9,38 @@
 #include "gmmreg_base.h"
 #include "gmmreg_rigid_func.h"
 
-class gmmreg_rigid: public gmmreg_base {
+namespace gmmreg {
+
+class RigidRegistration: public Base {
  public:
-  gmmreg_rigid() {
-    strcpy(section, "GMMREG_OPT");
-    func = new gmmreg_rigid_func;
+  RigidRegistration() {
+    strcpy(section_, "GMMREG_OPT");
+    func_ = new RigidFunc;
   }
-  ~gmmreg_rigid(){
-    delete func;
+  ~RigidRegistration(){
+    delete func_;
   }
 
  private:
-  vnl_vector<double> param_rigid;
-  gmmreg_rigid_func *func;
-  vnl_vector<long> nbd;
-  vnl_vector<double> lower_bound, upper_bound;
+  vnl_vector<double> param_rigid_;
+  RigidFunc* func_;
 
-  void set_bound();
-  void start_registration(vnl_vector<double>&);
-  int set_init_rigid(const char*);
-  void set_param(vnl_vector<double>&);
-  int set_init_params(const char*);
-  void save_results(const char*, const vnl_vector<double>&);
-  void prepare_basis_kernel() {};
-  void prepare_param_gradient(bool) {};
-  void perform_transform(const vnl_vector<double>&);
-  double bending_energy() {
+  void StartRegistration(vnl_vector<double>&) override;
+  int SetInitRigid(const char*);
+  void SetParam(vnl_vector<double>&);
+  int SetInitParams(const char*) override;
+  void SaveResults(const char*, const vnl_vector<double>&) override;
+  void PrepareBasisKernel() {};
+  void PrepareParamGradient(bool) {};
+  void PerformTransform(const vnl_vector<double>&) override;
+  double BendingEnergy() override {
     return 0;
   };
-  void compute_gradient(double lambda, const vnl_matrix<double>& gradient,
-      vnl_matrix<double>& grad_all) {};
-  void prepare_own_options(const char*);
+  void ComputeGradient(double lambda, const vnl_matrix<double>& gradient,
+      vnl_matrix<double>& grad_all) override {};
+  void PrepareOwnOptions(const char*) override;
 };
 
-#endif  // #ifndef gmmreg_rigid_h
+}  // namespace gmmreg
+
+#endif  // GMMREG_RIGID_H_

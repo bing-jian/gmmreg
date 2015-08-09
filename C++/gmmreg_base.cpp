@@ -1,86 +1,89 @@
-#include <assert.h>
-#include <iostream>
-#include <fstream>
-#include <cstring>
-#include <cstdlib>
-
-#include <vcl_string.h>
-#include <vcl_iostream.h>
-
 #include "gmmreg_base.h"
+
+#include <assert.h>
+#include <cstdlib>
+#include <cstring>
+#include <fstream>
+#include <iostream>
+
+#include <vcl_iostream.h>
+#include <vcl_string.h>
+
 #include "gmmreg_utils.h"
 
-void gmmreg_base::run(const char* f_config) {
-  initialize(f_config);
+namespace gmmreg {
+
+void Base::Run(const char* f_config) {
+  Initialize(f_config);
   vnl_vector<double> params;
-  start_registration(params);
-  save_results(f_config, params);
+  StartRegistration(params);
+  SaveResults(f_config, params);
 }
 
-int gmmreg_base::initialize(const char* f_config) {
-  if (prepare_input(f_config) < 0) {
+int Base::Initialize(const char* f_config) {
+  if (PrepareInput(f_config) < 0) {
     return -1;
   }
-  set_init_params(f_config);
-  prepare_common_options(f_config);
-  prepare_own_options(f_config);
-  prepare_basis_kernel();
+  SetInitParams(f_config);
+  PrepareCommonOptions(f_config);
+  PrepareOwnOptions(f_config);
+  PrepareBasisKernel();
   return 0;
 }
 
-int gmmreg_base::prepare_input(const char* f_config) {
+int Base::PrepareInput(const char* f_config) {
   char f_model[256] = {0}, f_scene[256] = {0};
-  GetPrivateProfileString(common_section, "model", NULL,
+  GetPrivateProfileString(common_section_, "model", NULL,
       f_model, 256, f_config);
-  if (LoadMatrixFromTxt(f_model, model) < 0) {
+  if (LoadMatrixFromTxt(f_model, model_) < 0) {
     return -1;
   }
-  GetPrivateProfileString(common_section, "scene", NULL,
+  GetPrivateProfileString(common_section_, "scene", NULL,
       f_scene, 256, f_config);
-  if (LoadMatrixFromTxt(f_scene, scene) < 0) {
+  if (LoadMatrixFromTxt(f_scene, scene_) < 0) {
     return -1;
   }
 
-  m = model.rows();
-  d = model.cols();
-  transformed_model.set_size(m, d);
-  s = scene.rows();
-  assert(scene.cols() == d);
+  m_ = model_.rows();
+  d_ = model_.cols();
+  transformed_model_.set_size(m_, d_);
+  s_ = scene_.rows();
+  assert(scene_.cols() == d_);
 
   return 0;
 }
 
-int gmmreg_base::set_ctrl_pts(const char* filename) {
+int Base::SetCtrlPts(const char* filename) {
   if (strlen(filename) == 0) {
     std::cout << "The control point set is not specified, "
                  "the model points are used as control points." << std::endl;
-    ctrl_pts = model;
-    n = ctrl_pts.rows();
-    return n;
+    ctrl_pts_ = model_;
+    n_ = ctrl_pts_.rows();
+    return n_;
   } else {
-    if (LoadMatrixFromTxt(filename, ctrl_pts) < 0) {
+    if (LoadMatrixFromTxt(filename, ctrl_pts_) < 0) {
       return -1;
     }
-    assert(ctrl_pts.cols() == d);
-    n = ctrl_pts.rows();
-    return n;
+    assert(ctrl_pts_.cols() == d_);
+    n_ = ctrl_pts_.rows();
+    return n_;
   }
 }
 
-void gmmreg_base::denormalize_all() {
-  if (b_normalize) {
-    denormalize(transformed_model, scene_centroid, scene_scale);
-    denormalize(model, scene_centroid, scene_scale);
-    denormalize(scene, scene_centroid, scene_scale);
+void Base::DenormalizeAll() {
+  if (b_normalize_) {
+    Denormalize(transformed_model_, scene_centroid_, scene_scale_);
+    Denormalize(model_, scene_centroid_, scene_scale_);
+    Denormalize(scene_, scene_centroid_, scene_scale_);
   }
 }
 
-void gmmreg_base::save_transformed(const char* filename,
+void Base::SaveTransformed(const char* filename,
     const vnl_vector<double>& params, const char* f_config) {
   std::ofstream outfile(filename, std::ios_base::out);
-  perform_transform(params);
-  denormalize_all();
-  transformed_model.print(outfile);
+  PerformTransform(params);
+  DenormalizeAll();
+  transformed_model_.print(outfile);
 
   char section_correspondence[256] = "CORRESPONDENCE";
   int num = GetPrivateProfileInt(section_correspondence,
@@ -105,12 +108,12 @@ void gmmreg_base::save_transformed(const char* filename,
     //vnl_matrix<double> working_M, working_S;
     vnl_matrix<double> dist;
     vnl_matrix<int> pairs;
-    ComputeSquaredDistanceMatrix(transformed_model, scene, dist);
+    ComputeSquaredDistanceMatrix(transformed_model_, scene_, dist);
     for (int i = 0; i < num; ++i) {
-      double threshold  = min_threshold + i*interval;
+      double threshold  = min_threshold + i * interval;
       //int n_match = find_working_pair(model, scene, transformed_model,
       //                                threshold, working_M, working_S);
-      pick_indices(dist, pairs, threshold*threshold);
+      pick_indices(dist, pairs, threshold * threshold);
       //printf("%f : %d\n",threshold, n_match);
       f_pair << "distance threshold : " << threshold << std::endl;
       f_pair << "# of matched point pairs : " << pairs.cols() << std::endl;
@@ -131,30 +134,32 @@ void gmmreg_base::save_transformed(const char* filename,
             << filename << std::endl;
 }
 
-void gmmreg_base::prepare_common_options(const char* f_config) {
-  b_normalize = GetPrivateProfileInt(section, "normalize", 1, f_config);
-  if (b_normalize) {
-    normalize(model, model_centroid, model_scale);
-    normalize(scene, scene_centroid, scene_scale);
-    normalize(ctrl_pts, model_centroid, model_scale);
+void Base::PrepareCommonOptions(const char* f_config) {
+  b_normalize_ = GetPrivateProfileInt(section_, "normalize", 1, f_config);
+  if (b_normalize_) {
+    Normalize(model_, model_centroid_, model_scale_);
+    Normalize(scene_, scene_centroid_, scene_scale_);
+    Normalize(ctrl_pts_, model_centroid_, model_scale_);
   }
 }
 
-void gmmreg_base::multi_scale_options(const char* f_config) {
-  level = GetPrivateProfileInt(section, "level", 1, f_config);
+void Base::MultiScaleOptions(const char* f_config) {
+  level_ = GetPrivateProfileInt(section_, "level", 1, f_config);
   char s_scale[256] = {0}, s_func_evals[256] = {0};
   char delims[] = " -,;";
-  GetPrivateProfileString(section, "sigma", NULL, s_scale, 255, f_config);
-  parse_tokens(s_scale, delims, v_scale);
-  if (v_scale.size() < level) {
+  GetPrivateProfileString(section_, "sigma", NULL, s_scale, 255, f_config);
+  parse_tokens(s_scale, delims, v_scale_);
+  if (v_scale_.size() < level_) {
     std::cerr << " too many levels " << std::endl;
     exit(1);
   }
-  GetPrivateProfileString(section, "max_function_evals", NULL,
+  GetPrivateProfileString(section_, "max_function_evals", NULL,
       s_func_evals, 255, f_config);
-  parse_tokens(s_func_evals, delims, v_func_evals);
-  if (v_func_evals.size() < level) {
+  parse_tokens(s_func_evals, delims, v_func_evals_);
+  if (v_func_evals_.size() < level_) {
     std::cerr << " too many levels " << std::endl;
     exit(1);
   }
 }
+
+}  // namespace gmmreg

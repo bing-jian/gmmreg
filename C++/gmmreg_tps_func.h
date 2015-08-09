@@ -1,74 +1,81 @@
-#ifndef gmmreg_tps_func_h
-#define gmmreg_tps_func_h
+#ifndef GMMREG_TPS_FUNC_H_
+#define GMMREG_TPS_FUNC_H_
 
 #include <vnl/vnl_cost_function.h>
 #include "gmmreg_base.h"
 
-class gmmreg_tps_func : public vnl_cost_function {
+namespace gmmreg {
+
+class ThinPlateSplineFunc : public vnl_cost_function {
  public:
-  gmmreg_tps_func(): vnl_cost_function() {}
+  ThinPlateSplineFunc(): vnl_cost_function() {}
+  virtual ~ThinPlateSplineFunc() {}
 
-  virtual double eval(double& f1, double& f2,
-      vnl_matrix<double>& g1, vnl_matrix<double>& g2) = 0;
-  double f(const vnl_vector<double>& x);
-  void gradf(const vnl_vector<double>& x, vnl_vector<double>& g);
+  virtual double Eval(const double f1, const double f2,
+      const vnl_matrix<double>& g1, const vnl_matrix<double>& g2) = 0;
+  double f(const vnl_vector<double>& x) override;
+  void gradf(const vnl_vector<double>& x, vnl_vector<double>& g) override;
 
-  gmmreg_base* gmmreg;
-  inline void set_gmmreg(gmmreg_base* gmmreg) {
-    this->gmmreg = gmmreg;
-    this->m = gmmreg->m;
-    this->n = gmmreg->n;
-    this->d = gmmreg->d;
-    gradient1.set_size(m, d);
-    gradient2.set_size(m, d);
-  }
-
-  inline void set_scale(double scale) {
-    this->scale = scale;
-  }
-  inline double get_scale() const {
-    return this->scale;
-  }
-  inline void set_lambda(double lambda) {
-    this->lambda = lambda;
-  }
-  inline double get_lambda() const {
-    return this->lambda;
+  inline void SetBase(Base* base) {
+    this->base_ = base;
+    this->m_ = base->m_;
+    this->n_ = base->n_;
+    this->d_ = base->d_;
+    gradient1_.set_size(m_, d_);
+    gradient2_.set_size(m_, d_);
   }
 
-  void prepare_param_gradient();
-  bool fix_affine;
-  inline void set_fix_affine(bool fix_affine) {
-    this->fix_affine = fix_affine;
+  inline void SetScale(const double scale) {
+    this->scale_ = scale;
+  }
+  inline double GetScale() const {
+    return this->scale_;
+  }
+  inline void SetLambda(const double lambda) {
+    this->lambda_ = lambda;
+  }
+  inline double GetLambda() const {
+    return this->lambda_;
+  }
+
+  void PrepareParamGradient();
+
+  inline void SetFixAffine(const bool fix_affine) {
+    this->fix_affine_ = fix_affine;
     if (fix_affine) {
-      set_number_of_unknowns((n - d - 1) * d); //dim = (n-d-1)*d;
+      set_number_of_unknowns((n_ - d_ - 1) * d_); //dim = (n-d-1)*d;
     } else {
-      set_number_of_unknowns(n * d); //dim = n*d;
+      set_number_of_unknowns(n_ * d_); //dim = n*d;
     }
     //gmmreg->dim = get_number_of_unknowns(); //dim;
   }
-  inline bool get_fix_affine() {return this->fix_affine;}
+  inline bool GetFixAffine() const {
+    return this->fix_affine_;
+  }
 
-  virtual ~gmmreg_tps_func() {}
+  bool fix_affine_;
 
  protected:
-  vnl_matrix<double> gradient;
+  Base* base_;
+  vnl_matrix<double> gradient_;
 
  private:
-  double scale, lambda;
-  int m, n, d;
-  vnl_matrix<double> gradient1, gradient2, grad_all;
+  double scale_, lambda_;
+  int m_, n_, d_;
+  vnl_matrix<double> gradient1_, gradient2_, grad_all_;
 };
 
-class gmmreg_tps_L2_func : public gmmreg_tps_func {
-  double eval(double& f1, double& f2,
-      vnl_matrix<double>& g1, vnl_matrix<double>& g2);
+class ThinPlateSplineFunc_L2 : public ThinPlateSplineFunc {
+  double Eval(const double f1, const double f2,
+      const vnl_matrix<double>& g1, const vnl_matrix<double>& g2) override;
 };
 
 
-class gmmreg_tps_KC_func : public gmmreg_tps_func {
-  double eval(double& f1, double& f2,
-      vnl_matrix<double>& g1, vnl_matrix<double>& g2);
+class ThinPlateSplineFunc_KC : public ThinPlateSplineFunc {
+  double Eval(const double f1, const double f2,
+      const vnl_matrix<double>& g1, const vnl_matrix<double>& g2) override;
 };
 
-#endif //#ifndef gmmreg_tps_func_h_
+}  // namespace gmmreg
+
+#endif  // GMMREG_TPS_FUNC_H__

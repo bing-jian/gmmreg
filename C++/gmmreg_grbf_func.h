@@ -1,66 +1,70 @@
-#ifndef gmmreg_grbf_func_h
-#define gmmreg_grbf_func_h
+#ifndef GaussianRadialBasisFunc_H_
+#define GaussianRadialBasisFunc_H_
 
 #include <vnl/vnl_cost_function.h>
 #include "gmmreg_base.h"
 
-class gmmreg_grbf_func : public vnl_cost_function {
- public:
-  gmmreg_grbf_func(): vnl_cost_function(), m(0), n(0), d(0) {}
+namespace gmmreg {
 
-  virtual double eval(double& f1, double& f2,
+class GaussianRadialBasisFunc : public vnl_cost_function {
+ public:
+  GaussianRadialBasisFunc(): vnl_cost_function(), m_(0), n_(0), d_(0) {}
+  virtual ~GaussianRadialBasisFunc() {}
+
+  virtual double Eval(const double f1, const double f2,
       vnl_matrix<double>& g1, vnl_matrix<double>& g2) = 0;
   double f(const vnl_vector<double>& x);
   void gradf(const vnl_vector<double>& x, vnl_vector<double>& g);
 
-  gmmreg_base* gmmreg;
-  inline void set_gmmreg(gmmreg_base* gmmreg) {
-    this->gmmreg = gmmreg;
-    this->m = gmmreg->m;
-    this->n = gmmreg->n;
-    this->d = gmmreg->d;
-    gradient1.set_size(m, d);
-    gradient2.set_size(m, d);
-    set_number_of_unknowns(n * d); //dim = n*d;
+  inline void SetBase(Base* base) {
+    this->base_ = base;
+    this->m_ = base->m_;
+    this->n_ = base->n_;
+    this->d_ = base->d_;
+    gradient1_.set_size(m_, d_);
+    gradient2_.set_size(m_, d_);
+    set_number_of_unknowns(n_ * d_);
   }
-  inline void set_scale(double scale) {
-    this->scale = scale;
+  inline void SetScale(const double scale) {
+    this->scale_ = scale;
   }
-  inline double get_scale() const {
-    return this->scale;
+  inline double GetScale() const {
+    return this->scale_;
   }
-  inline void set_lambda(double lambda) {
-    this->lambda = lambda;
+  inline void SetLambda(const double lambda) {
+    this->lambda_ = lambda;
   }
-  inline double get_lambda() const {
-    return this->lambda;
+  inline double GetLambda() const {
+    return this->lambda_;
   }
-  inline void set_beta(double beta) {
-    this->beta = beta;
+  inline void SetBeta(const double beta) {
+    this->beta_ = beta;
   }
-  inline double get_beta() const {
-    return this->beta;
+  inline double GetBeta() const {
+    return this->beta_;
   }
-  void prepare_param_gradient();
-  virtual ~gmmreg_grbf_func() {}
+  void PrepareParamGradient();
 
  protected:
-  vnl_matrix<double> gradient;
+  Base* base_;
+  vnl_matrix<double> gradient_;
 
  private:
-  double scale, lambda, beta;
-  int m, n, d;
-  vnl_matrix<double> gradient1, gradient2, grad_all;
+  double scale_, lambda_, beta_;
+  int m_, n_, d_;
+  vnl_matrix<double> gradient1_, gradient2_, grad_all_;
 };
 
-class gmmreg_grbf_L2_func : public gmmreg_grbf_func {
-  double eval(double&f1, double &f2,
-      vnl_matrix<double> &g1, vnl_matrix<double> &g2);
+class GaussianRadialBasisFunc_L2 : public GaussianRadialBasisFunc {
+  double Eval(const double f1, const double f2,
+      vnl_matrix<double>& g1, vnl_matrix<double>& g2);
 };
 
-class gmmreg_grbf_KC_func : public gmmreg_grbf_func {
-  double eval(double&f1, double &f2,
-      vnl_matrix<double> &g1, vnl_matrix<double> &g2);
+class GaussianRadialBasisFunc_KC : public GaussianRadialBasisFunc {
+  double Eval(const double f1, const double f2,
+      vnl_matrix<double>& g1, vnl_matrix<double>& g2);
 };
 
-#endif //#ifndef gmmreg_grbf_func_h_
+}  // namespace gmmreg
+
+#endif  // GMMREG_GRBF_FUNC_H_

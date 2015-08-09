@@ -12,107 +12,109 @@
 
 #include "gmmreg_utils.h"
 
-int gmmreg_cpd::prepare_input(const char* f_config) {
-  gmmreg_base::prepare_input(f_config);
+namespace gmmreg {
+
+int CoherentPointDrift::PrepareInput(const char* f_config) {
+  Base::PrepareInput(f_config);
   char f_ctrl_pts[80]={0};
-  GetPrivateProfileString(common_section, "ctrl_pts", NULL,
+  GetPrivateProfileString(common_section_, "ctrl_pts", NULL,
       f_ctrl_pts, 80, f_config);
-  if (set_ctrl_pts(f_ctrl_pts) < 0) {
+  if (SetCtrlPts(f_ctrl_pts) < 0) {
     //todo: compute the ctrl pts on the fly
     return -1;
   }
   return 0;
 }
 
-void gmmreg_cpd_grbf::prepare_basis_kernel() {
-  ComputeGaussianKernel(model, ctrl_pts, basis, kernel, beta);
-  Gtranspose = basis.transpose();
-  dPG.set_size(m, n);
-  dPY0.set_size(m, d);
+void CoherentPointDriftGrbf::PrepareBasisKernel() {
+  ComputeGaussianKernel(model_, ctrl_pts_, basis_, kernel_, beta_);
+  Gtranspose = basis_.transpose();
+  dPG.set_size(m_, n_);
+  dPY0.set_size(m_, d_);
   //vnl_qr<double> qr(Gtranspose*dPG+lambda*sigma*sigma*kernel); //, 1e-18);
   //invG = qr.inverse()*Gtranspose;
 }
 
-double gmmreg_cpd_grbf::update_param() {
-  double bending = vnl_trace(param_all.transpose()*kernel*param_all);
+double CoherentPointDriftGrbf::UpdateParam() {
+  double bending = vnl_trace(param_all_.transpose() * kernel_ * param_all_);
   double row_sum;
-  for (int i = 0;i < m;++i) {
+  for (int i = 0; i < m_; ++i) {
     row_sum  = P.get_row(i).sum();
-    dPG.set_row(i, row_sum * basis.get_row(i));
-    dPY0.set_row(i, row_sum * model.get_row(i));
+    dPG.set_row(i, row_sum * basis_.get_row(i));
+    dPY0.set_row(i, row_sum * model_.get_row(i));
   }
-  vnl_qr<double> qr(Gtranspose*dPG+lambda*sigma*sigma*kernel); //, 1e-18);
-  param_all = qr.solve(Gtranspose*(P*scene-dPY0));
+  vnl_qr<double> qr(Gtranspose * dPG + lambda_ * sigma_ * sigma_ * kernel_); //, 1e-18);
+  param_all_ = qr.solve(Gtranspose * (P * scene_ - dPY0));
   //param_all = invG*(P*scene-dPY0);
   return bending;
 }
 
-void gmmreg_cpd_tps::prepare_basis_kernel() {
+void CoherentPointDriftTps::PrepareBasisKernel() {
   vnl_matrix<double> K, U;
-  ComputeTPSKernel(model, ctrl_pts, U, K);
+  ComputeTPSKernel(model_, ctrl_pts_, U, K);
 
   //n = ctrl_pts.rows();
   vnl_matrix<double> Pn;
-  Pn.set_size(n, d+1);
-  Pn.set_column(0,1);
-  Pn.update(ctrl_pts, 0, 1);
+  Pn.set_size(n_, d_ + 1);
+  Pn.set_column(0, 1);
+  Pn.update(ctrl_pts_, 0, 1);
   vnl_qr<double> qr(Pn);
-  vnl_matrix<double> V=qr.Q();
-  vnl_matrix<double> PP = V.extract(n,n-d-1,0,d+1);
-  kernel = PP.transpose()*K*PP;
+  vnl_matrix<double> V = qr.Q();
+  vnl_matrix<double> PP = V.extract(n_, n_ - d_ - 1, 0, d_ + 1);
+  kernel_ = PP.transpose() * K * PP;
 
   //m = model.rows();
   vnl_matrix<double> Pm;
-  Pm.set_size(m, d+1);
-  Pm.set_column(0,1);
-  Pm.update(model, 0, 1);
+  Pm.set_size(m_, d_ + 1);
+  Pm.set_column(0, 1);
+  Pm.update(model_, 0, 1);
 
-  basis.set_size(m, n);
-  basis.update(Pm);
-  basis.update(U*PP,0,d+1);
+  basis_.set_size(m_, n_);
+  basis_.update(Pm);
+  basis_.update(U * PP, 0, d_ + 1);
 
-  G = U*PP;
+  G = U * PP;
   vnl_matrix<double> Gtranspose;
   Gtranspose = G.transpose();
 
   vnl_qr<double> qr_Pm(Pm);
-  Q1 = qr_Pm.Q().extract(m,d+1);
-  Q2 = qr_Pm.Q().extract(m,m-d-1,0,d+1);
-  R = qr_Pm.R().extract(d+1,d+1);
+  Q1 = qr_Pm.Q().extract(m_, d_ + 1);
+  Q2 = qr_Pm.Q().extract(m_, m_ - d_ - 1, 0, d_ + 1);
+  R = qr_Pm.R().extract(d_ + 1, d_ + 1);
 
   vnl_svd<double> svd(R);
   invR = svd.inverse();
-  nP.set_size(m,s);
+  nP.set_size(m_, s_);
 
-  vnl_matrix<double> A = G.transpose()*Q2*Q2.transpose()*G+lambda*kernel;
+  vnl_matrix<double> A = G.transpose() * Q2 * Q2.transpose() * G + lambda_ * kernel_;
   vnl_qr<double> qr2(A);
-  invG = qr2.inverse()*G.transpose()*Q2*Q2.transpose();
+  invG = qr2.inverse() * G.transpose() * Q2 * Q2.transpose();
 }
 
-double gmmreg_cpd_tps::update_param() {
-  tps = param_all.extract(n-d-1,d,d+1,0);
+double CoherentPointDriftTps::UpdateParam() {
+  tps_ = param_all_.extract(n_ - d_ -1, d_, d_ + 1,0);
   //std::cout << "before: tps " << tps.array_two_norm() << std::endl;
-  double bending = vnl_trace(tps.transpose()*kernel*tps);
+  double bending = vnl_trace(tps_.transpose() * kernel_ * tps_);
   //std::cout << "bending = " << bending << std::endl;
   double row_sum;
-  for (int i = 0; i < m; ++i) {
+  for (int i = 0; i < m_; ++i) {
     row_sum  = P.get_row(i).sum();
-    if (row_sum > eps) {
-      nP.set_row(i, P.get_row(i)/row_sum);
+    if (row_sum > eps_) {
+      nP.set_row(i, P.get_row(i) / row_sum);
     }
   }
   //std::cout << "before: nP " << nP.array_two_norm() << std::endl;
   //vnl_qr<double> qr(G.transpose()*Q2*Q2.transpose()*G+lambda*kernel);
   //tps = qr.solve(G.transpose()*Q2*Q2.transpose()*(nP*scene));
-  tps = invG*(nP*scene);
-  affine = invR*Q1.transpose()*(nP*scene-model-G*tps);
-  param_all.update(affine);
-  param_all.update(tps,d+1);
+  tps_ = invG * (nP * scene_);
+  affine_ = invR * Q1.transpose() * (nP * scene_ - model_ - G * tps_);
+  param_all_.update(affine_);
+  param_all_.update(tps_, d_+1);
   //std::cout << "after: tps" << tps.array_two_norm() << std::endl;
   return bending;
 }
 
-void gmmreg_cpd::start_registration(vnl_vector<double>& params) {
+void CoherentPointDrift::StartRegistration(vnl_vector<double>& params) {
   int EMiter, iter = 0;
   double Eu, E_old;
   double E = 1;
@@ -120,11 +122,11 @@ void gmmreg_cpd::start_registration(vnl_vector<double>& params) {
   double ntol = tol + 10;
   vnl_matrix<double> dP;
   vnl_matrix<double> prev_model;
-  vnl_matrix<double> moving_model(model);
+  vnl_matrix<double> moving_model(model_);
   //vnl_matrix<double> eye(n,n);
   //eye.set_identity();
-  /*prepare_basis_kernel(); already done */
-  P.set_size(model.rows(), scene.rows());
+  /*PrepareBasisKernel(); already done */
+  P.set_size(model_.rows(), scene_.rows());
   double bending;
   //column_sum.set_size(s);
   while ((iter < max_iter) && (ntol > tol)) {
@@ -136,78 +138,80 @@ void gmmreg_cpd::start_registration(vnl_vector<double>& params) {
       //std::cout << "E="<<E<<"\t";
       //std::cout << "sigma="<<sigma<<std::endl;
       E_old = E;
-      compute_P(moving_model, scene, P, Eu, sigma, outliers);
-      bending = update_param();
-      moving_model = model + basis * param_all;
-      E = Eu + (lambda / 2) * bending;
+      compute_P(moving_model, scene_, P, Eu, sigma_, outliers);
+      bending = UpdateParam();
+      moving_model = model_ + basis_ * param_all_;
+      E = Eu + (lambda_ / 2) * bending;
       EMtol = fabs(E_old - E) / E_old;
       ++EMiter;
     }
-    sigma *= anneal;
+    sigma_ *= anneal;
     ++iter;
     ntol = (moving_model - prev_model).array_two_norm();
   }
 }
 
-int gmmreg_cpd::set_init_params(const char* f_config) {
+int CoherentPointDrift::SetInitParams(const char* f_config) {
   char f_init_params[80] = {0};
   GetPrivateProfileString("Files", "init_params", NULL,
       f_init_params, 80, f_config);
   if (strlen(f_init_params) == 0) {
-    assert(n > 0);
-    assert(d > 0);
-    param_all.set_size(n,d);
-    param_all.fill(0);
+    assert(n_ > 0);
+    assert(d_ > 0);
+    param_all_.set_size(n_, d_);
+    param_all_.fill(0);
     return 0;
   } else {
     std::ifstream infile(f_init_params, std::ios_base::in);
-    param_all.read_ascii(infile);
-    assert(param_all.cols() == d);
-    assert(param_all.rows() == n);
+    param_all_.read_ascii(infile);
+    assert(param_all_.cols() == d_);
+    assert(param_all_.rows() == n_);
     return 1;
   }
 }
 
-void gmmreg_cpd::perform_transform(const vnl_vector<double> &x) {
-  transformed_model = model + basis*param_all;
+void CoherentPointDrift::PerformTransform(const vnl_vector<double> &x) {
+  transformed_model_ = model_ + basis_ * param_all_;
   //transformed_model = basis*param_all;
 }
 
-double gmmreg_cpd::bending_energy() {
-  return vnl_trace(param_all.transpose() * kernel * param_all);
+double CoherentPointDrift::BendingEnergy() {
+  return vnl_trace(param_all_.transpose() * kernel_ * param_all_);
 }
 
-void gmmreg_cpd::save_results(const char* f_config,
+void CoherentPointDrift::SaveResults(const char* f_config,
     const vnl_vector<double>& params) {
   char f_transformed[256] = {0};
-  GetPrivateProfileString(common_section, "transformed_model", NULL,
+  GetPrivateProfileString(common_section_, "transformed_model", NULL,
       f_transformed, 255, f_config);
-  save_transformed(f_transformed, params, f_config );
+  SaveTransformed(f_transformed, params, f_config);
 
   char f_final_params[256] = {0};
-  GetPrivateProfileString(common_section, "final_params", NULL,
+  GetPrivateProfileString(common_section_, "final_params", NULL,
       f_final_params, 255, f_config);
-  save_matrix(f_final_params, param_all);
+  save_matrix(f_final_params, param_all_);
 }
 
-void gmmreg_cpd::prepare_own_options(const char* f_config) {
+void CoherentPointDrift::PrepareOwnOptions(const char* f_config) {
   char s_EMtol[60] = {0}, s_anneal[60] = {0}, s_beta[60] = {0};
   char s_lambda[60] = {0}, s_outliers[60] = {0}, s_sigma[60] = {0};
   char s_tol[60] = {0}, s_viz[60] = {0};
-  GetPrivateProfileString(section, "emtol", "1e-3", s_EMtol, 60, f_config);
+  GetPrivateProfileString(section_, "emtol", "1e-3", s_EMtol, 60, f_config);
   EMtol = atof(s_EMtol);
-  GetPrivateProfileString(section, "anneal", "0.97", s_anneal, 60, f_config);
+  GetPrivateProfileString(section_, "anneal", "0.97", s_anneal, 60, f_config);
   anneal = atof(s_anneal);
-  GetPrivateProfileString(section, "beta", "1", s_beta, 60, f_config);
-  beta = atof(s_beta);
-  GetPrivateProfileString(section, "lambda", "1", s_lambda, 60, f_config);
-  lambda = atof(s_lambda);
-  GetPrivateProfileString(section, "outliers", "0", s_outliers, 60, f_config);
+  GetPrivateProfileString(section_, "beta", "1", s_beta, 60, f_config);
+  beta_ = atof(s_beta);
+  GetPrivateProfileString(section_, "lambda", "1", s_lambda, 60, f_config);
+  lambda_ = atof(s_lambda);
+  GetPrivateProfileString(section_, "outliers", "0", s_outliers, 60, f_config);
   outliers = atoi(s_outliers);
-  GetPrivateProfileString(section, "sigma", "1", s_sigma, 60, f_config);
-  sigma = atof(s_sigma);
-  GetPrivateProfileString(section, "tol", "1e-5", s_tol, 60, f_config);
+  GetPrivateProfileString(section_, "sigma", "1", s_sigma, 60, f_config);
+  sigma_ = atof(s_sigma);
+  GetPrivateProfileString(section_, "tol", "1e-5", s_tol, 60, f_config);
   tol = atof(s_tol);
-  max_iter = GetPrivateProfileInt(section, "max_iter", 150, f_config);
-  max_em_iter = GetPrivateProfileInt(section, "max_em_iter", 150, f_config);
+  max_iter = GetPrivateProfileInt(section_, "max_iter", 150, f_config);
+  max_em_iter = GetPrivateProfileInt(section_, "max_em_iter", 150, f_config);
 }
+
+}  // namespace gmmreg

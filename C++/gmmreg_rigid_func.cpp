@@ -1,20 +1,23 @@
-#include "gmmreg_utils.h"
 #include "gmmreg_rigid_func.h"
 
-double gmmreg_rigid_func::eval(double& f, vnl_matrix<double>& g) {
+#include "gmmreg_utils.h"
+
+namespace gmmreg {
+
+double RigidFunc::Eval(const double& f, vnl_matrix<double>* g) {
   // L2 version and KC version are equivalent in the rigid case.
-  g = -g;
+  *g = -*g;
   return -f;
 }
 
-double gmmreg_rigid_func::f(const vnl_vector<double>& x) {
-  gmmreg->perform_transform(x);
-  double energy = GaussTransform(gmmreg->transformed_model,
-      gmmreg->scene, scale, gradient);
-  return eval(energy, gradient);
+double RigidFunc::f(const vnl_vector<double>& x) {
+  base_->PerformTransform(x);
+  double energy = GaussTransform(base_->transformed_model_,
+      base_->scene_, scale_, gradient_);
+  return Eval(energy, &gradient_);
 }
 
-void gmmreg_rigid_func::gradf(const vnl_vector<double>& x,
+void RigidFunc::gradf(const vnl_vector<double>& x,
     vnl_vector<double>& g) {
 /*     case 'rigid2d'
  *         [f, grad] = rigid_costfunc(transformed_model, scene, scale);
@@ -31,23 +34,23 @@ void gmmreg_rigid_func::gradf(const vnl_vector<double>& x,
   int i = 0;
   vnl_matrix<double> r;
   vnl_matrix<double> gm;
-  if (d == 2) { // rigid2d
-    g[0] = gradient.get_column(0).sum();
-    g[1] = gradient.get_column(1).sum();
+  if (d_ == 2) {  // rigid2d
+    g[0] = gradient_.get_column(0).sum();
+    g[1] = gradient_.get_column(1).sum();
     r.set_size(2, 2);
     double theta = x[2];
     r[0][0] = -sin(theta);
     r[0][1] = -cos(theta);
     r[1][0] = cos(theta);
     r[1][1] = -sin(theta);
-    gm = gradient.transpose() * gmmreg->model;
+    gm = gradient_.transpose() * base_->model_;
     g[2] = 0;
     for (i = 0; i < 2; ++i) {
       for (int j = 0; j < 2; ++j) {
         g[2] += r[i][j] * gm[i][j];
       }
     }
-  } else if (d == 3) { //rigid3d
+  } else if (d_ == 3) {  // rigid3d
 /*
 *     case 'rigid3d'
 *        [f,grad] = rigid_costfunc(transformed_model, scene, scale);
@@ -62,9 +65,9 @@ void gmmreg_rigid_func::gradf(const vnl_vector<double>& x,
 *         g(6) = sum(grad(2,:));
 *         g(7) = sum(grad(3,:));
 */
-    g[4] = gradient.get_column(0).sum();
-    g[5] = gradient.get_column(1).sum();
-    g[6] = gradient.get_column(2).sum();
+    g[4] = gradient_.get_column(0).sum();
+    g[5] = gradient_.get_column(1).sum();
+    g[6] = gradient_.get_column(2).sum();
     vnl_vector<double> q;
     q.set_size(4);
     for (i = 0; i < 4; ++i) {
@@ -77,7 +80,7 @@ void gmmreg_rigid_func::gradf(const vnl_vector<double>& x,
     g3.set_size(3, 3);
     g4.set_size(3, 3);
     quaternion2rotation(q, r, g1, g2, g3, g4);
-    gm = gradient.transpose() * gmmreg->model;
+    gm = gradient_.transpose() * base_->model_;
     g[0] = 0;
     for (i=0; i < 3; ++i) {
       for (int j = 0; j < 3; ++j) {
@@ -104,3 +107,5 @@ void gmmreg_rigid_func::gradf(const vnl_vector<double>& x,
     }
   }
 }
+
+}  // namespace gmmreg

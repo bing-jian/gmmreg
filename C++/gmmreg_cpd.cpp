@@ -11,6 +11,7 @@
 #include <vnl/vnl_trace.h>
 
 #include "gmmreg_utils.h"
+#include "utils/io_utils.h"
 
 namespace gmmreg {
 
@@ -138,7 +139,7 @@ void CoherentPointDrift::StartRegistration(vnl_vector<double>& params) {
       //std::cout << "E="<<E<<"\t";
       //std::cout << "sigma="<<sigma<<std::endl;
       E_old = E;
-      compute_P(moving_model, scene_, P, Eu, sigma_, outliers);
+      ComputeP(moving_model, scene_, P, Eu, sigma_, outliers);
       bending = UpdateParam();
       moving_model = model_ + basis_ * param_all_;
       E = Eu + (lambda_ / 2) * bending;
@@ -189,7 +190,7 @@ void CoherentPointDrift::SaveResults(const char* f_config,
   char f_final_params[256] = {0};
   GetPrivateProfileString(common_section_, "final_params", NULL,
       f_final_params, 255, f_config);
-  save_matrix(f_final_params, param_all_);
+  SaveMatrixToAsciiFile(f_final_params, param_all_);
 }
 
 void CoherentPointDrift::PrepareOwnOptions(const char* f_config) {

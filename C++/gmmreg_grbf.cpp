@@ -13,6 +13,8 @@
 #include <vnl/vnl_trace.h>
 
 #include "gmmreg_utils.h"
+#include "utils/io_utils.h"
+#include "utils/misc_utils.h"
 
 namespace gmmreg {
 
@@ -105,7 +107,7 @@ void GrbfRegistration::SaveResults(const char* f_config,
   GetPrivateProfileString(common_section_, "transformed_model", NULL,
       f_transformed, 255, f_config);
   SaveTransformed(f_transformed, params, f_config);
-  save_matrix(f_final_grbf, param_grbf_);
+  SaveMatrixToAsciiFile(f_final_grbf, param_grbf_);
 }
 
 void GrbfRegistration::PrepareOwnOptions(const char* f_config) {
@@ -113,9 +115,9 @@ void GrbfRegistration::PrepareOwnOptions(const char* f_config) {
   char delims[] = " -,;";
   char s_lambda[256] = {0};
   GetPrivateProfileString(section_, "lambda", NULL, s_lambda, 255, f_config);
-  parse_tokens(s_lambda, delims, v_lambda);
+  utils::parse_tokens(s_lambda, delims, v_lambda);
   if (v_lambda.size() < level_) {
-    std::cerr<< " too many levels " << std::endl;
+    std::cerr << " too many levels " << std::endl;
     exit(1);
   }
 }

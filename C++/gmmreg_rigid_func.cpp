@@ -1,6 +1,7 @@
 #include "gmmreg_rigid_func.h"
 
 #include "gmmreg_utils.h"
+#include "utils/rotation_utils.h"
 
 namespace gmmreg {
 
@@ -79,7 +80,7 @@ void RigidFunc::gradf(const vnl_vector<double>& x,
     g2.set_size(3, 3);
     g3.set_size(3, 3);
     g4.set_size(3, 3);
-    quaternion2rotation(q, r, g1, g2, g3, g4);
+    Quaternion2Rotation<double>(q, r, g1, g2, g3, g4);
     gm = gradient_.transpose() * base_->model_;
     g[0] = 0;
     for (i=0; i < 3; ++i) {

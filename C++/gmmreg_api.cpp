@@ -16,6 +16,7 @@
 #include "gmmreg_rigid.h"
 #include "gmmreg_tps.h"
 #include "gmmreg_utils.h"
+#include "utils/misc_utils.h"
 
 using std::cerr;
 using std::cout;
@@ -65,8 +66,8 @@ int gmmreg_api(const char* input_config, const char* method) {
   cout << "Robust Point Set Registration Using Gaussian Mixture Models" << endl;
   cout << "Compiled on " << __DATE__ << ", " << __TIME__ << endl;
   cout << "Copyright Bing Jian & Baba C. Vemuri " << endl;
-  char f_config[BUFSIZE];
-  get_config_fullpath(input_config, f_config);
+  char f_config[1024];
+  gmmreg::utils::get_config_fullpath(input_config, f_config);
 
   if (!strcmp(strupr((char*)method), "EM_TPS")) {
     gmmreg::CoherentPointDriftTps().Run(f_config);

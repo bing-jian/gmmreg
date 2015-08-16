@@ -10,6 +10,9 @@
 #include <vcl_string.h>
 
 #include "gmmreg_utils.h"
+#include "utils/io_utils.h"
+#include "utils/match_utils.h"
+#include "utils/misc_utils.h"
 
 namespace gmmreg {
 
@@ -113,7 +116,7 @@ void Base::SaveTransformed(const char* filename,
       double threshold  = min_threshold + i * interval;
       //int n_match = find_working_pair(model, scene, transformed_model,
       //                                threshold, working_M, working_S);
-      pick_indices(dist, pairs, threshold * threshold);
+      PickIndices<double>(dist, pairs, threshold * threshold);
       //printf("%f : %d\n",threshold, n_match);
       f_pair << "distance threshold : " << threshold << std::endl;
       f_pair << "# of matched point pairs : " << pairs.cols() << std::endl;
@@ -148,14 +151,14 @@ void Base::MultiScaleOptions(const char* f_config) {
   char s_scale[256] = {0}, s_func_evals[256] = {0};
   char delims[] = " -,;";
   GetPrivateProfileString(section_, "sigma", NULL, s_scale, 255, f_config);
-  parse_tokens(s_scale, delims, v_scale_);
+  utils::parse_tokens(s_scale, delims, v_scale_);
   if (v_scale_.size() < level_) {
     std::cerr << " too many levels " << std::endl;
     exit(1);
   }
   GetPrivateProfileString(section_, "max_function_evals", NULL,
       s_func_evals, 255, f_config);
-  parse_tokens(s_func_evals, delims, v_func_evals_);
+  utils::parse_tokens(s_func_evals, delims, v_func_evals_);
   if (v_func_evals_.size() < level_) {
     std::cerr << " too many levels " << std::endl;
     exit(1);

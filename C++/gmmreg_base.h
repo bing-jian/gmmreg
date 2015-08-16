@@ -44,7 +44,7 @@ class Base {
   char section_[80], common_section_[80];
 
   unsigned int level_;
-  std::vector<double> v_scale_;
+  std::vector<float> v_scale_;
   std::vector<int> v_func_evals_;
 
   // load input data from files
@@ -56,9 +56,9 @@ class Base {
   void DenormalizeAll();
   int Initialize(const char* f_config);
 
- friend class RigidFunc;
- friend class ThinPlateSplineFunc;
- friend class GaussianRadialBasisFunc;
+  friend class RigidFunc;
+  friend class ThinPlateSplineFunc;
+  friend class GaussianRadialBasisFunc;
 
  private:
   double model_scale_, scene_scale_;

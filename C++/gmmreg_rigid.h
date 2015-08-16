@@ -14,10 +14,10 @@ namespace gmmreg {
 class RigidRegistration: public Base {
  public:
   RigidRegistration() {
-    strcpy(section_, "GMMREG_OPT");
+    strcpy(this->section_, "GMMREG_OPT");
     func_ = new RigidFunc;
   }
-  ~RigidRegistration(){
+  ~RigidRegistration() {
     delete func_;
   }
 

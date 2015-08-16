@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
 
   start = clock();
 
-  cost = GaussTransform(A, B, scale, gradient);
+  cost = gmmreg::GaussTransform(A, B, scale, gradient);
   end = clock();
   elapsed = 1000*((double) (end - start)) / CLOCKS_PER_SEC;
   cout << "Evaluate Gauss Transform: " << cost

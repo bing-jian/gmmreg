@@ -10,10 +10,12 @@
 #include <vnl/vnl_vector.h>
 
 #include "gmmreg_utils.h"
+#include "utils/io_utils.h"
+#include "utils/rotation_utils.h"
 
 namespace gmmreg {
 
-const double kPi = 3.1415926;
+const float kPi = 3.1415926f;
 
 void SetRigidTransformBound(const int d, vnl_lbfgsb* minimizer) {
   // http://public.kitware.com/vxl/doc/release/core/vnl/html/vnl__lbfgsb_8h_source.html
@@ -54,13 +56,13 @@ void SetRigidTransformBound(const int d, vnl_lbfgsb* minimizer) {
 
 void RigidRegistration::StartRegistration(vnl_vector<double>& params) {
   vnl_lbfgsb minimizer(*func_);
-  SetRigidTransformBound(d_, &minimizer);
+  SetRigidTransformBound(this->d_, &minimizer);
   //double fxval;
   func_->SetBase(this);
-  for (unsigned int k = 0; k < level_; ++k) {
-    func_->SetScale(v_scale_[k]);
+  for (unsigned int k = 0; k < this->level_; ++k) {
+    func_->SetScale(this->v_scale_[k]);
     SetParam(params);
-    minimizer.set_max_function_evals(v_func_evals_[k]);
+    minimizer.set_max_function_evals(this->v_func_evals_[k]);
     // For more options, see
     // http://public.kitware.com/vxl/doc/release/core/vnl/html/vnl__nonlinear__minimizer_8h-source.html
     minimizer.minimize(params);
@@ -86,21 +88,21 @@ void RigidRegistration::StartRegistration(vnl_vector<double>& params) {
 
 int RigidRegistration::SetInitParams(const char* f_config) {
   char f_init_affine[80] = {0}, f_init_rigid[80] = {0};
-  GetPrivateProfileString(section_, "init_rigid", NULL,
+  GetPrivateProfileString(this->section_, "init_rigid", NULL,
       f_init_rigid, 80, f_config);
   SetInitRigid(f_init_rigid);
   return 0;
 }
 
 int RigidRegistration::SetInitRigid(const char* filename) {
-  assert((d_ == 2) || (d_ == 3));
-  if (d_ == 2) {
+  assert((this->d_ == 2) || (this->d_ == 3));
+  if (this->d_ == 2) {
     param_rigid_.set_size(3);
     param_rigid_.fill(0);
     param_rigid_[0] = 0;
     param_rigid_[1] = 0;
     param_rigid_[2] = 0;
-  } else if (d_ == 3) {
+  } else if (this->d_ == 3) {
     param_rigid_.set_size(7);
     param_rigid_.fill(0);
     param_rigid_[3] = 1;  // q = (0, 0, 0, 1) for eye(3)
@@ -109,7 +111,7 @@ int RigidRegistration::SetInitRigid(const char* filename) {
 }
 
 void RigidRegistration::SetParam(vnl_vector<double>& x0) {
-  x0 = param_rigid_;
+  x0 = this->param_rigid_;
 }
 
 void RigidRegistration::PerformTransform(const vnl_vector<double>& x) {
@@ -117,9 +119,9 @@ void RigidRegistration::PerformTransform(const vnl_vector<double>& x) {
   vnl_matrix<double> translation;
   vnl_matrix<double> rotation;
   vnl_matrix<double> ones;
-  ones.set_size(m_, 1);
+  ones.set_size(this->m_, 1);
   ones.fill(1);
-  if (d_ == 2) {
+  if (this->d_ == 2) {
     rotation.set_size(2, 2);
     double theta = x[2];
     rotation[0][0] = cos(theta);
@@ -129,21 +131,21 @@ void RigidRegistration::PerformTransform(const vnl_vector<double>& x) {
     translation.set_size(1, 2);
     translation[0][0] = x[0];
     translation[0][1] = x[1];
-  } else if (d_ == 3) {
+  } else if (this->d_ == 3) {
     rotation.set_size(3, 3);
     vnl_vector<double> q;
     q.set_size(4);
     for (int i = 0; i < 4; ++i) {
       q[i] = x[i];
     }
-    quaternion2rotation(q, rotation);
+    Quaternion2Rotation<double>(q, rotation);
     translation.set_size(1, 3);
     translation[0][0] = x[4];
     translation[0][1] = x[5];
     translation[0][2] = x[6];
   }
-  transformed_model_ = model_ * rotation.transpose() + ones * translation;
-  param_rigid_ = x;
+  this->transformed_model_ = this->model_ * rotation.transpose() + ones * translation;
+  this->param_rigid_ = x;
 }
 
 void RigidRegistration::SaveResults(const char* f_config,
@@ -151,17 +153,17 @@ void RigidRegistration::SaveResults(const char* f_config,
   char f_transformed[80] = {0};
   char f_final_rigid[80] = {0};
 
-  GetPrivateProfileString(common_section_, "transformed_model",
+  GetPrivateProfileString(this->common_section_, "transformed_model",
       NULL, f_transformed, 80, f_config);
-  SaveTransformed(f_transformed, params, f_config);
+  this->SaveTransformed(f_transformed, params, f_config);
 
-  GetPrivateProfileString(common_section_, "final_rigid",
+  GetPrivateProfileString(this->common_section_, "final_rigid",
       NULL, f_final_rigid, 80, f_config);
-  save_vector(f_final_rigid, param_rigid_);
+  SaveVectorToAsciiFile(f_final_rigid, this->param_rigid_);
 }
 
 void RigidRegistration::PrepareOwnOptions(const char* f_config) {
-  MultiScaleOptions(f_config);
+  this->MultiScaleOptions(f_config);
 }
 
 }  // namespace gmmreg

@@ -23,9 +23,9 @@ class GrbfRegistration: public Base {
  private:
   vnl_matrix<double> param_grbf_;
   vnl_matrix<double> after_grbf, basis_, param_all_;
-  std::vector<double> v_beta;
+  std::vector<float> v_beta;
   double beta_;
-  std::vector<double> v_lambda;
+  std::vector<float> v_lambda;
   std::vector<int> v_affine;
 
   void StartRegistration(vnl_vector<double>&) override;

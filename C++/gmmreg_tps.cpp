@@ -13,6 +13,8 @@
 #include <vnl/vnl_trace.h>
 
 #include "gmmreg_utils.h"
+#include "utils/io_utils.h"
+#include "utils/misc_utils.h"
 
 namespace gmmreg {
 
@@ -121,7 +123,7 @@ void TpsRegistration::PrepareBasisKernel() {
   /* vnl_svd<double> SVD(Pn.transpose());
   vnl_matrix<double> VV = SVD.V();
   std::cout << VV.rows() << " " << VV.cols() << std::endl;
-  save_matrix("./VV.txt", VV);
+  SaveMatrixToAsciiFile("./VV.txt", VV);
   */
 
   vnl_qr<double> qr(Pn);
@@ -136,8 +138,8 @@ void TpsRegistration::PrepareBasisKernel() {
 void TpsRegistration::PerformTransform(const vnl_vector<double> &x) {
   SetAffineAndTps(x);
   transformed_model_ = basis_ * param_all_;
-  // save_matrix("./param_all.txt", param_all_);
-  // save_matrix("./basis.txt", basis_);
+  // SaveMatrixToAsciiFile("./param_all.txt", param_all_);
+  // SaveMatrixToAsciiFile("./basis.txt", basis_);
 }
 
 double TpsRegistration::BendingEnergy() {
@@ -167,8 +169,8 @@ void TpsRegistration::SaveResults(const char* f_config,
       f_transformed, 255, f_config);
 
   SaveTransformed(f_transformed, params, f_config);
-  save_matrix(f_final_affine, param_affine_);
-  save_matrix(f_final_tps, param_tps_);
+  SaveMatrixToAsciiFile(f_final_affine, param_affine_);
+  SaveMatrixToAsciiFile(f_final_tps, param_tps_);
 }
 
 
@@ -177,7 +179,7 @@ void TpsRegistration::PrepareOwnOptions(const char* f_config) {
   char delims[] = " -,;";
   char s_lambda[256] = {0};
   GetPrivateProfileString(section_, "lambda", NULL, s_lambda, 255, f_config);
-  parse_tokens(s_lambda, delims, v_lambda_);
+  utils::parse_tokens(s_lambda, delims, v_lambda_);
   if (v_lambda_.size() < level_) {
     std::cerr<< " too many levels " << std::endl;
     exit(1);
@@ -185,7 +187,7 @@ void TpsRegistration::PrepareOwnOptions(const char* f_config) {
   char s_affine[256] = {0};
   GetPrivateProfileString(section_, "fix_affine", NULL,
       s_affine, 255, f_config);
-  parse_tokens(s_affine, delims, v_affine_);
+  utils::parse_tokens(s_affine, delims, v_affine_);
   if (v_affine_.size() < level_) {
     std::cerr<< " too many levels " << std::endl;
     exit(1);

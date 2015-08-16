@@ -9,6 +9,7 @@ namespace gmmreg {
 class RigidFunc : public vnl_cost_function {
  public:
   RigidFunc(): vnl_cost_function() {}
+  ~RigidFunc() {}
 
   double Eval(const double &, vnl_matrix<double>*);
 
@@ -34,8 +35,6 @@ class RigidFunc : public vnl_cost_function {
     }
     gradient_.set_size(m_, d_);
   }
-
-  ~RigidFunc() {}
 
  private:
   Base* base_;

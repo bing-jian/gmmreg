@@ -23,7 +23,7 @@ class TpsRegistration: public Base {
  private:
   vnl_matrix<double> param_affine_, param_tps_;
   vnl_matrix<double> after_tps_, basis_, param_all_;
-  std::vector<double> v_lambda_;
+  std::vector<float> v_lambda_;
   std::vector<int> v_affine_;
 
   void StartRegistration(vnl_vector<double>&) override;

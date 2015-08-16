@@ -1,8 +1,6 @@
 #include <iostream>
 #include <fstream>
 
-#include "gmmreg_utils.h"
-
 #include <vnl/algo/vnl_qr.h>
 
 #ifdef WIN32
@@ -11,7 +9,12 @@
 #include "port_ini.h"
 #endif
 
-int gmmreg_tps_transform(const char* f_config) {
+#include "gmmreg_utils.h"
+#include "utils/io_utils.h"
+
+namespace gmmreg {
+
+int ThinPlateSplineTransform(const char* f_config) {
   vnl_matrix<double> model, scene, ctrl_pts, source, transformed_source;
   char f_model[256] = {0}, f_scene[256] = {0};
   char section[80], common_section[80] = "FILES";
@@ -72,8 +75,6 @@ int gmmreg_tps_transform(const char* f_config) {
   param_all.update(tps, d + 1);
 
   // TODO: check if dimensions are consistent.
-
-
   bool b_normalize = GetPrivateProfileInt("GMMREG_OPT", "normalize", 1, f_config);
 
   double model_scale, scene_scale, ctrl_scale;
@@ -119,6 +120,7 @@ int gmmreg_tps_transform(const char* f_config) {
   transformed_source.print(outfile);
   return 0;
 }
+}  // namespace gmmreg
 
 int main(int argc, char* argv[]) {
   if (argc < 2) {
@@ -126,8 +128,6 @@ int main(int argc, char* argv[]) {
     //print_usage();
     return -1;
   }
-  gmmreg_tps_transform(argv[1]);
+  gmmreg::ThinPlateSplineTransform(argv[1]);
   return 0;
 }
-
-

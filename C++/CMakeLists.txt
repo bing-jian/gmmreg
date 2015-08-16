@@ -1,9 +1,3 @@
-#=========================================================================
-# $Author: bingjian $
-# $Date: 2013-01-04 01:39:25 -0500 (Fri, 04 Jan 2013) $
-# $Revision: 145 $
-#=========================================================================
-
 CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 IF(COMMAND cmake_policy)
     cmake_policy(SET CMP0003 NEW)
@@ -85,16 +79,16 @@ ENDIF(WIN32)
 
 
 SET(GMMREG_API_SRCS
-    gmmreg_utils.cpp
+    gmmreg_api.cpp
     gmmreg_base.cpp
     gmmreg_cpd.cpp
-    gmmreg_tps.cpp
-    gmmreg_tps_func.cpp
     gmmreg_grbf.cpp
     gmmreg_grbf_func.cpp
     gmmreg_rigid.cpp
     gmmreg_rigid_func.cpp
-    gmmreg_api.cpp
+    gmmreg_tps.cpp
+    gmmreg_tps_func.cpp
+    utils/misc_utils.cc
 )
 file(GLOB_RECURSE GMMREG_API_HDRS *.h)
 
@@ -102,11 +96,10 @@ file(GLOB_RECURSE GMMREG_API_HDRS *.h)
 INCLUDE_DIRECTORIES( ${VXL_VNL_INCLUDE_DIR} )
 
 SET(gauss_transform_sources ${gauss_transform_sources}
-test_gauss_transform.cpp gmmreg_utils.cpp
+    test_gauss_transform.cpp
 )
 ADD_EXECUTABLE(test_gauss_transform ${gauss_transform_sources}
 )
-#TARGET_LINK_LIBRARIES( test_gauss_transform ${VXL_VNL_LIBRARIES} )
 TARGET_LINK_LIBRARIES(test_gauss_transform vnl_algo vnl vcl)
 
 ADD_EXECUTABLE(gmmreg_aux gmmreg_aux.cpp
@@ -114,7 +107,7 @@ ADD_EXECUTABLE(gmmreg_aux gmmreg_aux.cpp
 TARGET_LINK_LIBRARIES(gmmreg_aux vnl vnl_algo)
 
 ADD_EXECUTABLE(extract_correspondence
-    extract_correspondence.cpp gmmreg_utils.cpp
+    extract_correspondence.cpp
 )
 TARGET_LINK_LIBRARIES(extract_correspondence vnl vnl_algo)
 
@@ -135,7 +128,6 @@ TARGET_LINK_LIBRARIES(gmmreg_demo gmmreg_api)
 
 SET(gmmreg_transform_sources ${gmmreg_transform_sources}
   gmmreg_transform.cpp
-  gmmreg_utils.cpp
 )
 
 ADD_EXECUTABLE(gmmreg_transform ${gmmreg_transform_sources}
@@ -144,6 +136,5 @@ TARGET_LINK_LIBRARIES(gmmreg_transform vnl vnl_algo vcl)
 IF(UNIX)
   TARGET_LINK_LIBRARIES(gmmreg_transform m port_ini)
 ENDIF(UNIX)
-
 
 #ENDIF( VXL_VNL_FOUND )

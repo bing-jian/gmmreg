@@ -1,20 +1,13 @@
 #!/usr/bin/env python
 #coding=utf-8
 
-##==============================================================================
-## $Author: bingjian $
-## $Date: 2013-01-04 01:39:25 -0500 (Fri, 04 Jan 2013) $
-## $Revision: 145 $
-## $URL: http://gmmreg.googlecode.com/svn/trunk/Python/_core.py $
-##==============================================================================
-
 import ConfigParser
 import time
 from math import cos,sin,log,exp,sqrt
 from numpy import loadtxt,arange,array,dot,delete,reshape,kron,eye,ones,zeros,trace,s_,r_,c_,squeeze
 from numpy.linalg import svd,qr,norm
 from scipy.optimize import fmin_bfgs, fmin_l_bfgs_b
-#from _extension import *
+from _extension import *
 #import _plotting
 
 

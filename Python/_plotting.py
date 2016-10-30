@@ -1,13 +1,6 @@
 #!/usr/bin/env python
 #coding=utf-8
 
-##====================================================
-## $Author: bing.jian $
-## $Date: 2010-08-19 02:49:19 -0400 (Thu, 19 Aug 2010) $
-## $Revision: 132 $
-##====================================================
-
-
 from pylab import *
 from configobj import ConfigObj
 import matplotlib.pyplot as plt
@@ -84,5 +77,3 @@ def display_pts(f_config):
     s = np.loadtxt(sf)
     t = np.loadtxt(tf)
     displayABC(m,s,t)
-
-

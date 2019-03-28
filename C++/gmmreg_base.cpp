@@ -6,9 +6,6 @@
 #include <fstream>
 #include <iostream>
 
-#include <vcl_iostream.h>
-#include <vcl_string.h>
-
 #include "gmmreg_utils.h"
 #include "utils/io_utils.h"
 #include "utils/match_utils.h"

@@ -4,7 +4,6 @@
 #include <cstring>
 #include <fstream>
 #include <iostream>
-#include <vcl_iostream.h>
 #include <vnl/algo/vnl_determinant.h>
 #include <vnl/algo/vnl_qr.h>
 #include <vnl/algo/vnl_svd.h>

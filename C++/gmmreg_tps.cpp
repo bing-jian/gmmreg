@@ -6,7 +6,6 @@
 #include <fstream>
 #include <iostream>
 
-#include <vcl_iostream.h>
 #include <vnl/algo/vnl_lbfgs.h>
 #include <vnl/algo/vnl_qr.h>
 #include <vnl/vnl_matrix.h>
@@ -24,7 +23,7 @@ int TpsRegistration::PrepareInput(const char* f_config) {
   GetPrivateProfileString(common_section_, "ctrl_pts", NULL,
       f_ctrl_pts, 256, f_config);
   if (SetCtrlPts(f_ctrl_pts) < 0) {
-    //todo: compute the ctrl pts on the fly
+    // TODO: compute the ctrl pts on the fly
     return -1;
   }
   return 0;
@@ -49,7 +48,6 @@ void TpsRegistration::StartRegistration(vnl_vector<double>& params) {
       break;
     }
   }
-  vcl_cout << "registration done" << vcl_endl;
 }
 
 int TpsRegistration::SetInitParams(const char* f_config) {

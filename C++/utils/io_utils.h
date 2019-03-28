@@ -8,7 +8,6 @@
 #include <iostream>
 #include <vector>
 
-#include <vcl_iostream.h>
 #include <vnl/vnl_vector.h>
 #include <vnl/vnl_matrix.h>
 

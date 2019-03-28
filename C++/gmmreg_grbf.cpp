@@ -6,7 +6,6 @@
 #include <fstream>
 #include <iostream>
 
-#include <vcl_iostream.h>
 #include <vnl/algo/vnl_lbfgs.h>
 #include <vnl/algo/vnl_qr.h>
 #include <vnl/vnl_matrix.h>

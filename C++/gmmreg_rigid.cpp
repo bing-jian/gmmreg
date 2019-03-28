@@ -4,7 +4,6 @@
 #include <fstream>
 #include <iostream>
 
-#include <vcl_iostream.h>
 #include <vnl/algo/vnl_lbfgsb.h>
 #include <vnl/vnl_matrix.h>
 #include <vnl/vnl_vector.h>
@@ -23,9 +22,9 @@ void SetRigidTransformBound(const int d, vnl_lbfgsb* minimizer) {
   vnl_vector<double> lower_bound, upper_bound;
   if (d == 2) {
     nbd.set_size(3); // (dx, dy, d\theta)
-    nbd[0] = 0;  // not constrained
-    nbd[1] = 0;  // not constrained
-    nbd[2] = 2;  // has both lower and upper bounds
+    nbd[0] = 0;  // dx unconstrained
+    nbd[1] = 0;  // dy unconstrained
+    nbd[2] = 2;  // d\theta has both lower and upper bounds
     lower_bound.set_size(3);
     lower_bound.fill(0);
     lower_bound[2] = -1.0 * kPi;
@@ -83,7 +82,6 @@ void RigidRegistration::StartRegistration(vnl_vector<double>& params) {
              << "Evaluations: " << minimizer.get_num_evaluations() << vcl_endl;
     */
   }
-  vcl_cout << "Solution: " << params << vcl_endl;
 }
 
 int RigidRegistration::SetInitParams(const char* f_config) {

@@ -4,6 +4,7 @@ IF(COMMAND cmake_policy)
 ENDIF(COMMAND cmake_policy)
 
 PROJECT(GMMREG )
+SET(CMAKE_CXX_STANDARD 11)
 
 # The CMake command FIND_PACKAGE(VXL) attempts to find VXL binary
 # installation.  CMake will look in the directory specified by the

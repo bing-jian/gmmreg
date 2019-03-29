@@ -1,21 +1,8 @@
 #include "gmmreg_api.h"
 
-#include <cstdlib>
 #include <iostream>
-#include <memory>
-#include <vector>
 
-#ifdef WIN32
-#include <windows.h>
-#else
-#include "port_ini.h"
-#endif
-
-#include "gmmreg_cpd.h"
-#include "gmmreg_grbf.h"
-#include "gmmreg_rigid.h"
-#include "gmmreg_tps.h"
-#include "gmmreg_utils.h"
+#include "gmmreg_factory.h"
 #include "utils/misc_utils.h"
 
 using std::cerr;
@@ -25,7 +12,6 @@ using std::endl;
 #ifdef __cplusplus
 extern "C"
 #endif
-
 void print_usage() {
   cerr << "C++ implementation of the generic point set registration framework "
           "proposed in Bing Jian and Baba C. Vemuri, "
@@ -69,23 +55,11 @@ int gmmreg_api(const char* input_config, const char* method) {
   char f_config[1024];
   gmmreg::utils::get_config_fullpath(input_config, f_config);
 
-  if (!strcmp(strupr((char*)method), "EM_TPS")) {
-    gmmreg::CoherentPointDriftTps().Run(f_config);
-  } else if (!strcmp(strupr((char*)method), "EM_GRBF")) {
-    gmmreg::CoherentPointDriftGrbf().Run(f_config);
-  } else if (!strcmp(strupr((char*)method), "TPS_L2")) {
-    gmmreg::TpsRegistration_L2().Run(f_config);
-  } else if (!strcmp(strupr((char*)method), "TPS_KC")) {
-    gmmreg::TpsRegistration_KC().Run(f_config);
-  } else if (!strcmp(strupr((char*)method), "GRBF_L2")) {
-    gmmreg::GrbfRegistration_L2().Run(f_config);
-  } else if (!strcmp(strupr((char*)method), "GRBF_KC")) {
-    gmmreg::GrbfRegistration_KC().Run(f_config);
-  } else if (!strcmp(strlwr((char*)method), "rigid")) {
-    gmmreg::RigidRegistration().Run(f_config);
-  } else {
+  auto instance = gmmreg::GmmregFactory::CreateInstance(strlwr((char*)method));
+  if (instance == nullptr) {
     print_usage();
     return -1;
   }
+  instance->Run(f_config);
   return 0;
 }

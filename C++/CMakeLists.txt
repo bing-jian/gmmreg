@@ -81,6 +81,7 @@ ENDIF(WIN32)
 
 SET(GMMREG_API_SRCS
     gmmreg_api.cpp
+    gmmreg_factory.cpp
     gmmreg_base.cpp
     gmmreg_cpd.cpp
     gmmreg_grbf.cpp

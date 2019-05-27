@@ -3,8 +3,20 @@ IF(COMMAND cmake_policy)
     cmake_policy(SET CMP0003 NEW)
 ENDIF(COMMAND cmake_policy)
 
-PROJECT(GMMREG )
+PROJECT(GMMREG)
 SET(CMAKE_CXX_STANDARD 11)
+SET(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+# Set a default build type if none was specified
+set(default_build_type "Release")
+if(NOT CMAKE_BUILD_TYPE AND NOT WIN32)
+  message(STATUS "Setting build type to '${default_build_type}' as none was specified.")
+  set(CMAKE_BUILD_TYPE "${default_build_type}" CACHE
+      STRING "Choose the type of build." FORCE)
+  # Set the possible values of build type for cmake-gui
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release"
+    "MinSizeRel" "RelWithDebInfo")
+endif()
 
 # The CMake command FIND_PACKAGE(VXL) attempts to find VXL binary
 # installation.  CMake will look in the directory specified by the
@@ -78,6 +90,12 @@ ELSE(WIN32)
   ADD_LIBRARY(port_ini ${INI_LIBRARY_TYPE} port_ini.c)
 ENDIF(WIN32)
 
+find_package(OpenMP)
+if (OPENMP_FOUND)
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+endif()
 
 SET(GMMREG_API_SRCS
     gmmreg_api.cpp

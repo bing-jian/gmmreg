@@ -31,7 +31,7 @@ int ThinPlateSplineTransform(const char* f_config) {
   if (LoadMatrixFromTxt(f_scene, scene) < 0) {
     return -1;
   }
-  assert(scene.cols() == d);
+  // assert(scene.cols() == d);
 
   char f_ctrl_pts[256] = {0};
   GetPrivateProfileString(common_section, "ctrl_pts", NULL,
@@ -39,7 +39,7 @@ int ThinPlateSplineTransform(const char* f_config) {
   if (LoadMatrixFromTxt(f_ctrl_pts, ctrl_pts) < 0) {
     return -1;
   }
-  assert(ctrl_pts.cols() == d);
+  // assert(ctrl_pts.cols() == d);
   int n = ctrl_pts.rows();
 
   char f_source[256] = {0};
@@ -48,7 +48,7 @@ int ThinPlateSplineTransform(const char* f_config) {
   if (LoadMatrixFromTxt(f_source, source) < 0) {
     return -1;
   }
-  assert(source.cols() == d);
+  // assert(source.cols() == d);
   int m = source.rows();
 
   vnl_matrix<double> affine, tps;
@@ -58,16 +58,16 @@ int ThinPlateSplineTransform(const char* f_config) {
   if (LoadMatrixFromTxt(f_init_affine, affine) < 0) {
     return -1;
   }
-  assert(affine.cols() == d);
-  assert(affine.rows() == d+1);
+  // assert(affine.cols() == d);
+  // assert(affine.rows() == d+1);
 
   GetPrivateProfileString(common_section, "init_tps", NULL,
       f_init_tps, 256, f_config);
   if (LoadMatrixFromTxt(f_init_tps, tps) < 0) {
     return -1;
   }
-  assert(tps.cols() == d);
-  assert(tps.rows() == (n - d - 1));
+  // assert(tps.cols() == d);
+  // assert(tps.rows() == (n - d - 1));
 
   vnl_matrix<double> param_all;
   param_all.set_size(n, d);

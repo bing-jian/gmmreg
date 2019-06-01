@@ -102,7 +102,8 @@ T GaussTransform(const T* A, const T* B,
     int m, int n, int dim, T scale, T* grad) {
   T cross_term = 0;
 
-  #pragma omp for
+
+  #pragma omp parallel for
   for (int i = 0; i < m * dim; ++i) {
     grad[i] = 0;
   }
@@ -125,7 +126,7 @@ T GaussTransform(const T* A, const T* B,
   }
 
   scale *= m * n;
-  #pragma omp for
+  #pragma omp parallel for
   for (int i = 0; i < m * dim; ++i) {
     grad[i] /= scale;
   }

@@ -6,7 +6,7 @@
   volume = {33},
   number = {8},
   pages = {1633-1645},
-  url = {http://gmmreg.googlecode.com},
+  url = {https://github.com/bing-jian/gmmreg/},
 }
 
 @INPROCEEDINGS{Jian&Vemuri_iccv05,

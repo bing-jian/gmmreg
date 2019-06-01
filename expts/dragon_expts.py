@@ -2,6 +2,8 @@
 #coding=utf-8
 
 import os, numpy, subprocess, time
+
+# https://github.com/bistromath/gr-air-modes/blob/master/python/Quaternion.py
 from Quaternion import Quat, normalize
 
 gmmreg_binary = {'nt' : r'gmmreg_demo.exe',

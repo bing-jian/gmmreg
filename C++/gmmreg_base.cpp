@@ -1,5 +1,7 @@
 #include "gmmreg_base.h"
 
+#include <chrono>
+
 #include <assert.h>
 #include <cstdlib>
 #include <cstring>
@@ -13,10 +15,20 @@
 
 namespace gmmreg {
 
+typedef std::chrono::high_resolution_clock::time_point TimeVar;
+
+#define duration(a) \
+  std::chrono::duration_cast<std::chrono::microseconds>(a).count()
+#define time_now() std::chrono::high_resolution_clock::now()
+
+
 void Base::Run(const char* f_config) {
   Initialize(f_config);
   vnl_vector<double> params;
+  TimeVar t1 = time_now();
   StartRegistration(params);
+  std::cout << "Registration took " << duration(time_now() - t1) / 1000.0 << " milliseconds."
+      << std::endl;
   SaveResults(f_config, params);
 }
 
@@ -38,6 +50,8 @@ int Base::PrepareInput(const char* f_config) {
   if (LoadMatrixFromTxt(f_model, model_) < 0) {
     return -1;
   }
+
+
   GetPrivateProfileString(common_section_, "scene", NULL,
       f_scene, 256, f_config);
   if (LoadMatrixFromTxt(f_scene, scene_) < 0) {
@@ -49,6 +63,7 @@ int Base::PrepareInput(const char* f_config) {
   transformed_model_.set_size(m_, d_);
   s_ = scene_.rows();
   assert(scene_.cols() == d_);
+
 
   return 0;
 }
@@ -141,6 +156,12 @@ void Base::PrepareCommonOptions(const char* f_config) {
     Normalize(scene_, scene_centroid_, scene_scale_);
     Normalize(ctrl_pts_, model_centroid_, model_scale_);
   }
+#ifdef USE_KDTREE
+  scene_tree_.reset(new NanoflannTree<double>(scene_));
+  scene_tree_->tree.buildIndex();
+  model_tree_.reset(new NanoflannTree<double>(model_));
+  model_tree_->tree.buildIndex();
+#endif
 }
 
 void Base::MultiScaleOptions(const char* f_config) {

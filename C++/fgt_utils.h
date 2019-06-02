@@ -92,7 +92,7 @@ T FastGaussTransform(const NanoflannTree<T>& tree, const PointCloud<T>& moving,
   int dim = moving.cols();
 
   T cross_term = 0;
-  #pragma omp for
+  #pragma omp parallel for
   for (int i = 0; i < m * dim; ++i) {
     grad[i] = 0;
   }
@@ -130,7 +130,7 @@ T FastGaussTransform(const NanoflannTree<T>& tree, const PointCloud<T>& moving,
   h2 *= m * n;
   inv_h2 = 1.0 / h2;
 
-  #pragma omp for
+  #pragma omp parallel for
   for (int i = 0; i < m * dim; ++i) {
     grad[i] *= inv_h2;
   }
@@ -213,6 +213,7 @@ T FastSelfGaussTransform(const vnl_matrix<T>& pts,
   }
   h2 *= m * m;
   inv_h2 = 1.0 / h2;
+  #pragma omp parallel for
   for (int i = 0; i < m * dim; ++i) {
     grad[i] *= inv_h2;
   }

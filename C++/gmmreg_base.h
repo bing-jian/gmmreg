@@ -7,9 +7,16 @@
 #include "port_ini.h"
 #endif
 
+#include <memory>
 #include <vector>
 #include <vnl/vnl_vector.h>
 #include <vnl/vnl_matrix.h>
+
+#define USE_KDTREE
+
+#ifdef USE_KDTREE
+#include "fgt_utils.h"
+#endif
 
 namespace gmmreg {
 
@@ -36,6 +43,10 @@ class Base {
 
   // each row is a sample point
   vnl_matrix<double> model_, scene_, ctrl_pts_, transformed_model_;
+#ifdef USE_KDTREE
+  std::unique_ptr<NanoflannTree<double>> model_tree_;
+  std::unique_ptr<NanoflannTree<double>> scene_tree_;
+#endif
 
   double sigma_, lambda_;
   vnl_matrix<double> kernel_;
@@ -47,7 +58,7 @@ class Base {
   std::vector<float> v_scale_;
   std::vector<int> v_func_evals_;
 
-  // load input data from files
+  // Load input data from files
   virtual int PrepareInput(const char* input_config);
   int SetCtrlPts(const char* filename);
   void SaveTransformed(const char* filename,

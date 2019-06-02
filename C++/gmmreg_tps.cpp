@@ -136,8 +136,6 @@ void TpsRegistration::PrepareBasisKernel() {
 void TpsRegistration::PerformTransform(const vnl_vector<double> &x) {
   SetAffineAndTps(x);
   transformed_model_ = basis_ * param_all_;
-  // SaveMatrixToAsciiFile("./param_all.txt", param_all_);
-  // SaveMatrixToAsciiFile("./basis.txt", basis_);
 }
 
 double TpsRegistration::BendingEnergy() {

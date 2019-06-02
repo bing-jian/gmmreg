@@ -1,4 +1,5 @@
 #include "gmmreg_tps_func.h"
+
 #include "gmmreg_utils.h"
 
 namespace gmmreg {
@@ -22,11 +23,22 @@ double ThinPlateSplineFunc_KC::Eval(const double f1, const double f2,
 
 double ThinPlateSplineFunc::f(const vnl_vector<double>& x) {
   base_->PerformTransform(x);
-  double bending = base_->BendingEnergy();
+
+#ifdef USE_KDTREE
+  base_->model_tree_.reset(new NanoflannTree<double>(base_->transformed_model_));
+  base_->model_tree_->tree.buildIndex();
+  double energy1 = FastGaussTransform(
+      *(base_->model_tree_.get()), base_->transformed_model_, scale_, gradient1_);
+  double energy2 = FastGaussTransform(
+      *(base_->scene_tree_.get()), base_->transformed_model_, scale_, gradient2_);
+#else
   double energy1 = GaussTransform(base_->transformed_model_,
       base_->transformed_model_, scale_, gradient1_);
-  double energy2 = GaussTransform(base_->transformed_model_,
-      base_->scene_, scale_, gradient2_);
+  double energy2 = GaussTransform(
+      base_->transformed_model_, base_->scene_, scale_, gradient2_);
+#endif
+
+  double bending = base_->BendingEnergy();
   double energy = Eval(energy1, energy2, gradient1_, gradient2_);
   energy += lambda_ * bending;
   return energy;

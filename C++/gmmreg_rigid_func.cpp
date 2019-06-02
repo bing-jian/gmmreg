@@ -1,5 +1,7 @@
 #include "gmmreg_rigid_func.h"
 
+#include <iostream>
+
 #include "gmmreg_utils.h"
 #include "utils/rotation_utils.h"
 
@@ -13,8 +15,13 @@ double RigidFunc::Eval(const double& f, vnl_matrix<double>* g) {
 
 double RigidFunc::f(const vnl_vector<double>& x) {
   base_->PerformTransform(x);
-  double energy = GaussTransform(base_->transformed_model_,
-      base_->scene_, scale_, gradient_);
+#ifdef USE_KDTREE
+  double energy = FastGaussTransform(
+      *(base_->scene_tree_.get()), base_->transformed_model_, scale_, gradient_);
+#else
+  double energy = GaussTransform(
+      base_->scene_, base_->transformed_model_, scale_, gradient_);
+#endif
   return Eval(energy, &gradient_);
 }
 

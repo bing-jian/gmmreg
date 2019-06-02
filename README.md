@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/bing-jian/gmmreg.svg?branch=master)](https://travis-ci.org/bing-jian/gmmreg)
+
 Robust Point Set Registration Using Gaussian Mixture Models
 ======
 

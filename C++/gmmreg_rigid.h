@@ -1,11 +1,6 @@
 #ifndef GMMREG_RIGID_H_
 #define GMMREG_RIGID_H_
 
-#include <assert.h>
-
-#include <iostream>
-#include <fstream>
-
 #include "gmmreg_base.h"
 #include "gmmreg_rigid_func.h"
 

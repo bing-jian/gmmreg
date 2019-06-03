@@ -8,21 +8,16 @@ namespace gmmreg {
 
 class RigidFunc : public vnl_cost_function {
  public:
-  RigidFunc(): vnl_cost_function() {}
+  RigidFunc() : vnl_cost_function() {}
   ~RigidFunc() {}
 
-  double Eval(const double &, vnl_matrix<double>*);
+  double Eval(const double&, vnl_matrix<double>*);
 
   double f(const vnl_vector<double>& x) override;
   void gradf(const vnl_vector<double>& x, vnl_vector<double>& g) override;
 
-  inline void SetScale(const double scale) {
-    this->scale_ = scale;
-  }
-  inline double GetScale() const {
-    return this->scale_;
-  }
-
+  inline void SetScale(const double scale) { this->scale_ = scale; }
+  inline double GetScale() const { return this->scale_; }
 
   inline void SetBase(Base* base) {
     this->base_ = base;

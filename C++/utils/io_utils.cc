@@ -49,16 +49,11 @@ void SaveVectorToAsciiFile(const char * filename, const vnl_vector<T>& x) {
 template<typename T>
 int LoadMatrixFromTxt(const char* filename, vnl_matrix<T>& matrix) {
   std::ifstream infile(filename, std::ios_base::in);
-  if (infile.is_open()) {
-    if (matrix.read_ascii(infile)) {
+  if (infile.is_open() && matrix.read_ascii(infile)) {
       return matrix.rows();
-    } else {
-      std::cerr << "unable to parse input file " << filename
-                << " as a matrix." << std::endl;
-      return -1;
-    }
   } else {
-    std::cerr << "unable to open model file " << filename << std::endl;
+    std::cerr << "unable to parse input file " << filename
+              << " as a matrix." << std::endl;
     return -1;
   }
 }

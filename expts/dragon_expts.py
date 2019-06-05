@@ -9,25 +9,13 @@ This Python script can be used to test the gmmreg algorithm on the Stanford
 import os, subprocess, time
 import numpy as np
 
+from common_utils import *
+
 # https://github.com/bistromath/gr-air-modes/blob/master/python/Quaternion.py
 from Quaternion import Quat, normalize
 
-BINARY_DIR = '../C++/build'
-
-GMMREG_BINARY = {
-        'nt' : r'gmmreg_demo.exe',
-        'posix': r'gmmreg_demo'
-}
-
-
-BINARY_FULLPATH = os.path.join(BINARY_DIR, GMMREG_BINARY[os.name])
 DATA_PATH = '../data/dragon_stand'
-TMP_PATH = './tmp'
 CONFIG_FILE = './dragon_stand.ini'
-
-
-if not os.path.exists(TMP_PATH):
-    os.makedirs(TMP_PATH)
 
 
 def load_dragon_conf(data_path):
@@ -51,28 +39,6 @@ def get_all_plyfiles(data_path):
 
 PLY_FILES = get_all_plyfiles(DATA_PATH)
 
-
-
-# Run pairwise rigid registration using specified binary and configuration.
-def run_rigid_pairwise(gmmreg_exe, model, scene, f_config):
-    if type(model) == type('abc'):
-        model = np.loadtxt(model)
-        scene = np.loadtxt(scene)
-    if model.shape[0] > 10000:
-        model = model[0::10]
-        scene = scene[0::10]
-    print(model.shape)
-    print(scene.shape)
-    np.savetxt(os.path.join(TMP_PATH, 'model.txt'), model)
-    np.savetxt(os.path.join(TMP_PATH, 'scene.txt'), scene)
-    cmd = '%s %s %s'%(gmmreg_exe, f_config, 'rigid')
-    t1 = time.time()
-    subprocess.call(cmd, shell=True)
-    t2 = time.time()
-    print("Run time : %s seconds" % (t2 - t1))
-    param = np.loadtxt(os.path.join(TMP_PATH, 'final_rigid.txt'))
-    matrix = np.loadtxt(os.path.join(TMP_PATH, 'final_rigid_matrix.txt'))
-    return param, matrix, t2 - t1
 
 
 def ply2txt(plyfile):
@@ -122,7 +88,7 @@ def compute_accuracy(reg_result):
 def main():
     errors = {}
     run_times = {}
-    for step in [1, 2, 3]:
+    for step in [1]:
         reg_result = {}
         reg_result = run_rigid_batch(step, reg_result)
         reg_result = run_rigid_batch(-step, reg_result)

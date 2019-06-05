@@ -3,8 +3,6 @@
 #include <chrono>
 
 #include <assert.h>
-#include <cstdlib>
-#include <cstring>
 #include <fstream>
 #include <iostream>
 
@@ -12,6 +10,7 @@
 #include "utils/io_utils.h"
 #include "utils/match_utils.h"
 #include "utils/misc_utils.h"
+
 
 namespace gmmreg {
 
@@ -27,7 +26,8 @@ void Base::Run(const char* f_config) {
   vnl_vector<double> params;
   TimeVar t1 = time_now();
   StartRegistration(params);
-  std::cout << "Registration took " << duration(time_now() - t1) / 1000.0 << " milliseconds."
+  elapsed_time_in_ms_ = duration(time_now() - t1) / 1000.0;
+  std::cout << "Registration took " << elapsed_time_in_ms_ << " milliseconds."
       << std::endl;
   SaveResults(f_config, params);
 }
@@ -91,6 +91,22 @@ void Base::DenormalizeAll() {
     Denormalize(model_, scene_centroid_, scene_scale_);
     Denormalize(scene_, scene_centroid_, scene_scale_);
   }
+}
+
+
+void Base::SaveElaspedTime(const char* f_config) {
+  vnl_vector<double> elapsed_time;
+  elapsed_time.set_size(1);
+  elapsed_time[0] = elapsed_time_in_ms_;
+  char f_elasped_time[256] = {0};
+  GetPrivateProfileString(this->common_section_, "elasped_time_in_ms", NULL,
+                          f_elasped_time, 256, f_config);
+
+  SaveVectorToAsciiFile(f_elasped_time, elapsed_time);
+
+
+
+
 }
 
 void Base::SaveTransformed(const char* filename,

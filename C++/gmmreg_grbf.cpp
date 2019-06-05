@@ -99,6 +99,8 @@ void GrbfRegistration::ComputeGradient(double lambda,
 
 void GrbfRegistration::SaveResults(const char* f_config,
     const vnl_vector<double>& params) {
+  SaveElaspedTime(f_config);
+
   char f_transformed[256] = {0};
   char f_final_grbf[256] = {0};
   GetPrivateProfileString(common_section_, "final_grbf", NULL,

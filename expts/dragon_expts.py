@@ -73,28 +73,33 @@ def lookup_ground_truth(i, j):
 # http://www.boris-belousov.net/2016/12/01/quat-dist/
 def compute_accuracy(reg_result):
     error = {} # error in degrees.
-    run_time = {}
+    total_run_time = {}
+    core_run_time = {}
     for i, j in reg_result:
         q_ij, q_ji = lookup_ground_truth(i, j)
         param = reg_result[(i,j)][0]
         q = Quat(normalize(param[0:4]))
         similarity = np.abs(np.dot(q.q, q_ji.q))
         error[(i, j)] = 2 * np.arccos(similarity)*180 / np.pi
-        run_time[(i, j)] = reg_result[(i,j)][-1]
-    return error, run_time
+        total_run_time[(i, j)] = reg_result[(i,j)][-1]
+        core_run_time[(i, j)] = reg_result[(i,j)][-2]
+    return error, total_run_time, core_run_time
 
 
 # Run pair-wise registrations, record errors and run time.
 def main():
     errors = {}
-    run_times = {}
+    total_run_times = {}
+    core_run_times = {}
     for step in [1]:
         reg_result = {}
         reg_result = run_rigid_batch(step, reg_result)
         reg_result = run_rigid_batch(-step, reg_result)
-        error, run_time = compute_accuracy(reg_result)
+        error, total_run_time, core_run_time = compute_accuracy(reg_result)
         errors[step] = np.array([error[ij] for ij in error])
-        run_times[step] = np.array([run_time[ij] for ij in run_time])
+        total_run_times[step] = np.array([total_run_time[ij] for ij in total_run_time])
+        core_run_times[step] = np.array([core_run_time[ij] for ij in core_run_time])
+
     for step in errors:
         print("-----------")
         print("Input pairs with pose difference ~= %d degrees" % (step * 24))
@@ -103,10 +108,13 @@ def main():
             error.mean(), error.min(), error.max(), np.median(error)))
         print("<# of small errors (<3 degree)>: %d out of %d)" % (
             len(np.where(error < 3)[0]), len(error)))
-        run_time = run_times[step]
-        print("<avg_time, min_time, max_time, median_time>: %f, %f, %f, %f (in seconds)" % (
+        run_time = total_run_times[step]
+        print("Total run time: <avg_time, min_time, max_time, median_time>: %f, %f, %f, %f (in seconds)" % (
             run_time.mean(), run_time.min(), run_time.max(), np.median(run_time)))
         print("Please note that the run time reported above includes time spend on reading/writing files.")
+        core_run_time = core_run_times[step]
+        print("Registration time: <avg_time, min_time, max_time, median_time>: %f, %f, %f, %f (in milliseconds)" % (
+            core_run_time.mean(), core_run_time.min(), core_run_time.max(), np.median(core_run_time)))
 
 
 # Please comment the code using open3d (www.open3d.org) if it is not installed.

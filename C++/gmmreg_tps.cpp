@@ -116,13 +116,10 @@ void TpsRegistration::PrepareBasisKernel() {
   Pn.set_size(n_, d_ + 1);
   Pn.set_column(0, 1);
   Pn.update(ctrl_pts_, 0, 1);
-  /* should use SVD(Pn), but vnl's SVD is an ``economy-size'' SVD  */
-
-  /* vnl_svd<double> SVD(Pn.transpose());
-  vnl_matrix<double> VV = SVD.V();
-  std::cout << VV.rows() << " " << VV.cols() << std::endl;
-  SaveMatrixToAsciiFile("./VV.txt", VV);
-  */
+  // Could use SVD(Pn), but vnl's SVD is an ``economy-size'' SVD
+  // vnl_svd<double> SVD(Pn.transpose());
+  // vnl_matrix<double> VV = SVD.V();
+  // std::cout << VV.rows() << " " << VV.cols() << std::endl;
 
   vnl_qr<double> qr(Pn);
   vnl_matrix<double> V = qr.Q();
@@ -153,6 +150,8 @@ void TpsRegistration::ComputeGradient(const double lambda,
 
 void TpsRegistration::SaveResults(const char* f_config,
     const vnl_vector<double>& params) {
+  SaveElaspedTime(f_config);
+
   char f_transformed[256] = {0};
   char f_final_affine[256] = {0};
   char f_final_tps[256] = {0};

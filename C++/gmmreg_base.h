@@ -67,13 +67,18 @@ class Base {
   void DenormalizeAll();
   int Initialize(const char* f_config);
 
+  void SaveElaspedTime(const char* f_config);
+
   friend class RigidFunc;
   friend class ThinPlateSplineFunc;
   friend class GaussianRadialBasisFunc;
 
  private:
   double model_scale_, scene_scale_;
+  double elapsed_time_in_ms_;
+
   void PrepareCommonOptions(const char* f_config);
+
   virtual void PrepareOwnOptions(const char* f_config) = 0;
   virtual void PrepareBasisKernel() = 0;
   virtual int SetInitParams(const char* filename) = 0;

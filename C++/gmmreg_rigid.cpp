@@ -156,22 +156,23 @@ void RigidRegistration::PerformTransform(const vnl_vector<double>& x) {
 
 void RigidRegistration::SaveResults(const char* f_config,
                                     const vnl_vector<double>& params) {
-  char f_transformed[80] = {0};
-  char f_final_rigid[80] = {0};
-  char f_final_matrix[80] = {0};
+  SaveElaspedTime(f_config);
+  char f_transformed[256] = {0};
+  char f_final_rigid[256] = {0};
+  char f_final_matrix[256] = {0};
 
   GetPrivateProfileString(this->common_section_, "transformed_model", NULL,
-                          f_transformed, 80, f_config);
+                          f_transformed, 256, f_config);
   this->SaveTransformed(f_transformed, params, f_config);
 
   GetPrivateProfileString(this->common_section_, "final_rigid", NULL,
-                          f_final_rigid, 80, f_config);
+                          f_final_rigid, 256, f_config);
   SaveVectorToAsciiFile(f_final_rigid, this->param_rigid_);
 
   vnl_matrix<double> matrix;
   ConvertRigidParamToMatrix(this->param_rigid_, this->d_, &matrix);
   GetPrivateProfileString(this->common_section_, "final_rigid_matrix", NULL,
-                          f_final_matrix, 80, f_config);
+                          f_final_matrix, 256, f_config);
   SaveMatrixToAsciiFile(f_final_matrix, matrix);
 }
 

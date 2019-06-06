@@ -18,6 +18,9 @@ if(NOT CMAKE_BUILD_TYPE AND NOT WIN32)
     "MinSizeRel" "RelWithDebInfo")
 endif()
 
+SET(GCC_FASTMATH_FLAGS "-ffast-math -funsafe-math-optimizations -msse4.2")
+SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_FASTMATH_FLAGS}")
+
 # The CMake command FIND_PACKAGE(VXL) attempts to find VXL binary
 # installation.  CMake will look in the directory specified by the
 # CMake variable VXL_DIR.  Normally, CMake will initially not find

@@ -51,7 +51,6 @@ DEPTH_FILES = get_all_depth_files(DATA_PATH)
 
 
 
-
 try:
     from open3d.geometry import PointCloud, voxel_down_sample
     from open3d.utility import Vector3dVector
@@ -73,18 +72,20 @@ def draw_registration_result(source, target, transformation):
 
 import cv2
 # Please comment the code using open3d (www.open3d.org) if it is not installed.
-def visualize_registration(i, j):
+def run_pairwise_registration(i, j, visualize=False, icp_refine=False):
     model_depth = cv2.imread(DEPTH_FILES[i], cv2.IMREAD_ANYCOLOR | cv2.IMREAD_ANYDEPTH)
     scene_depth = cv2.imread(DEPTH_FILES[j], cv2.IMREAD_ANYCOLOR | cv2.IMREAD_ANYDEPTH)
     model = convert_depth_to_pcloud(model_depth)
     scene = convert_depth_to_pcloud(scene_depth)
     pcloud_model = PointCloud()
     pcloud_model.points = Vector3dVector(model)
-    pcloud_model.paint_uniform_color([1, 0, 0]) # red
     pcloud_scene = PointCloud()
     pcloud_scene.points = Vector3dVector(scene)
-    pcloud_scene.paint_uniform_color([0, 1, 0]) # green
-    draw_geometries([pcloud_model, pcloud_scene])
+
+    if visualize:
+        pcloud_model.paint_uniform_color([1, 0, 0]) # red
+        pcloud_scene.paint_uniform_color([0, 1, 0]) # green
+        draw_geometries([pcloud_model, pcloud_scene])
 
     down_model = voxel_down_sample(pcloud_model, voxel_size=0.065)
     down_scene = voxel_down_sample(pcloud_scene, voxel_size=0.065)
@@ -98,48 +99,71 @@ def visualize_registration(i, j):
     gt = np.dot(np.linalg.inv(GT_POS[j]), GT_POS[i])
     print("Transformation from ground truth:")
     print(gt)
-    theta = np.arccos((np.trace(gt[:3,:3]) - 1) * 0.5)
-    print("pose difference (in degrees) before alignment:", theta * 180 / np.pi)
+    theta_before = np.arccos((np.trace(gt[:3,:3]) - 1) * 0.5)
+    print("pose difference (in degrees) before alignment:", theta_before * 180 / np.pi)
     R = np.dot(gt[:3,:3].T, res[1][:3,:3])
-    theta = np.arccos((np.trace(R) - 1) * 0.5)
-    print("pose difference (in degrees) after alignment:", theta * 180 / np.pi)
+    theta_after = np.arccos((np.trace(R) - 1) * 0.5)
+    print("pose difference (in degrees) after alignment:", theta_after * 180 / np.pi)
     transformed = np.loadtxt(os.path.join(TMP_PATH, 'transformed_model.txt'))
     pcloud_transformed = PointCloud()
     pcloud_transformed.points = Vector3dVector(transformed)
     pcloud_transformed.paint_uniform_color([0, 0, 1]) # blue
-    draw_geometries([pcloud_transformed, down_scene])
-    matrix = np.loadtxt(os.path.join(TMP_PATH, 'final_rigid_matrix.txt'))
-    transformed = np.dot(model, matrix[:3,:3].T) + matrix[:3, 3].T
-    pcloud_transformed.points = Vector3dVector(transformed)
-    pcloud_transformed.paint_uniform_color([0, 0, 1]) # blue
-    draw_geometries([pcloud_transformed, pcloud_scene])
+    if visualize:
+        draw_geometries([pcloud_transformed, down_scene])
+        matrix = np.loadtxt(os.path.join(TMP_PATH, 'final_rigid_matrix.txt'))
+        transformed = np.dot(model, matrix[:3,:3].T) + matrix[:3, 3].T
+        pcloud_transformed.points = Vector3dVector(transformed)
+        pcloud_transformed.paint_uniform_color([0, 0, 1]) # blue
+        draw_geometries([pcloud_transformed, pcloud_scene])
+
+    if icp_refine:
+        print("Apply point-to-point ICP")
+        threshold = 0.02
+        trans_init = matrix
+        t1 = time.time()
+        reg_p2p = registration_icp(
+                down_model, down_scene, threshold, trans_init,
+                TransformationEstimationPointToPoint())
+        t2 = time.time()
+        print("ICP Run time : %s seconds" % (t2 - t1))
+        print(reg_p2p)
+        print("Transformation by ICP is:")
+        print(reg_p2p.transformation)
+        print("")
+        R = np.dot(gt[:3,:3].T, reg_p2p.transformation[:3,:3])
+        theta = np.arccos((np.trace(R) - 1) * 0.5)
+        print("pose difference (in degrees) after icp-refinement:", theta * 180 / np.pi)
+        if visualize:
+            draw_registration_result(pcloud_model, pcloud_scene, reg_p2p.transformation)
+    return res, theta_before * 180 / np.pi, theta_after * 180 / np.pi
 
 
-    print("Apply point-to-point ICP")
-    threshold = 0.02
-    trans_init = matrix
-    t1 = time.time()
-    reg_p2p = registration_icp(
-        down_model, down_scene, threshold, trans_init,
-        TransformationEstimationPointToPoint())
-    t2 = time.time()
-    print("ICP Run time : %s seconds" % (t2 - t1))
-
-    print(reg_p2p)
-    print("Transformation by ICP is:")
-    print(reg_p2p.transformation)
-    print("")
-    R = np.dot(gt[:3,:3].T, reg_p2p.transformation[:3,:3])
-    theta = np.arccos((np.trace(R) - 1) * 0.5)
-    print("pose difference (in degrees) after icp-refinement:", theta * 180 / np.pi)
-
-    draw_registration_result(pcloud_model, pcloud_scene, reg_p2p.transformation)
+# Run pair-wise registrations, record errors and run time.
+def main():
+    o = []
+    for i in range(0, 300):
+        j = i + 5
+        res, theta_before, theta_after = run_pairwise_registration(i, j, visualize=False, icp_refine=False)
+        o.append((theta_before, theta_after, res[-2]))
+    o = np.array(o)
+    print("-----------")
+    print("Input pairs with pose difference ~= %f degrees" % (np.mean(o[:,0])))
+    error = o[:, 1]
+    print("<avg_err, min_err, max_err, median_err>: %f, %f, %f, %f (in degrees)" % (
+        error.mean(), error.min(), error.max(), np.median(error)))
+    print("<# of small errors (<3 degree)>: %d out of %d)" % (
+        len(np.where(error < 3)[0]), len(error)))
+    core_run_time = o[:, 2]
+    print("Registration time: <avg_time, min_time, max_time, median_time>: %f, %f, %f, %f (in milliseconds)" % (
+        core_run_time.mean(), core_run_time.min(), core_run_time.max(), np.median(core_run_time)))
+    np.savetxt('./tmp/loung_expts_results.txt', o)
 
 
 import sys
 if __name__ == "__main__":
     # Register just one pair, visualize point clouds before/after alignment.
-    visualize_registration(1, 6)
-    #visualize_registration(20, 26)
-    #visualize_registration(1, 11)
-    #visualize_registration(900, 910)
+    run_pairwise_registration(1, 6, visualize=True)
+    #run_pairwise_registration(20, 26)
+    #run_pairwise_registration(1, 11)
+    #run_pairwise_registration(900, 910)
+    main()

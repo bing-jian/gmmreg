@@ -20,7 +20,7 @@ BINARY_FULLPATH = os.path.join(BINARY_DIR, GMMREG_BINARY[os.name])
 
 # TODO(bing-jian): use a better downsample method.
 def downsampled_subset(x, num):
-    downsample_rate = np.ceil(len(x) / num * 1.0)
+    downsample_rate = int(np.floor(len(x) / num * 1.0))
     return x[::downsample_rate]
 
 # Run pairwise rigid registration using specified binary and configuration.
@@ -29,8 +29,9 @@ def run_rigid_pairwise(gmmreg_exe, model, scene, f_config):
         model = np.loadtxt(model)
         scene = np.loadtxt(scene)
     if model.shape[0] > 5000:
-        model = downsampled_subset(model, 4000)
-        scene = downsampled_subset(scene, 4000)
+        model = downsampled_subset(model, 5000)
+    if scene.shape[0] > 5000:
+        scene = downsampled_subset(scene, 5000)
     print(model.shape)
     print(scene.shape)
     np.savetxt(os.path.join(TMP_PATH, 'model.txt'), model)

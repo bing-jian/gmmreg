@@ -20,7 +20,7 @@ BINARY_FULLPATH = os.path.join(BINARY_DIR, GMMREG_BINARY[os.name])
 
 # TODO(bing-jian): use a better downsample method.
 def downsampled_subset(x, num):
-    downsample_rate = int(np.floor(len(x) / num * 1.0))
+    downsample_rate = max(int(np.floor(len(x) / num * 1.0)), 1)
     return x[::downsample_rate]
 
 # Run pairwise rigid registration using specified binary and configuration.

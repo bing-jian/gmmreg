@@ -22,6 +22,7 @@ BINARY_FULLPATH = os.path.join(BINARY_DIR, GMMREG_BINARY[os.name])
 TRAJECTORY_PATH = '../data/lounge/lounge_trajectory.log'
 TMP_PATH = './tmp'
 CONFIG_FILE = './lounge.ini'
+# Change DATA_PATH to where rgb-d data are located.
 DATA_PATH = '/home/bing/data/lounge'
 
 
@@ -109,7 +110,7 @@ def run_pairwise_registration(i, j, visualize=False, icp_refine=False):
     pcloud_transformed.points = Vector3dVector(transformed)
     pcloud_transformed.paint_uniform_color([0, 0, 1]) # blue
     if visualize:
-        draw_geometries([pcloud_transformed, down_scene])
+        draw_geometries([pcloud_transformed, down_model, down_scene])
         matrix = np.loadtxt(os.path.join(TMP_PATH, 'final_rigid_matrix.txt'))
         transformed = np.dot(model, matrix[:3,:3].T) + matrix[:3, 3].T
         pcloud_transformed.points = Vector3dVector(transformed)
@@ -141,7 +142,7 @@ def run_pairwise_registration(i, j, visualize=False, icp_refine=False):
 # Run pair-wise registrations, record errors and run time.
 def main():
     o = []
-    for i in range(0, 300):
+    for i in range(0, 2995):
         j = i + 5
         res, theta_before, theta_after = run_pairwise_registration(i, j, visualize=False, icp_refine=False)
         o.append((theta_before, theta_after, res[-2]))
@@ -150,7 +151,7 @@ def main():
     print("Input pairs with pose difference ~= %f degrees" % (np.mean(o[:,0])))
     error = o[:, 1]
     print("<avg_err, min_err, max_err, median_err>: %f, %f, %f, %f (in degrees)" % (
-        error.mean(), error.min(), error.max(), np.median(error)))
+        np.nanmean(error), np.nanmin(error), np.nanmax(error), np.nanmedian(error)))
     print("<# of small errors (<3 degree)>: %d out of %d)" % (
         len(np.where(error < 3)[0]), len(error)))
     core_run_time = o[:, 2]
@@ -162,8 +163,8 @@ def main():
 import sys
 if __name__ == "__main__":
     # Register just one pair, visualize point clouds before/after alignment.
-    run_pairwise_registration(1, 6, visualize=True)
-    #run_pairwise_registration(20, 26)
-    #run_pairwise_registration(1, 11)
+    #run_pairwise_registration(1, 6, visualize=True)
+    #run_pairwise_registration(20, 26, visualize=True)
+    run_pairwise_registration(1, 11, visualize=True)
     #run_pairwise_registration(900, 910)
     main()

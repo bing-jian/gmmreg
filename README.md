@@ -14,16 +14,16 @@ This website hosts implementations of the robust point set registration framewor
 An earlier conference version of this work,  "A Robust Algorithm for Point Set Registration Using Mixture of Gaussians, Bing Jian and Baba C. Vemuri.", appeared in the proceedings of ICCV'05. Here is the [bibtex entry](https://github.com/bing-jian/gmmreg/blob/master/gmmreg_bib.txt) for citing this work.
 
 The basic idea of the proposed point set registration framework is to *1) represent the two point sets by continuous distributions, in particular, Gaussian mixture models; 2) and then minimize the distance between the two distributions by moving one towards another.*
-Interestingly, several previous well-known point set registration algorithms can all be re-formulated using this generic framework, including:
+Interestingly, several previous well-known point set registration algorithms can all be re-formulated using this unified framework, including:
 
- * [Iterative Closest Point (ICP)](https://en.wikipedia.org/wiki/Iterative_closest_point) Besl, Paul J.; N.D. McKay (1992). 
+ * [[Iterative Closest Point (ICP)]](https://en.wikipedia.org/wiki/Iterative_closest_point) Besl, Paul J.; N.D. McKay (1992). 
 "A Method for Registration of 3-D Shapes". IEEE Transactions on Pattern Analysis and Machine Intelligence. 14 (2): 239–256.
 
- * [TPS-RPM](https://www.cise.ufl.edu/~anand/students/chui/research.html) Haili Chui and Anand Rangarajan,
+ * [[TPS-RPM]](https://www.cise.ufl.edu/~anand/students/chui/research.html) Haili Chui and Anand Rangarajan,
 A new point matching algorithm for non-rigid registration,
 Computer Vision and Image Understanding, 2003, 89(2-3), pp. 114-141.
 
- * [KC-Reg] Yanghai Tsin and Takeo Kanade,
+ * [[KC-Reg]](http://www.cs.cmu.edu/~ytsin/KCReg/) Yanghai Tsin and Takeo Kanade,
 A Correlation-Based Approach to Robust Point Set Registration,
 ECCV (3) 2004: 558-569. 
 
@@ -31,11 +31,13 @@ ECCV (3) 2004: 558-569.
 A Robust Algorithm for Point Set Registration Using Mixture of Gaussians,
 ICCV 2005, pp. 1246-1251.
 
- * [CPD](https://arxiv.org/pdf/0905.2635.pdf) Andriy Myronenko, Xubo B. Song, Miguel A. Carreira-Perpinan,
+ * [[Coherent Point Drift (CPD)]](https://arxiv.org/pdf/0905.2635.pdf) Andriy Myronenko, Xubo B. Song, Miguel A. Carreira-Perpinan,
 Non-rigid Point Set Registration: Coherent Point Drift,
 NIPS 2006, pp. 1009-1016. 
 
-Please see Fig 3. in [Jian&Vemuri PAMI'11](https://github.com/bing-jian/gmmreg/blob/master/gmmreg_PAMI_preprint.pdf) on how those work are related.  For a growing list of recent work on point set registration/matching, please refer to [this actively maintained github repo](https://github.com/gwang-cv/Point-Set-Matching-Registration-Material).
+Please see Fig 3. in [Jian&Vemuri PAMI'11](https://github.com/bing-jian/gmmreg/blob/master/gmmreg_PAMI_preprint.pdf) on how those methods can be reformulated under this unified framework by choosing different statistical divergence functions. 
+
+For a growing list of recent work on point set registration/matching, please refer to [this actively maintained github repo](https://github.com/gwang-cv/Point-Set-Matching-Registration-Material).
 
 ## How to compile and test the C++ code
 
@@ -96,9 +98,10 @@ Transformation from ground truth:
 * Test environment and setting
     * CPU: Intel(R) Core(TM) i7-6850K CPU @ 3.60GHz
     * OS: Ubuntu 16.04
-    * Algorithm:  GMMReg-Rigid (6dof, 3D rotation parametrized using quaternion); Gauss transform computed with k-d tree.
+    * Algorithm:  GMMReg-Rigid (3D rotation parametrized using quaternion); Gauss transform approximated using k-d tree.
     * C++: Compiled with OpenMP support and -O3 optimization flag.
     * Point cloud downsampling: using voxel\_down\_sample(voxel\_size=0.065) from [Open3D](http://www.open3d.org/docs/tutorial/Basic/pointcloud.html#voxel-downsampling)
+    * Multi-scale configuration and optimization solver parameters are specified [here](https://github.com/bing-jian/gmmreg/blob/master/expts/lounge.ini)
     * Note that error in rotation estimation is measured as angle discrepancy in degrees, using a formula described in http://www.boris-belousov.net/2016/12/01/quat-dist/)
 
 
@@ -121,5 +124,4 @@ Metric| Avg | Min | Max | Median |
 Rotation angle error (in degrees)  | 0.65 | 0.01 | 19.49| 0.41 |
 Run time per pair (in milliseconds)| 76.18 | 18.27 | 508.25 | 60.06 |
 
-
-
+* Note that always downsampling to ~5000 points (instead of downsampling using a fixed voxel size) leads to less mistakes (much smaller max angle error with similar averge/median angle errors) at the cost of running longer time (about twice time as reported above).

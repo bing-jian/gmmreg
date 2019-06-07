@@ -1,6 +1,10 @@
 This directory contains the C++ code for rigid and non-rigid point set
 registration algorithms described in the following papers:
 
+[0] Bing Jian and Baba C. Vemuri,
+Robust Point Set Registration Using Gaussian Mixture Models,
+IEEE Transactions on Pattern Analysis and Machine Intelligence, 2011, 33(8), pp. 1633-1645.
+
 [1] Haili Chui and Anand Rangarajan,
 A new point matching algorithm for non-rigid registration,
 Computer Vision and Image Understanding, 2003, 89(2-3), pp. 114-141.
@@ -18,7 +22,7 @@ Non-rigid Point Set Registration: Coherent Point Drift,
 NIPS 2006, pp. 1009-1016.
 
 This implementation requires the vxl/vnl library which can be downloaded
-from http://vxl.sourceforge.net/
+from https://vxl.github.io/
 
 To build the execuatables from the source code, please use the CMake
 which can be obtained from http://www.cmake.org/

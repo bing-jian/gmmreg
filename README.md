@@ -42,11 +42,13 @@ For a growing list of recent work on point set registration/matching, please ref
 ## How to compile and test the C++ code
 
 * Build the C++ code using CMake
+
 To build the execuatables from the source code, please use [CMake](http://www.cmake.org/). Please note that
 the current C++ implementation depends on [vxl/vnl](http://vxl.sourceforge.net/) 
 for doing matrix computation and numerical optimization.
 
 * Run registration using the executable and a configuration file
+
 The executable (named "gmmreg\_demo") takes a configuration file (in INI format) and a tag string from command line. For more on usage, please check [this file](https://github.com/bing-jian/gmmreg/blob/master/C%2B%2B/gmmreg_api.cpp). For examples of config INI file, please check [this folder](https://github.com/bing-jian/gmmreg/tree/master/data). 
 
 * Test non-rigid registration.
@@ -107,7 +109,7 @@ Transformation from ground truth:
 
 * Results on 295 pairs (every 5 frames from the first 300 frames, e.g. registering i-th and (i+5)-th for i from 1 to 295). 
 The avg pair-wise pose difference among these 295 pairs is ~4.84 degree.  
-The median angle error against the ground truth is ~0.6 degree and the median fps is ~8 with a Intel i7-6850K CPU.
+The median angle error against the ground truth is ~0.6 degree and the median fps is ~8 with Intel i7-6850K CPU.
 
 
 Metric| Avg | Min | Max | Median |
@@ -117,7 +119,7 @@ Run time per pair (in milliseconds)| 120.14 | 47.09 | 413.48 | 116.62 |
 
 * Results on 2995 pairs (every 5 frames from the entire 3000 frames, e.g. registering i-th and (i+5)-th for i from 1 to 2995). 
 The avg pair-wise pose difference among these 295 pairs is ~5.43 degree.
-The median angle error against the ground truth is ~0.4 degree and the median fps is ~16 fps with a Intel i7-6850K CPU.
+The median angle error against the ground truth is ~0.4 degree and the median fps is ~16 fps with Intel i7-6850K CPU.
  
 Metric| Avg | Min | Max | Median | 
 --|------|-----|-----|------|

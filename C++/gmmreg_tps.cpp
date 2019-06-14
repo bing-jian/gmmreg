@@ -45,6 +45,11 @@ void TpsRegistration::StartRegistration(vnl_vector<double>& params) {
     if (minimizer.get_failure_code() < 0) {
       break;
     }
+    double fxval = func_->f(params);
+    std::cout << "Cost function minimized to " << fxval << std::endl
+              << "# of iterations: " << minimizer.get_num_iterations() << ", "
+              << "# of evaluations: " << minimizer.get_num_evaluations()
+              << std::endl;
   }
 }
 
@@ -102,9 +107,8 @@ int TpsRegistration::SetInitTps(const char* filename) {
 
 void TpsRegistration::PrepareBasisKernel() {
   // TODO(bing-jian): detect singularity of the data
-  vnl_matrix<double> K, U;
-  ComputeTPSKernel(model_, ctrl_pts_, U, K);
-  m_ = model_.rows();
+  ComputeTPSKernel(model_, ctrl_pts_, U_, K_);
+  U_transpose_ = U_.transpose();
   vnl_matrix<double> Pm;
   Pm.set_size(m_, d_ + 1);
   Pm.set_column(0, 1);
@@ -121,29 +125,63 @@ void TpsRegistration::PrepareBasisKernel() {
 
   vnl_qr<double> qr(Pn);
   vnl_matrix<double> V = qr.Q();
-  vnl_matrix<double> PP = V.extract(n_, n_ - d_ - 1, 0, d_ + 1);
+  PP_ = V.extract(n_, n_ - d_ - 1, 0, d_ + 1);
+  PP_transpose_ = PP_.transpose();
+#ifdef PRE_COMPUTE_TPS_BASIS_AND_KERNEL
   basis_.set_size(m_, n_);
   basis_.update(Pm);
-  basis_.update(U * PP, 0, d_ + 1);
-  kernel_ = PP.transpose() * K * PP;
+  basis_.update(U_ * PP_, 0, d_ + 1);
+  kernel_ = PP_transpose_ * K_ * PP_;
+#endif
 }
 
 void TpsRegistration::PerformTransform(const vnl_vector<double> &x) {
   SetAffineAndTps(x);
+#ifdef PRE_COMPUTE_TPS_BASIS_AND_KERNEL
   transformed_model_ = basis_ * param_all_;
+#else
+  transformed_model_ = model_ * param_affine_.extract(d_, d_, 1, 0);
+  vnl_matrix<double> ones;
+  ones.set_size(m_, 1);
+  ones.fill(1.0);
+  vnl_matrix<double> translation = param_affine_.extract(1, d_, 0, 0);
+  transformed_model_ += ones * translation;
+  transformed_model_ += U_ * (PP_ * param_tps_);
+#endif
 }
 
 double TpsRegistration::BendingEnergy() {
+#ifdef PRE_COMPUTE_TPS_BASIS_AND_KERNEL
   return vnl_trace(param_tps_.transpose() * kernel_ * param_tps_);
+#else
+  vnl_matrix<double> tmp = PP_ * param_tps_;
+  return vnl_trace(tmp.transpose() * K_ * tmp);
+#endif
 }
 
 void TpsRegistration::ComputeGradient(const double lambda,
     const vnl_matrix<double>& gradient, vnl_matrix<double>& grad_all) {
   grad_all.fill(0);
+#ifdef PRE_COMPUTE_TPS_BASIS_AND_KERNEL
   if (lambda > 0) {
     grad_all.update(2 * lambda * kernel_ * param_tps_, d_ + 1);
   }
   grad_all += basis_.transpose() * gradient;
+#else
+  vnl_matrix<double> ones;
+  ones.set_size(1, m_);
+  ones.fill(1.0);
+  vnl_matrix<double> grad_translation = ones * gradient;
+  vnl_matrix<double> grad_linear = model_.transpose() * gradient;
+  vnl_matrix<double> grad_tps = PP_transpose_ * (U_transpose_ * gradient);
+
+  if (lambda > 0) {
+    grad_tps += 2 * lambda * PP_transpose_ * (K_ * (PP_ *param_tps_));
+  }
+  grad_all.update(grad_translation, 0);
+  grad_all.update(grad_linear, 1);
+  grad_all.update(grad_tps, d_ + 1);
+#endif
 }
 
 void TpsRegistration::SaveResults(const char* f_config,
@@ -174,7 +212,7 @@ void TpsRegistration::PrepareOwnOptions(const char* f_config) {
   GetPrivateProfileString(section_, "lambda", NULL, s_lambda, 255, f_config);
   utils::parse_tokens(s_lambda, delims, v_lambda_);
   if (v_lambda_.size() < level_) {
-    std::cerr<< " too many levels " << std::endl;
+    std::cerr<< " Need more 'lambda' parameters. " << std::endl;
     exit(1);
   }
   char s_affine[256] = {0};
@@ -182,7 +220,7 @@ void TpsRegistration::PrepareOwnOptions(const char* f_config) {
       s_affine, 255, f_config);
   utils::parse_tokens(s_affine, delims, v_affine_);
   if (v_affine_.size() < level_) {
-    std::cerr<< " too many levels " << std::endl;
+    std::cerr<< " Need more 'fixed_affine' parameters. " << std::endl;
     exit(1);
   }
 }

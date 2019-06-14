@@ -38,7 +38,11 @@ int Base::Initialize(const char* f_config) {
   SetInitParams(f_config);
   PrepareCommonOptions(f_config);
   PrepareOwnOptions(f_config);
+  TimeVar t1 = time_now();
   PrepareBasisKernel();
+  initialization_time_in_ms_ = duration(time_now() - t1) / 1000.0;
+  std::cout << "Init took " << initialization_time_in_ms_ << " milliseconds."
+      << std::endl;
   return 0;
 }
 
@@ -49,7 +53,6 @@ int Base::PrepareInput(const char* f_config) {
   if (LoadMatrixFromTxt(f_model, model_) < 0) {
     return -1;
   }
-
 
   GetPrivateProfileString(common_section_, "scene", NULL,
       f_scene, 256, f_config);
@@ -62,7 +65,6 @@ int Base::PrepareInput(const char* f_config) {
   transformed_model_.set_size(m_, d_);
   s_ = scene_.rows();
   assert(scene_.cols() == d_);
-
 
   return 0;
 }
@@ -91,7 +93,6 @@ void Base::DenormalizeAll() {
     Denormalize(scene_, scene_centroid_, scene_scale_);
   }
 }
-
 
 void Base::SaveElaspedTime(const char* f_config) {
   vnl_vector<double> elapsed_time;
@@ -182,14 +183,14 @@ void Base::MultiScaleOptions(const char* f_config) {
   GetPrivateProfileString(section_, "sigma", NULL, s_scale, 255, f_config);
   utils::parse_tokens(s_scale, delims, v_scale_);
   if (v_scale_.size() < level_) {
-    std::cerr << " too many levels " << std::endl;
+    std::cerr << " Need more 'sigma' parameters. " << std::endl;
     exit(1);
   }
   GetPrivateProfileString(section_, "max_function_evals", NULL,
       s_func_evals, 255, f_config);
   utils::parse_tokens(s_func_evals, delims, v_func_evals_);
   if (v_func_evals_.size() < level_) {
-    std::cerr << " too many levels " << std::endl;
+    std::cerr << " Need more 'max_func_evals' parameters. " << std::endl;
     exit(1);
   }
 }

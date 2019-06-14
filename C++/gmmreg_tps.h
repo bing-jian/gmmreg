@@ -21,8 +21,14 @@ class TpsRegistration: public Base {
   ThinPlateSplineFunc* func_;
 
  private:
-  vnl_matrix<double> param_affine_, param_tps_;
-  vnl_matrix<double> after_tps_, basis_, param_all_;
+  vnl_matrix<double> param_affine_, param_tps_, param_all_;
+#ifdef PRE_COMPUTE_TPS_BASIS_AND_KERNEL
+  vnl_matrix<double> basis_;
+#endif
+  // Kept intermediate matrices in case we need to optimize
+  // matrix chain multiplication.
+  vnl_matrix<double> K_, U_, PP_, PP_transpose_, U_transpose_;
+
   std::vector<float> v_lambda_;
   std::vector<int> v_affine_;
 

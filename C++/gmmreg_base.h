@@ -76,6 +76,7 @@ class Base {
  private:
   double model_scale_, scene_scale_;
   double elapsed_time_in_ms_;
+  double initialization_time_in_ms_;
 
   void PrepareCommonOptions(const char* f_config);
 

@@ -9,8 +9,8 @@
 #include <vnl/vnl_matrix.h>
 
 #include "fgt_utils.h"
-#include "gmmreg_utils.h"
 #include "nanoflann.hpp"
+#include "utils/gauss_transform.h"
 
 typedef std::chrono::high_resolution_clock::time_point TimeVar;
 

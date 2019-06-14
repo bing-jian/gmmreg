@@ -1,6 +1,10 @@
 #include "gmmreg_grbf_func.h"
 
-#include "gmmreg_utils.h"
+#ifdef USE_KDTREE
+#include "fgt_utils.h"
+#else
+#include "utils/gauss_transform.h"
+#endif
 
 namespace gmmreg {
 

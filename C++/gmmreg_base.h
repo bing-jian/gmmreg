@@ -12,7 +12,7 @@
 #include <vnl/vnl_vector.h>
 #include <vnl/vnl_matrix.h>
 
-#define USE_KDTREE
+//#define USE_KDTREE
 
 #ifdef USE_KDTREE
 #include "fgt_utils.h"

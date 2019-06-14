@@ -1,20 +1,8 @@
-#ifndef GMMREG_UTILS_H_
-#define GMMREG_UTILS_H_
+#include "gauss_transform.h"
 
-#include <vnl/vnl_matrix.h>
-#include <vnl/vnl_vector.h>
-
-#include "utils/macros.h"
+#include "macros.h"
 
 namespace gmmreg {
-
-template <typename T>
-T GaussTransform(const vnl_matrix<T>& A, const vnl_matrix<T>& B, T scale);
-
-template <typename T>
-T GaussTransform(const vnl_matrix<T>& A, const vnl_matrix<T>& B, T scale,
-                 vnl_matrix<T>& gradient);
-
 
 /*
  *  Note: The input point set containing 'n' points in 'd'-dimensional
@@ -92,7 +80,4 @@ T GaussTransform(const vnl_matrix<T>& A, const vnl_matrix<T>& B, T scale,
                         A.cols(), scale, gradient.data_block());
 }
 
-
 }  // namespace gmmreg
-
-#endif  // GMMREG_UTILS_H_

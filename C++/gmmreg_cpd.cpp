@@ -1,15 +1,11 @@
 #include "gmmreg_cpd.h"
 
-#include <cstdlib>
-#include <cstring>
-#include <fstream>
-#include <iostream>
-#include <vnl/algo/vnl_determinant.h>
 #include <vnl/algo/vnl_qr.h>
 #include <vnl/algo/vnl_svd.h>
 #include <vnl/vnl_trace.h>
 
 #include "gmmreg_utils.h"
+#include "utils/em_utils.h"
 #include "utils/io_utils.h"
 
 namespace gmmreg {

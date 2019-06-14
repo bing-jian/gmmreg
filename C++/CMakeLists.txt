@@ -160,4 +160,7 @@ IF(UNIX)
   TARGET_LINK_LIBRARIES(gmmreg_transform m port_ini)
 ENDIF(UNIX)
 
+ADD_EXECUTABLE(gmmreg_downsample gmmreg_downsample.cpp)
+TARGET_LINK_LIBRARIES(gmmreg_downsample vnl)
+
 #ENDIF( VXL_VNL_FOUND )

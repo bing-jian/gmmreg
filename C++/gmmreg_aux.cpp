@@ -1,5 +1,6 @@
 #include <fstream>
 #include <iostream>
+#include <memory>
 #include <vector>
 
 #include <vnl/algo/vnl_determinant.h>
@@ -104,7 +105,7 @@ int main(int argc, char* argv[]) {
 
   cout << n << " "<< d << "-d points loaded from " << argv[1] << endl;
   cout << "estimated scale: " << estimate_scale(input_pts) << endl;
-  vnl_vector<double> min_row,max_row;
+  vnl_vector<double> min_row, max_row;
   min_row.set_size(d);
   max_row.set_size(d);
   for (int i = 0; i < d; ++i) {
@@ -114,7 +115,7 @@ int main(int argc, char* argv[]) {
   std::vector<int> interval;
   for (int i = 0; i < d; ++i) {
     int k;
-    cout << "intervals at dimension[" << i << "]:";
+    cout << "interval at dimension[" << i << "]: ";
     std::cin >> k;
     //assert k>0
     interval.push_back(k);
@@ -133,5 +134,6 @@ int main(int argc, char* argv[]) {
   std::ofstream outfile(argv[2], std::ios_base::out);
   matrix.print(outfile);
   cout << volume << " Control points saved to " << argv[2] << endl;
+
   return 0;
 }

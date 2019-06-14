@@ -45,8 +45,8 @@ class CoherentPointDriftTps: public CoherentPointDrift {
   vnl_matrix<double> nP;
   vnl_matrix<double> G, Q1, Q2, R, invR, invG;
 
-  void PrepareBasisKernel();
-  double UpdateParam();
+  void PrepareBasisKernel() override;
+  double UpdateParam() override;
 };
 
 class CoherentPointDriftGrbf: public CoherentPointDrift {
@@ -55,8 +55,8 @@ class CoherentPointDriftGrbf: public CoherentPointDrift {
   vnl_matrix<double> dPY0;
   vnl_matrix<double> Gtranspose, invG;
 
-  void PrepareBasisKernel();
-  double UpdateParam();
+  void PrepareBasisKernel() override;
+  double UpdateParam() override;
 };
 
 }  // namespace gmmreg

@@ -36,7 +36,7 @@ class GrbfRegistration: public Base {
   void SaveResults(const char* f_config, const vnl_vector<double>&) override;
 
   int PrepareInput(const char* input_config) override;
-  void PrepareBasisKernel();
+  void PrepareBasisKernel() override;
   void PrepareParamGradient(bool);
   void PerformTransform(const vnl_vector<double>&) override;
   double BendingEnergy() override;

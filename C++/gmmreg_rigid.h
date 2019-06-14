@@ -25,7 +25,7 @@ class RigidRegistration: public Base {
   void SetParam(vnl_vector<double>&);
   int SetInitParams(const char*) override;
   void SaveResults(const char*, const vnl_vector<double>&) override;
-  void PrepareBasisKernel() {};
+  void PrepareBasisKernel() override {};
   void PrepareParamGradient(bool) {};
   void PerformTransform(const vnl_vector<double>&) override;
   double BendingEnergy() override {

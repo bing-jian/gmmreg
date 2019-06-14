@@ -4,7 +4,6 @@
 #include <vnl/algo/vnl_svd.h>
 #include <vnl/vnl_trace.h>
 
-//#include "gmmreg_utils.h"
 #include "utils/em_utils.h"
 #include "utils/io_utils.h"
 #include "utils/rbf_utils.h"

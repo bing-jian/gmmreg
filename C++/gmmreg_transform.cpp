@@ -9,7 +9,6 @@
 #include "port_ini.h"
 #endif
 
-//#include "gmmreg_utils.h"
 #include "utils/io_utils.h"
 #include "utils/normalization_utils.h"
 #include "utils/rbf_utils.h"
@@ -127,7 +126,6 @@ int ThinPlateSplineTransform(const char* f_config) {
 int main(int argc, char* argv[]) {
   if (argc < 2) {
     std::cerr << "Usage: " << argv[0] << " config_file" << std::endl;
-    //print_usage();
     return -1;
   }
   gmmreg::ThinPlateSplineTransform(argv[1]);

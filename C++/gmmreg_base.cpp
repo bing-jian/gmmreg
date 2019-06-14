@@ -6,7 +6,6 @@
 #include <fstream>
 #include <iostream>
 
-#include "gmmreg_utils.h"
 #include "utils/io_utils.h"
 #include "utils/match_utils.h"
 #include "utils/misc_utils.h"

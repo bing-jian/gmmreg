@@ -6,7 +6,6 @@
 #include <vnl/vnl_matrix.h>
 #include <vnl/vnl_vector.h>
 
-#include "gmmreg_utils.h"
 #include "utils/io_utils.h"
 #include "utils/rotation_utils.h"
 

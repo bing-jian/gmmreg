@@ -9,9 +9,10 @@
 #include "port_ini.h"
 #endif
 
-#include "gmmreg_utils.h"
+//#include "gmmreg_utils.h"
 #include "utils/io_utils.h"
 #include "utils/normalization_utils.h"
+#include "utils/rbf_utils.h"
 
 namespace gmmreg {
 

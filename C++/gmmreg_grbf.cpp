@@ -1,8 +1,6 @@
 #include "gmmreg_grbf.h"
 
 #include <assert.h>
-#include <cstdlib>
-#include <cstring>
 #include <fstream>
 #include <iostream>
 
@@ -11,9 +9,9 @@
 #include <vnl/vnl_matrix.h>
 #include <vnl/vnl_trace.h>
 
-#include "gmmreg_utils.h"
 #include "utils/io_utils.h"
 #include "utils/misc_utils.h"
+#include "utils/rbf_utils.h"
 
 namespace gmmreg {
 
@@ -42,8 +40,8 @@ void GrbfRegistration::StartRegistration(vnl_vector<double>& params) {
     SetParam(params);
     int n_max_func_evals = v_func_evals_[k];
     minimizer.set_max_function_evals(n_max_func_evals);
-    // For more options, see
-    // http://public.kitware.com/vxl/doc/release/core/vnl/html/vnl__nonlinear__minimizer_8h-source.html
+    // For more options, please see
+    // https://public.kitware.com/vxl/doc/release/core/vnl/html/vnl__nonlinear__minimizer_8h_source.html
     minimizer.minimize(params);
     if (minimizer.get_failure_code() < 0) {
       break;

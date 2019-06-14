@@ -10,7 +10,7 @@ using std::cerr;
 using std::cout;
 using std::endl;
 
-double estimate_scale(vnl_matrix<double> pts) {
+double estimate_scale(const vnl_matrix<double>& pts) {
   int m = pts.rows();
   int d = pts.cols();
   double scale = vnl_determinant(pts.transpose() * pts / (m * 1.0));
@@ -33,7 +33,7 @@ def compute_index(pos, x):
 */
 
 void compute_index(unsigned long pos,
-                   vnl_vector<unsigned long>& v,
+                   const vnl_vector<unsigned long>& v,
                    vnl_vector<int>& index) {
   int d = v.size(); //assert index.size() = d;
   for (int i = d - 1; i >= 0; --i) {
@@ -50,7 +50,7 @@ def build_iterator(interval):
     return iter
 */
 
-void build_iterator(std::vector<int>& interval, vnl_matrix<int>& iterator) {
+void build_iterator(const std::vector<int>& interval, vnl_matrix<int>& iterator) {
   int d = interval.size();
   vnl_vector<unsigned long> v;
   v.set_size(d);
@@ -77,8 +77,8 @@ def sample_grid(min_pos, max_pos, interval):
     return numpy.array(grid)
 */
 
-void nd_grid(vnl_vector<double>& min_pos, vnl_vector<double>& max_pos,
-    std::vector<int>& interval, vnl_matrix<int>& iterator,
+void nd_grid(const vnl_vector<double>& min_pos, const vnl_vector<double>& max_pos,
+    const std::vector<int>& interval, const vnl_matrix<int>& iterator,
     vnl_matrix<double>& matrix) {
   unsigned long volume = iterator.rows();
   int d = iterator.cols();

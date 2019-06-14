@@ -1,19 +1,9 @@
-/*=========================================================================
-  $Author: bing.jian $
-  $Date: 2011-01-27 14:35:23 -0500 (Thu, 27 Jan 2011) $
-  $Revision: 134 $
-  =========================================================================*/
-
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <cstdlib>
-
-#include <vnl/algo/vnl_determinant.h>
 #include <vnl/vnl_matrix.h>
 #include <vnl/vnl_vector.h>
 
-#include "gmmreg_utils.h"
 #include "utils/match_utils.h"
 
 namespace gmmreg {
@@ -28,7 +18,7 @@ void ExtractMatchingPairs(
   vnl_matrix<T> dist;
   vnl_matrix<int> pairs;
   ComputeSquaredDistanceMatrix<T>(model, scene, dist);
-  PickIndices<T>(dist, pairs, threshold*threshold);
+  FindNearestPairs<T>(dist, pairs, threshold*threshold);
   std::cout << "distance threshold : " << threshold << std::endl;
   int n = pairs.cols();
   int d = model.cols();

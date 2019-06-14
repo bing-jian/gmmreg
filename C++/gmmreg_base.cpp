@@ -10,7 +10,7 @@
 #include "utils/io_utils.h"
 #include "utils/match_utils.h"
 #include "utils/misc_utils.h"
-
+#include "utils/normalization_utils.h"
 
 namespace gmmreg {
 
@@ -103,10 +103,6 @@ void Base::SaveElaspedTime(const char* f_config) {
                           f_elasped_time, 256, f_config);
 
   SaveVectorToAsciiFile(f_elasped_time, elapsed_time);
-
-
-
-
 }
 
 void Base::SaveTransformed(const char* filename,
@@ -142,9 +138,9 @@ void Base::SaveTransformed(const char* filename,
     ComputeSquaredDistanceMatrix(transformed_model_, scene_, dist);
     for (int i = 0; i < num; ++i) {
       double threshold  = min_threshold + i * interval;
-      //int n_match = find_working_pair(model, scene, transformed_model,
+      // int n_match = find_working_pair(model, scene, transformed_model,
       //                                threshold, working_M, working_S);
-      PickIndices<double>(dist, pairs, threshold * threshold);
+      FindNearestPairs<double>(dist, pairs, threshold * threshold);
       //printf("%f : %d\n",threshold, n_match);
       f_pair << "distance threshold : " << threshold << std::endl;
       f_pair << "# of matched point pairs : " << pairs.cols() << std::endl;

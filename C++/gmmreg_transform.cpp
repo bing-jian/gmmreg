@@ -11,6 +11,7 @@
 
 #include "gmmreg_utils.h"
 #include "utils/io_utils.h"
+#include "utils/normalization_utils.h"
 
 namespace gmmreg {
 

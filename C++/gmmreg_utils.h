@@ -22,17 +22,6 @@ void ComputeGaussianKernel(const vnl_matrix<T>& model,
                            const vnl_matrix<T>& ctrl_pts, vnl_matrix<T>& G,
                            vnl_matrix<T>& K, T beta);
 
-template <typename T>
-void ComputeSquaredDistanceMatrix(const vnl_matrix<T>& A,
-                                  const vnl_matrix<T>& B, vnl_matrix<T>& D);
-
-template <typename T>
-void Normalize(vnl_matrix<T>& x, vnl_vector<T>& centroid, T& scale);
-
-template <typename T>
-void Denormalize(vnl_matrix<T>& x, const vnl_vector<T>& centroid,
-                 const T scale);
-
 
 #define SQR(X) ((X) * (X))
 
@@ -216,57 +205,6 @@ void ComputeGaussianKernel(const vnl_matrix<T>& model,
     K.set_size(n, n);
     GaussianAffinityMatrix(ctrl_pts.data_block(), ctrl_pts.data_block(), n, n,
                            d, lambda, K.data_block());
-  }
-}
-
-template <typename T>
-void ComputeSquaredDistanceMatrix(const vnl_matrix<T>& A,
-                                  const vnl_matrix<T>& B, vnl_matrix<T>& D) {
-  int m = A.rows();
-  int n = B.rows();
-  // asssert(A.cols()==B.cols());
-  D.set_size(m, n);
-  vnl_vector<T> v_ij;
-
-#pragma omp for
-  for (int i = 0; i < m; ++i) {
-    for (int j = 0; j < n; ++j) {
-      v_ij = A.get_row(i) - B.get_row(j);
-      D(i, j) = v_ij.squared_magnitude();
-    }
-  }
-}
-
-template <typename T>
-void Normalize(vnl_matrix<T>& x, vnl_vector<T>& centroid, T& scale) {
-  int n = x.rows();
-  if (n == 0) return;
-  int d = x.cols();
-  centroid.set_size(d);
-
-  vnl_vector<T> col;
-#pragma omp for
-  for (int i = 0; i < d; ++i) {
-    col = x.get_column(i);
-    centroid(i) = col.mean();
-  }
-#pragma omp for
-  for (int i = 0; i < n; ++i) {
-    x.set_row(i, x.get_row(i) - centroid);
-  }
-  scale = x.frobenius_norm() / sqrt(T(n));
-  x = x / scale;
-}
-
-template <typename T>
-void Denormalize(vnl_matrix<T>& x, const vnl_vector<T>& centroid,
-                 const T scale) {
-  int n = x.rows();
-  if (n == 0) return;
-  int d = x.cols();
-#pragma omp for
-  for (int i = 0; i < n; ++i) {
-    x.set_row(i, x.get_row(i) * scale + centroid);
   }
 }
 

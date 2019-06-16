@@ -13,6 +13,32 @@ This website hosts implementations of the robust point set registration framewor
  ["Robust Point Set Registration Using Gaussian Mixture Models"](https://github.com/bing-jian/gmmreg/blob/master/gmmreg_PAMI_preprint.pdf), Bing Jian and [Baba C. Vemuri](http://www.cise.ufl.edu/~vemuri), [IEEE Transactions on Pattern Analysis and Machine Intelligence, 2011, 33(8), pp. 1633-1645](https://ieeexplore.ieee.org/document/5674050).
 An earlier conference version of this work,  "A Robust Algorithm for Point Set Registration Using Mixture of Gaussians, Bing Jian and Baba C. Vemuri.", appeared in the proceedings of ICCV'05. Here is the [bibtex entry](https://github.com/bing-jian/gmmreg/blob/master/gmmreg_bib.txt) for citing this work.
 
+## Featured Applications
+
+ * [Garment Retexturing](https://www.researchgate.net/publication/327835781_From_2D_to_3D_Geodesic-based_Garment_Matching)
+
+ <img src="garment_retexturing.png">
+
+Recently, a group of researchers from Estonia and Spain reported an interesting work of garment retexturing
+in a paper titled ["From 2D to 3D geodesic-based garment matching"](https://link.springer.com/article/10.1007/s11042-019-7739-5). 
+The GMM based point set registration algorithm was chosen by them for contour matching, a critical component in their
+ method for garment retexturing. The following comments are taken from Section 3.2 in [their paper](https://arxiv.org/abs/1809.08064):
+
+*"Out of available algorithms, we have chosen to
+use non-rigid point set registration using Gaussian mixture
+models (GMM) [21] because of its accurate fitting
+under different conditions and fast execution time. Additionally,
+Gaussian mixtures provide robust results even if
+the shapes have different features, such as different neck
+lines, hand positions and folds."*
+
+ * [3-D Vessel Tree Surface Reconstruction](http://www.freepatentsonline.com/10140733.pdf)
+
+The GMM based point set registration algorithm was used in "3-D Vessel Tree Surface Reconstruction", a patent 
+(United States Patent 10140733) filed by researchers at Siemens Corporate Research in Princeton, as shown in 
+Eq(2) and Eq(16).
+
+## A Unified Framework
 The basic idea of the proposed point set registration framework is to *1) represent the two point sets by continuous distributions, in particular, Gaussian mixture models; 2) and then minimize the distance between the two distributions by moving one towards another.*
 Interestingly, several previous well-known point set registration algorithms can all be re-formulated using this generic framework, including:
 
@@ -23,7 +49,7 @@ Interestingly, several previous well-known point set registration algorithms can
 A new point matching algorithm for non-rigid registration,
 Computer Vision and Image Understanding, 2003, 89(2-3), pp. 114-141.
 
- * [KC-Reg] Yanghai Tsin and Takeo Kanade,
+ * [KC-Reg](http://www.cs.cmu.edu/~ytsin/KCReg/) Yanghai Tsin and Takeo Kanade,
 A Correlation-Based Approach to Robust Point Set Registration,
 ECCV (3) 2004: 558-569. 
 

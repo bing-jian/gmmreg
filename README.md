@@ -5,7 +5,7 @@ Robust Point Set Registration Using Gaussian Mixture Models
 
 2D, Non-Rigid  | 3D, Rigid  |
 --|--|
- <img src="gmmreg.png" width="640"> |  <img src="expts/lounge_reg_sparse.png" width="640">  | 
+ <img src="images/fish_partial_matching.png" width="640"> |  <img src="expts/lounge_reg_sparse.png" width="640">  | 
 
 
 ## Description
@@ -17,7 +17,7 @@ An earlier conference version of this work,  "A Robust Algorithm for Point Set R
 
  * [Garment Retexturing](https://www.researchgate.net/publication/327835781_From_2D_to_3D_Geodesic-based_Garment_Matching)
 
- <img src="garment_retexturing.png">
+ <img src="images/garment_retexturing.png">
 
 Recently, a group of researchers from Estonia and Spain reported an interesting work of garment retexturing
 in a paper titled ["From 2D to 3D geodesic-based garment matching"](https://link.springer.com/article/10.1007/s11042-019-7739-5). 

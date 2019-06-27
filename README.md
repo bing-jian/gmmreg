@@ -32,6 +32,15 @@ Gaussian mixtures provide robust results even if
 the shapes have different features, such as different neck
 lines, hand positions and folds."*
 
+ * [Block Assembly for Global Registration of Building Scans](https://3d.bk.tudelft.nl/liangliang/publications/2016/block_assembly/block_assembly.html)
+<p align="middle">
+ <img src="images/portal_detection_and_matching.png" width="480">
+ <img src="images/pairwise_portal_matching.png" width="480"> 
+</p>
+
+In SIGGRAPH Asia 2016,  Yan et al. proposed a method for global registration of building scans. Our GMM based point set registration algorithm was used for pairwise portal matching in their pipeline as indicated in Section 4.3 of [their paper](http://peterwonka.net/Publications/pdfs/2016.SGA.Feilong.BlockAssembly.pdf).
+
+
  * [3-D Vessel Tree Surface Reconstruction](http://www.freepatentsonline.com/10140733.pdf)
 
 The GMM based point set registration algorithm was used in "3-D Vessel Tree Surface Reconstruction", a patent 

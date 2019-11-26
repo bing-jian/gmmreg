@@ -7,11 +7,13 @@ Robust Point Set Registration Using Gaussian Mixture Models
 --|--|
  <img src="images/fish_partial_matching.png" width="640"> |  <img src="expts/lounge_reg_sparse.png" width="640">  | 
 
-
 ## Description
 This website hosts implementations of the robust point set registration framework described in the paper
  ["Robust Point Set Registration Using Gaussian Mixture Models"](https://github.com/bing-jian/gmmreg/blob/master/gmmreg_PAMI_preprint.pdf), Bing Jian and [Baba C. Vemuri](http://www.cise.ufl.edu/~vemuri), [IEEE Transactions on Pattern Analysis and Machine Intelligence, 2011, 33(8), pp. 1633-1645](https://ieeexplore.ieee.org/document/5674050).
 An earlier conference version of this work,  "A Robust Algorithm for Point Set Registration Using Mixture of Gaussians, Bing Jian and Baba C. Vemuri.", appeared in the proceedings of ICCV'05. Here is the [bibtex entry](https://github.com/bing-jian/gmmreg/blob/master/gmmreg_bib.txt) for citing this work.
+
+## Note
+A python implementation (unoptimized and mainly for proof of concept) can be found in http://github.com/bing-jian/gmmreg-python.
 
 ## Featured Applications
 

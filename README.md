@@ -155,7 +155,7 @@ Rotation angle error (in degrees)  | 0.96 | 0.07 | 9.08| 0.60 |
 Run time per pair (in milliseconds)| 120.14 | 47.09 | 413.48 | 116.62 |
 
 * Results on 2995 pairs (every 5 frames from the entire 3000 frames, e.g. registering i-th and (i+5)-th for i from 1 to 2995). 
-The avg pair-wise pose difference among these 295 pairs is ~5.43 degree.
+The avg pair-wise pose difference among these 2995 pairs is ~5.43 degree.
 The median angle error against the ground truth is ~0.4 degree and the median fps is ~16 fps with Intel i7-6850K CPU.
  
 Metric| Avg | Min | Max | Median | 

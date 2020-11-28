@@ -94,15 +94,15 @@ void Base::DenormalizeAll() {
   }
 }
 
-void Base::SaveElaspedTime(const char* f_config) {
+void Base::SaveElapsedTime(const char* f_config) {
   vnl_vector<double> elapsed_time;
   elapsed_time.set_size(1);
   elapsed_time[0] = elapsed_time_in_ms_;
-  char f_elasped_time[256] = {0};
-  GetPrivateProfileString(this->common_section_, "elasped_time_in_ms", NULL,
-                          f_elasped_time, 256, f_config);
+  char f_elapsed_time[256] = {0};
+  GetPrivateProfileString(this->common_section_, "elapsed_time_in_ms", NULL,
+                          f_elapsed_time, 256, f_config);
 
-  SaveVectorToAsciiFile(f_elasped_time, elapsed_time);
+  SaveVectorToAsciiFile(f_elapsed_time, elapsed_time);
 }
 
 void Base::SaveTransformed(const char* filename,

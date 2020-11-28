@@ -44,9 +44,9 @@ def run_rigid_pairwise(gmmreg_exe, model, scene, f_config):
     print("Run time : %s seconds" % (t2 - t1))
     param = np.loadtxt(os.path.join(TMP_PATH, 'final_rigid.txt'))
     matrix = np.loadtxt(os.path.join(TMP_PATH, 'final_rigid_matrix.txt'))
-    elasped_time_in_ms = np.loadtxt(os.path.join(TMP_PATH, 'elapsed_time_in_ms.txt'))
+    elapsed_time_in_ms = np.loadtxt(os.path.join(TMP_PATH, 'elapsed_time_in_ms.txt'))
 
-    return param, matrix, elasped_time_in_ms.item(), t2-t1
+    return param, matrix, elapsed_time_in_ms.item(), t2-t1
 
 
 # http://qianyi.info/scenedata.html

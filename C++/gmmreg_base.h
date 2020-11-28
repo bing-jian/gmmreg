@@ -67,7 +67,7 @@ class Base {
   void DenormalizeAll();
   int Initialize(const char* f_config);
 
-  void SaveElaspedTime(const char* f_config);
+  void SaveElapsedTime(const char* f_config);
 
   friend class RigidFunc;
   friend class ThinPlateSplineFunc;

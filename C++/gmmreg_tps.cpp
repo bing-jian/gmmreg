@@ -186,7 +186,7 @@ void TpsRegistration::ComputeGradient(const double lambda,
 
 void TpsRegistration::SaveResults(const char* f_config,
     const vnl_vector<double>& params) {
-  SaveElaspedTime(f_config);
+  SaveElapsedTime(f_config);
 
   char f_transformed[256] = {0};
   char f_final_affine[256] = {0};

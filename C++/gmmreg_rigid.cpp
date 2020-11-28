@@ -155,7 +155,7 @@ void RigidRegistration::PerformTransform(const vnl_vector<double>& x) {
 
 void RigidRegistration::SaveResults(const char* f_config,
                                     const vnl_vector<double>& params) {
-  SaveElaspedTime(f_config);
+  SaveElapsedTime(f_config);
   char f_transformed[256] = {0};
   char f_final_rigid[256] = {0};
   char f_final_matrix[256] = {0};

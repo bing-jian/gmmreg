@@ -25,7 +25,6 @@ class CoherentPointDrift : public Base {
       const vnl_matrix<double>& gradient,
       vnl_matrix<double>& grad_all) override {};
   void PrepareOwnOptions(const char*) override;
-  virtual void PrepareBasisKernel() = 0;
   virtual double UpdateParam() = 0;
 
  protected:

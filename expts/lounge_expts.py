@@ -88,8 +88,8 @@ def run_pairwise_registration(i, j, visualize=False, icp_refine=False):
         pcloud_scene.paint_uniform_color([0, 1, 0]) # green
         draw_geometries([pcloud_model, pcloud_scene])
 
-    down_model = voxel_down_sample(pcloud_model, voxel_size=0.065)
-    down_scene = voxel_down_sample(pcloud_scene, voxel_size=0.065)
+    down_model = voxel_down_sample(pcloud_model, voxel_size=0.05)
+    down_scene = voxel_down_sample(pcloud_scene, voxel_size=0.05)
     model_pts = np.array(down_model.points)
     scene_pts = np.array(down_scene.points)
 
@@ -101,10 +101,17 @@ def run_pairwise_registration(i, j, visualize=False, icp_refine=False):
     print("Transformation from ground truth:")
     print(gt)
     theta_before = np.arccos((np.trace(gt[:3,:3]) - 1) * 0.5)
-    print("pose difference (in degrees) before alignment:", theta_before * 180 / np.pi)
+    print("pose difference (in degrees) before alignment: ", theta_before * 180 / np.pi)
+    err_fnorm = np.linalg.norm(gt[:3,:3] - np.eye(3), 'fro')
+    print("rotation error before alignment: ", err_fnorm)
+
     R = np.dot(gt[:3,:3].T, res[1][:3,:3])
     theta_after = np.arccos((np.trace(R) - 1) * 0.5)
-    print("pose difference (in degrees) after alignment:", theta_after * 180 / np.pi)
+    print("pose difference (in degrees) after alignment: ", theta_after * 180 / np.pi)
+    print(gt[:3,:3] - res[1][:3,:3])
+    err_fnorm = np.linalg.norm(gt[:3,:3] - res[1][:3,:3], 'fro')
+    print("rotation error w.r.t gt: ", err_fnorm)
+
     transformed = np.loadtxt(os.path.join(TMP_PATH, 'transformed_model.txt'))
     pcloud_transformed = PointCloud()
     pcloud_transformed.points = Vector3dVector(transformed)
@@ -136,7 +143,7 @@ def run_pairwise_registration(i, j, visualize=False, icp_refine=False):
         print("pose difference (in degrees) after icp-refinement:", theta * 180 / np.pi)
         if visualize:
             draw_registration_result(pcloud_model, pcloud_scene, reg_p2p.transformation)
-    return res, theta_before * 180 / np.pi, theta_after * 180 / np.pi
+    return res, theta_before * 180 / np.pi, theta_after * 180 / np.pi, err_fnorm
 
 
 # Run pair-wise registrations, record errors and run time.
@@ -144,8 +151,8 @@ def main():
     o = []
     for i in range(0, 2995):
         j = i + 5
-        res, theta_before, theta_after = run_pairwise_registration(i, j, visualize=False, icp_refine=False)
-        o.append((theta_before, theta_after, res[-2]))
+        res, theta_before, theta_after, err_fnorm = run_pairwise_registration(i, j, visualize=False, icp_refine=False)
+        o.append((theta_before, theta_after, res[-2], err_fnorm))
     o = np.array(o)
     print("-----------")
     print("Input pairs with pose difference ~= %f degrees" % (np.mean(o[:,0])))
@@ -157,6 +164,11 @@ def main():
     core_run_time = o[:, 2]
     print("Registration time: <avg_time, min_time, max_time, median_time>: %f, %f, %f, %f (in milliseconds)" % (
         core_run_time.mean(), core_run_time.min(), core_run_time.max(), np.median(core_run_time)))
+    error_fnorm = o[:, 3]
+    print("<avg_err, min_err, max_err, median_err>: %f, %f, %f, %f " % (
+        np.nanmean(error_fnorm), np.nanmin(error_fnorm), np.nanmax(error_fnorm), np.nanmedian(error_fnorm)))
+    print("<# of small errors (<0.1)>: %d out of %d)" % (
+        len(np.where(error_fnorm < 0.1)[0]), len(error_fnorm)))
     np.savetxt('./tmp/loung_expts_results.txt', o)
 
 
@@ -167,4 +179,4 @@ if __name__ == "__main__":
     #run_pairwise_registration(20, 26, visualize=True)
     run_pairwise_registration(1, 11, visualize=True)
     #run_pairwise_registration(900, 910)
-    main()
+    #main()

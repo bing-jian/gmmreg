@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #coding=utf-8
 
-import ConfigParser
+from six.moves import configparser
 import time
 from math import cos,sin,log,exp,sqrt
 from numpy import loadtxt,arange,array,dot,delete,reshape,kron,eye,ones,zeros,trace,s_,r_,c_,squeeze
@@ -17,12 +17,12 @@ def normalize(x):
     """
     centroid = x.mean(0)
     x = x - centroid
-    scale = norm(x,'fro')/sqrt(x.shape[0])
-    x = x/scale
-    return x,centroid,scale
+    scale = norm(x, 'fro') / sqrt(x.shape[0])
+    x = x / scale
+    return x, centroid, scale
 
 
-def denormalize(x,centroid,scale):
+def denormalize(x, centroid, scale):
     """Denormalize a point set from saved centroid and scale."""
     x = x*scale + centroid
     return x
@@ -34,10 +34,9 @@ def L2_distance(model, scene, scale):
     """
     f1, g1 = gauss_transform(model, model, scale)
     f2, g2 = gauss_transform(model, scene, scale)
-    # print f1,f2
     f =  f1 - 2*f2
     g = 2*array(g1) - 2*array(g2)
-    return f,g
+    return f, g
 
 
 def correlation(model, scene, scale):
@@ -49,14 +48,13 @@ def correlation(model, scene, scale):
     #f = -f2/sqrt(f1)
     #g = array(g1)*f2/(f1*sqrt(f1)) - array(g2)/sqrt(f1)
     #below is the version using -log(correlation), supposely slightly faster because no square root
-    #print f1,f2
     #epsilon = 1e-10
     #f = log(f1+epsilon) - 2*log(f2+epsilon)
     #g = 2*array(g1)/(f1+epsilon) - 2*array(g2)/(f2+epsilon)
     #squared correlation
     f = -f2*f2/f1
     g = 2*array(g1)*f2*f2/(f1*f1) - 2*array(g2)*f2/f1
-    return f,g
+    return f, g
 
 
 def init_param(n, d, opt_affine=True):
@@ -74,7 +72,6 @@ def init_param(n, d, opt_affine=True):
         # init_affine is fixed during the optimization
         init_param = init_tps
     return array(init_param)
-    #return init_param
 
 
 def transform_points(param, basis):
@@ -88,6 +85,7 @@ def transform_points(param, basis):
     after_tps = dot(basis,r_[affine_param,tps_param])
     return after_tps
 
+
 def compute_GRBF(ctrl_pts, landmarks, sigma):
     """
     Compute the kernel matrix for GRBF splines.
@@ -96,10 +94,10 @@ def compute_GRBF(ctrl_pts, landmarks, sigma):
         return exp(-r*r/(sigma*sigma))
 
     K = array([kernel_func(norm(x-y), sigma) for x in ctrl_pts for y in ctrl_pts])
-    K = K.reshape(len(ctrl_pts),len(ctrl_pts))
+    K = K.reshape(len(ctrl_pts), len(ctrl_pts))
     U = array([kernel_func(norm(x-y), sigma) for x in landmarks for y in ctrl_pts])
-    U = U.reshape(len(landmarks),len(ctrl_pts))
-    return K,U
+    U = U.reshape(len(landmarks), len(ctrl_pts))
+    return K, U
 
 
 def compute_TPS_K(ctrl_pts, landmarks = None, _lambda = 0):
@@ -131,22 +129,23 @@ def compute_TPS_K(ctrl_pts, landmarks = None, _lambda = 0):
         U = array(U).reshape(m,n)
     else:
         U = None
-    return K,U
+    return K, U
 
-def prepare_TPS_basis(landmarks,ctrl_pts):
+
+def prepare_TPS_basis(landmarks, ctrl_pts):
     """
     Return the basis for performing TPS transforms and the kernel matrix for computing the bending energy.
     """
     [m,d] = landmarks.shape
     [n,d] = ctrl_pts.shape
-    [K,U] = compute_TPS_K(ctrl_pts,landmarks)
-    Pm = c_[ones((m,1)),landmarks]
-    Pn = c_[ones((n,1)),ctrl_pts]
+    [K,U] = compute_TPS_K(ctrl_pts, landmarks)
+    Pm = c_[ones((m,1)), landmarks]
+    Pn = c_[ones((n,1)), ctrl_pts]
     u,s,vh = svd(Pn)
     PP = u[:,d+1:]
-    TPS_basis = c_[Pm,dot(U,PP)]
-    TPS_kernel = dot(PP.T,dot(K,PP))
-    return TPS_basis,TPS_kernel
+    TPS_basis = c_[Pm, dot(U,PP)]
+    TPS_kernel = dot(PP.T, dot(K,PP))
+    return TPS_basis, TPS_kernel
 
 
 def obj_TPS(dist_func, param, basis, kernel, scene, scale, _lambda): #, init_affine=None):
@@ -211,7 +210,6 @@ def run_multi_level(model,scene,ctrl_pts,level,scales,lambdas,iters):
 
 
 def run_ini(f_config):
-
     section_common = 'FILES'
     section_option = 'GMMREG_OPT'
 
@@ -236,7 +234,6 @@ def run_ini(f_config):
     iters = [int(s) for s in option_str.split(' ')]
 
     normalize_flag = int(c.get(section_option,'normalize'))
-    #print normalize_flag
     if normalize_flag==1:
         [model, c_m, s_m] = normalize(model)
         [scene, c_s, s_s] = normalize(scene)
@@ -248,8 +245,7 @@ def run_ini(f_config):
         scene = denormalize(scene,c_s,s_s)
         after_tps = denormalize(after_tps,c_s,s_s)
     t2 = time.time()
-    print "Elasped time is %s seconds"%(t2-t1)
+    print("Elasped time is %s seconds"%(t2-t1))
     #_plotting.displayABC(model,scene,after_tps)
     #_plotting.display2Dpointsets(after_tps,scene)
-    return model,scene,after_tps
-
+    return model, scene, after_tps

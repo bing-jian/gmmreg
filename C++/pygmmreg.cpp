@@ -13,7 +13,7 @@ py_gmmreg_api(PyObject *self, PyObject *args)
     }
 
     /* call function */
-    gmmreg_api(f_config,method);
+    gmmreg_api(f_config, method);
 
     /* send the result back to Python */
     //Py_DECREF(f_config);

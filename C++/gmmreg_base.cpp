@@ -167,6 +167,10 @@ void Base::PrepareCommonOptions(const char* f_config) {
     Normalize(model_, model_centroid_, model_scale_);
     Normalize(scene_, scene_centroid_, scene_scale_);
     Normalize(ctrl_pts_, model_centroid_, model_scale_);
+    std::cout << model_scale_ << std::endl;
+    std::cout << scene_scale_ << std::endl;
+    std::cout << model_centroid_ << std::endl;
+    std::cout << scene_centroid_ << std::endl;
   }
 #ifdef USE_KDTREE
   scene_tree_.reset(new NanoflannTree<double>(scene_));

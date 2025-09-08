@@ -173,6 +173,26 @@ void RigidRegistration::SaveResults(const char* f_config,
   GetPrivateProfileString(this->common_section_, "final_rigid_matrix", NULL,
                           f_final_matrix, 256, f_config);
   SaveMatrixToAsciiFile(f_final_matrix, matrix);
+
+
+  if (b_normalize_) {
+    if (d_ == 3) {
+      for (int i = 4; i < 7; ++i) {
+        param_rigid_[i] *= scene_scale_;
+        param_rigid_[i] += scene_centroid_[i - 4];
+        param_rigid_[i] -= scene_scale_ * model_centroid_[i - 4] / model_scale_;
+      }
+    } else if (d_ == 2) {
+      for (int i = 0; i < 2; ++i) {
+        param_rigid_[i] *= scene_scale_;
+        param_rigid_[i] += scene_centroid_[i];
+        param_rigid_[i] -= scene_scale_ * model_centroid_[i] / model_scale_;
+      }
+    }
+    SaveVectorToAsciiFile("/tmp/rigid_params_denormalized.txt", this->param_rigid_);
+    ConvertRigidParamToMatrix(this->param_rigid_, this->d_, &matrix);
+    SaveMatrixToAsciiFile("/tmp/rigid_matrix_denormalized.txt", matrix);
+  }
 }
 
 void RigidRegistration::PrepareOwnOptions(const char* f_config) {

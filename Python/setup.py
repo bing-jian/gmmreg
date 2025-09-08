@@ -24,7 +24,7 @@ setup (name = 'gmmreg',
        description = 'A Python package for robust point set registration using mixture of Gaussians.',
        author = 'Bing Jian',
        author_email = 'bing.jian@gmail.com',
-       url = 'http://gmmreg.googlecode.com/',
+       url = 'https://github.com/bing-jian/gmmreg',
        long_description = '''
               This is a Python package for robust point set registration using mixture of Gaussians.
               ''',

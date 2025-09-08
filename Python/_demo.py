@@ -3,7 +3,7 @@
 
 import time
 import subprocess
-import ConfigParser
+from six.moves import configparser
 
 from numpy import loadtxt
 
@@ -19,19 +19,19 @@ def test(f_config, display = True):
 def run_executable(gmmreg_exe, f_config, method, display = True):
     cmd = '%s %s %s'%(gmmreg_exe, f_config, method)
     t1 = time.time()
-    subprocess.call(cmd,shell=True)
+    subprocess.call(cmd, shell=True)
     t2 = time.time()
-    print "Elasped time is %s seconds" % (t2 - t1)
+    print("Elasped time is %s seconds" % (t2 - t1))
     if display:
         display_pts(f_config)
 
 def display_pts(f_config):
-    c = ConfigParser.ConfigParser()
+    c = configparser.ConfigParser()
     c.read(f_config)
     section_common = 'FILES'
-    mf = c.get(section_common,'model')
-    sf = c.get(section_common,'scene')
-    tf = c.get(section_common,'transformed_model')
+    mf = c.get(section_common, 'model')
+    sf = c.get(section_common, 'scene')
+    tf = c.get(section_common, 'transformed_model')
 
     m = loadtxt(mf)
     s = loadtxt(sf)

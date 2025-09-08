@@ -52,6 +52,8 @@ class Base {
   vnl_matrix<double> kernel_;
   int b_normalize_;
   vnl_vector<double> model_centroid_, scene_centroid_;
+  double model_scale_, scene_scale_;
+
   char section_[80], common_section_[80];
 
   unsigned int level_;
@@ -74,7 +76,7 @@ class Base {
   friend class GaussianRadialBasisFunc;
 
  private:
-  double model_scale_, scene_scale_;
+
   double elapsed_time_in_ms_;
   double initialization_time_in_ms_;
 

@@ -65,6 +65,7 @@ def displayABC(A,B,C):
         display3Dpointsets(C,B,ax)
     plt.show()
 
+
 def display_pts(f_config):
     config = ConfigObj(f_config)
 

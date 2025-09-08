@@ -1,24 +1,18 @@
-/**
- * $Author: bing.jian $
- * $Date: 2008-11-06 15:45:11 -0500 (Thu, 06 Nov 2008) $
- * $Revision: 98 $
- */
-
 #include <Python.h>
 
 /*
 Reference:
-  Writing a C extension to NumPy
-  http://numpy.scipy.org/numpydoc/numpy-13.html
-Note the location of arrayobject.h has been changed! See
-http://projects.scipy.org/pipermail/numpy-tickets/2006-October/000344.html
-In [13]: numpy.version.version
-Out[13]: '1.1.1'
-In [14]: numpy.get_include()
-Out[14]: 'C:\\DevTools\\Python25\\lib\\site-packages\\numpy\\core\\include'
+[1]  Writing a C extension to NumPy
+  http://folk.uio.no/inf3330/scripting/doc/python/NumPy/Numeric/numpy-13.html
+[2]  How to extend NumPy
+  https://docs.scipy.org/doc/numpy/user/c-info.how-to-extend.html
 */
-#include "numpy/arrayobject.h"
 
+#if PY_MAJOR_VERSION >= 3
+#define IS_PY3K
+#endif
+
+#include "numpy/arrayobject.h"
 
 #define IND2(a,i,j) \
     *((double *)(a->data + i*a->strides[0] + j*a->strides[1]))
@@ -70,7 +64,7 @@ py_squared_distance_matrix(PyObject *self, PyObject *args)
     squared_distance_matrix((double*)(arrayA->data), (double*)(arrayB->data), (double*)(arrayg->data), m, n, d, dist);
     out_dim[0] = m;
     out_dim[1] = n;
-    
+
     /* PyArray_FromDimsAndData() deprecated, use PyArray_SimpleNewFromData()
     http://blog.enthought.com/?p=62
     array_dist = (PyArrayObject*) PyArray_FromDimsAndData(2,out_dim,PyArray_DOUBLE, (char*)dist);
@@ -184,10 +178,25 @@ static PyMethodDef pyMethods[] = {
     {NULL, NULL, 0, NULL}        /* Sentinel */
 };
 
-PyMODINIT_FUNC
-init_extension(void)
-{
-    (void) Py_InitModule("_extension", pyMethods);
-    import_array();
-}
 
+#if PY_MAJOR_VERSION >= 3
+static struct PyModuleDef gmmreg_module = {
+  PyModuleDef_HEAD_INIT,
+  "_extension",
+  "robust point set registration algorithm.",
+   -1, // global state
+   pyMethods
+};
+PyMODINIT_FUNC PyInit__extension(void)
+#else
+// python 2
+PyMODINIT_FUNC init_extension(void)
+#endif
+{
+#if PY_MAJOR_VERSION >= 3
+  return PyModule_Create(&gmmreg_module);
+#else
+  (void) Py_InitModule("_extension", pyMethods);
+#endif
+  import_array();
+}

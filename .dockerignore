@@ -1,4 +1,5 @@
-C++/build/
+# C++ source and build output are mounted at runtime, not copied.
+C++/
 expts/tmp/
 **/__pycache__/
 **/*.pyc

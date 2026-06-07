@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y \
     libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
-# Build and install VXL (provides vnl/vnl_algo/vcl)
+# Build VXL (provides vnl/vnl_algo/vcl)
 RUN git clone --depth 1 https://github.com/vxl/vxl.git /vxl-src && \
     cmake -B /vxl-build -S /vxl-src \
         -DCMAKE_BUILD_TYPE=Release \
@@ -21,4 +21,11 @@ RUN git clone --depth 1 https://github.com/vxl/vxl.git /vxl-src && \
 
 ENV VXL_DIR=/vxl-build
 
-WORKDIR /workspace
+# C++ source is mounted at runtime, not copied.
+# Run: docker run --rm -v $(PWD)/C++:/workspace/C++ gmmreg-builder
+WORKDIR /workspace/C++
+# Remove stale CMakeCache.txt and CMakeFiles/ to avoid path mismatch when the
+# source tree was previously configured outside this container.
+CMD rm -rf build/CMakeCache.txt build/CMakeFiles && \
+    cmake -B build -S . -DCMAKE_BUILD_TYPE=Release && \
+    cmake --build build --parallel $(nproc)

@@ -89,3 +89,40 @@ TEST_F(TpsL2FishTest, OutputMatchesExpected) {
         EXPECT_NEAR(am[i], em[i], 8.0 * 1e-4)
             << "transformed_model flat index " << i << " mismatch";
 }
+
+// ── tps_kc ───────────────────────────────────────────────────────────────────
+
+class TpsKcFishTest : public ::testing::Test {
+protected:
+    void TearDown() override {
+        std::remove("output.json");
+        std::remove("transformed_model.txt");
+        std::remove("final_affine.txt");
+        std::remove("final_tps.txt");
+    }
+};
+
+TEST_F(TpsKcFishTest, OutputMatchesExpected) {
+    ASSERT_EQ(gmmreg_api("fish_full.ini", "tps_kc"), 0)
+        << "gmmreg_api returned non-zero for tps_kc";
+
+    std::string actual   = ReadAll("output.json");
+    std::string expected = ReadAll("expected_output/fish_full/tps_kc.json");
+    ASSERT_FALSE(actual.empty())   << "output.json was not created";
+    ASSERT_FALSE(expected.empty()) << "expected_output/fish_full/tps_kc.json not found";
+
+    // ── params ───────────────────────────────────────────────────────────────
+    auto ap = ParseFlatArray(actual,   "params");
+    auto ep = ParseFlatArray(expected, "params");
+    ASSERT_EQ(ap.size(), ep.size()) << "params array length mismatch";
+    for (size_t i = 0; i < ep.size(); ++i)
+        EXPECT_NEAR(ap[i], ep[i], 1e-2) << "params[" << i << "] mismatch";
+
+    // ── transformed_model ────────────────────────────────────────────────────
+    auto am = ParseTransformedModel(actual);
+    auto em = ParseTransformedModel(expected);
+    ASSERT_EQ(am.size(), em.size()) << "transformed_model element count mismatch";
+    for (size_t i = 0; i < em.size(); ++i)
+        EXPECT_NEAR(am[i], em[i], 8.0 * 1e-4)
+            << "transformed_model flat index " << i << " mismatch";
+}

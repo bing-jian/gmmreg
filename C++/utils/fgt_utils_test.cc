@@ -145,3 +145,34 @@ TEST(FastSelfGaussTransform, MatchesGaussTransformSelf) {
 
     EXPECT_NEAR(fast, exact, 1e-3);
 }
+
+// Gradient matches central finite differences (edge list held fixed during perturbation)
+TEST(FastSelfGaussTransform, GradientNumericalCheck) {
+    vnl_matrix<double> A(4, 2);
+    A(0,0)=0.1; A(0,1)=0.2;  A(1,0)=0.5; A(1,1)=0.3;
+    A(2,0)=0.8; A(2,1)=0.7;  A(3,0)=0.3; A(3,1)=0.9;
+    double scale = 5.0;
+
+    auto tree = MakeTree(A);
+    std::vector<std::pair<int, int>> edges;
+    FastNeighborSearch(*tree, A, scale, &edges);
+
+    vnl_matrix<double> grad(4, 2, 0.0);
+    FastSelfGaussTransform(A, edges, scale, grad);
+
+    const double eps = 1e-5;
+    for (int i = 0; i < 4; ++i) {
+        for (int d = 0; d < 2; ++d) {
+            vnl_matrix<double> A_plus = A, A_minus = A;
+            A_plus(i, d) += eps;
+            A_minus(i, d) -= eps;
+            vnl_matrix<double> g(4, 2, 0.0);
+            double fp = FastSelfGaussTransform(A_plus,  edges, scale, g);
+            g.fill(0.0);
+            double fm = FastSelfGaussTransform(A_minus, edges, scale, g);
+            double fd = (fp - fm) / (2.0 * eps);
+            EXPECT_NEAR(grad(i, d), fd, 1e-4)
+                << "Gradient mismatch at (" << i << ", " << d << ")";
+        }
+    }
+}

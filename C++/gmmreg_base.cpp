@@ -29,6 +29,7 @@ void Base::Run(const char* f_config) {
   std::cout << "Registration took " << elapsed_time_in_ms_ << " milliseconds."
       << std::endl;
   SaveResults(f_config, params);
+  SaveJsonOutput(f_config, params);
 }
 
 int Base::Initialize(const char* f_config) {
@@ -174,6 +175,15 @@ void Base::PrepareCommonOptions(const char* f_config) {
   model_tree_.reset(new NanoflannTree<double>(model_));
   model_tree_->tree.buildIndex();
 #endif
+}
+
+void Base::SaveJsonOutput(const char* f_config,
+                          const vnl_vector<double>& params) {
+  char f_json[256] = {0};
+  GetPrivateProfileString(common_section_, "output_json", NULL,
+                          f_json, 256, f_config);
+  SaveOutputToJson(f_json, params, transformed_model_,
+                   elapsed_time_in_ms_, initialization_time_in_ms_);
 }
 
 void Base::MultiScaleOptions(const char* f_config) {

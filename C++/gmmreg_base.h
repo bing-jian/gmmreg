@@ -79,6 +79,7 @@ class Base {
   double initialization_time_in_ms_;
 
   void PrepareCommonOptions(const char* f_config);
+  void SaveJsonOutput(const char* f_config, const vnl_vector<double>& params);
 
   virtual void PrepareOwnOptions(const char* f_config) = 0;
   virtual void PrepareBasisKernel() = 0;

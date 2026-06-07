@@ -175,3 +175,14 @@ target_link_libraries(hello_gtest GTest::gtest_main)
 gtest_discover_tests(hello_gtest)
 
 add_subdirectory(utils)
+
+add_executable(tps_l2_test tests/tps_l2_test.cc)
+target_include_directories(tps_l2_test PRIVATE ${VXL_VNL_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(tps_l2_test
+    GTest::gtest_main
+    Threads::Threads
+    gmmreg_api
+)
+gtest_discover_tests(tps_l2_test
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/testdata
+)

@@ -51,7 +51,9 @@ int gmmreg_api(const char* input_config, const char* method) {
   char f_config[1024];
   gmmreg::utils::get_config_fullpath(input_config, f_config);
 
-  auto instance = gmmreg::GmmregFactory::CreateInstance(strlwr((char*)method));
+  char method_lower[64] = {0};
+  strncpy(method_lower, method, sizeof(method_lower) - 1);
+  auto instance = gmmreg::GmmregFactory::CreateInstance(strlwr(method_lower));
   if (instance == nullptr) {
     print_usage();
     return -1;

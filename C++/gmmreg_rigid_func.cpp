@@ -1,7 +1,7 @@
 #include "gmmreg_rigid_func.h"
 
 #ifdef USE_KDTREE
-#include "fgt_utils.h"
+#include "utils/fgt_utils.h"
 #else
 #include "utils/gauss_transform.h"
 #endif

@@ -199,3 +199,27 @@ gtest_discover_tests(tps_kc_test
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/testdata
     PROPERTIES RESOURCE_LOCK fish_full_testdata
 )
+
+add_executable(grbf_l2_test tests/grbf_l2_test.cc)
+target_include_directories(grbf_l2_test PRIVATE ${VXL_VNL_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(grbf_l2_test
+    GTest::gtest_main
+    Threads::Threads
+    gmmreg_api
+)
+gtest_discover_tests(grbf_l2_test
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/testdata
+    PROPERTIES RESOURCE_LOCK fish_full_testdata
+)
+
+add_executable(grbf_kc_test tests/grbf_kc_test.cc)
+target_include_directories(grbf_kc_test PRIVATE ${VXL_VNL_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(grbf_kc_test
+    GTest::gtest_main
+    Threads::Threads
+    gmmreg_api
+)
+gtest_discover_tests(grbf_kc_test
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/testdata
+    PROPERTIES RESOURCE_LOCK fish_full_testdata
+)

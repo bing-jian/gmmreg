@@ -5,16 +5,19 @@ This Python script can be used to test the gmmreg algorithm on the Stanford
 "dragon stand" dataset as described in Section 6.1 of the gmmreg PAMI paper.
 """
 
-import collections, copy, os, subprocess, time
+import argparse
+import base64
+import collections
+import copy
+import os
+import subprocess
+import time
+import uuid
 
 import numpy as np
+from configparser import ConfigParser
 from scipy.spatial.transform import Rotation
 import open3d as o3d
-
-try:
-    from configparser import ConfigParser
-except ImportError:
-    from ConfigParser import ConfigParser  # ver. < 3.0
 
 DATA_PATH = '../data/dragon_stand'
 CONFIG_FILE = './dragon_stand.ini'
@@ -45,7 +48,7 @@ def lookup_ground_truth(gt_poses, i, j):
     q_i = Rotation.from_quat(pose_i[3::])
     q_j = Rotation.from_quat(pose_j[3::])
     q_ji = (q_i * q_j.inv()).as_quat()
-    q_ij = (q_i * q_i.inv()).as_quat()
+    q_ij = (q_j * q_i.inv()).as_quat()
     return q_ij, q_ji
 
 
@@ -250,8 +253,6 @@ def main(args):
         batch_processor.visualize()
 
 
-import argparse
-import uuid, base64
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description='Testing scrpt for running gmmreg on Dragonstand dataset.')

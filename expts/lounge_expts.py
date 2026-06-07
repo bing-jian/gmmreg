@@ -2,11 +2,18 @@
 #coding=utf-8
 """
 This Python script can be used to test the gmmreg algorithm on the Stanford
-"lounge" dataset.  For how to get this dataset, please refert to
+"lounge" dataset.  For how to get this dataset, please refer to
 http://qianyi.info/scenedata.html
+
+Dataset can be downloaded with:
+  wget https://github.com/isl-org/open3d_downloads/releases/download/20220301-data/LoungeRGBDImages.zip
 """
 
-import copy, os, subprocess, time
+import argparse
+import copy
+import os
+import subprocess
+import time
 
 import cv2
 import numpy as np
@@ -18,14 +25,22 @@ BINARY_DIR = '../C++/build'
 GMMREG_BINARY = {'nt': r'gmmreg_demo.exe', 'posix': r'gmmreg_demo'}
 
 BINARY_FULLPATH = os.path.join(BINARY_DIR, GMMREG_BINARY[os.name])
-TRAJECTORY_PATH = '../data/lounge/lounge_trajectory.log'
 TMP_PATH = './tmp'
 CONFIG_FILE = './lounge.ini'
-# Change DATA_PATH to where rgb-d data are located.
-DATA_PATH = '/home/bing/data/lounge'
 
 if not os.path.exists(TMP_PATH):
     os.makedirs(TMP_PATH)
+
+# Populated by _init_data() before any registration calls.
+GT_POS = None
+DEPTH_FILES = None
+
+
+def _init_data(data_path):
+    global GT_POS, DEPTH_FILES
+    trajectory_path = os.path.join(data_path, 'lounge_trajectory.log')
+    GT_POS = parse_ground_truth(trajectory_path)
+    DEPTH_FILES = get_all_depth_files(data_path)
 
 
 def parse_ground_truth(trajectory_conf):
@@ -39,15 +54,9 @@ def parse_ground_truth(trajectory_conf):
     return matrices
 
 
-GT_POS = parse_ground_truth(TRAJECTORY_PATH)
-
-
 def get_all_depth_files(data_path):
     ind = range(1, 3001)
     return [os.path.join(data_path, 'depth/%06d.png' % j) for j in ind]
-
-
-DEPTH_FILES = get_all_depth_files(DATA_PATH)
 
 
 def draw_registration_result(source, target, transformation):
@@ -100,10 +109,10 @@ def run_pairwise_registration(i, j, visualize=False, icp_refine=False):
     pcloud_transformed = o3d.geometry.PointCloud()
     pcloud_transformed.points = o3d.utility.Vector3dVector(transformed)
     pcloud_transformed.paint_uniform_color([0, 0, 1])  # blue
+    matrix = np.loadtxt(os.path.join(TMP_PATH, 'final_rigid_matrix.txt'))
     if visualize:
         o3d.visualization.draw_geometries(
             [pcloud_transformed, down_model, down_scene])
-        matrix = np.loadtxt(os.path.join(TMP_PATH, 'final_rigid_matrix.txt'))
         transformed = np.dot(model, matrix[:3, :3].T) + matrix[:3, 3].T
         pcloud_transformed.points = o3d.utility.Vector3dVector(transformed)
         pcloud_transformed.paint_uniform_color([0, 0, 1])  # blue
@@ -114,9 +123,9 @@ def run_pairwise_registration(i, j, visualize=False, icp_refine=False):
         threshold = 0.02
         trans_init = matrix
         t1 = time.time()
-        reg_p2p = o3d.registration.registration_icp(
+        reg_p2p = o3d.pipelines.registration.registration_icp(
             down_model, down_scene, threshold, trans_init,
-            o3d.registration.TransformationEstimationPointToPoint())
+            o3d.pipelines.registration.TransformationEstimationPointToPoint())
         t2 = time.time()
         print("ICP Run time : %s seconds" % (t2 - t1))
         print(reg_p2p)
@@ -159,8 +168,17 @@ def main():
     np.savetxt('./tmp/loung_expts_results.txt', o)
 
 
-import sys
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description='Testing script for running gmmreg on the Lounge RGB-D dataset.')
+    parser.add_argument(
+        '--data_path',
+        default='../data/lounge',
+        help='Directory containing the Lounge dataset (depth/ subfolder and lounge_trajectory.log).')
+    args = parser.parse_args()
+
+    _init_data(args.data_path)
+
     # Register just one pair, visualize point clouds before/after alignment.
     #run_pairwise_registration(1, 6, visualize=True)
     #run_pairwise_registration(20, 26, visualize=True)

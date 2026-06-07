@@ -2,7 +2,7 @@ IMAGE_BUILDER ?= gmmreg-builder
 IMAGE_TESTER  ?= gmmreg-tester
 DATA_DIR      ?= $(PWD)/data
 
-.PHONY: build-builder compile build-tester build run-dragon run-lounge shell clean
+.PHONY: build-builder compile test shell-builder build-tester build run-dragon run-lounge shell clean
 
 # Build the C++ build environment image (installs VXL and toolchain).
 build-builder:
@@ -12,6 +12,22 @@ build-builder:
 # Output lands in C++/build/ on the host.
 compile: build-builder
 	docker run --rm -v $(PWD)/C++:/workspace/C++ $(IMAGE_BUILDER)
+
+# Build and run all CTest unit tests inside the builder container.
+test: build-builder
+	docker run --rm -v $(PWD)/C++:/workspace/C++ $(IMAGE_BUILDER) bash -c \
+		"rm -rf build/CMakeCache.txt build/CMakeFiles && \
+		 cmake -B build -S . -DCMAKE_BUILD_TYPE=Release && \
+		 cmake --build build --parallel $$(nproc) && \
+		 ctest --test-dir build --output-on-failure"
+
+# Open an interactive shell in the builder container with source and data mounted.
+shell-builder: build-builder
+	docker run --rm -it \
+		-v $(PWD)/C++:/workspace/C++ \
+		-v $(PWD)/expts:/workspace/expts \
+		-v $(DATA_DIR):/workspace/data \
+		$(IMAGE_BUILDER) bash
 
 # Build the Python test environment image (depends on builder image).
 build-tester: build-builder

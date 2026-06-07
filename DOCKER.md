@@ -33,8 +33,10 @@ make run-lounge
 
 | Target | Description |
 |---|---|
-| `make build-builder` | Build `gmmreg-builder` image (VXL + toolchain) |
+| `make build-builder` | Build `gmmreg-builder` image (VXL + toolchain + GoogleTest) |
 | `make compile` | Mount `C++/` into the builder and produce the binary in `C++/build/` |
+| `make test` | Build and run all GoogleTest/CTest unit tests inside the builder container |
+| `make shell-builder` | Interactive bash shell in the builder container with `C++/`, `expts/`, `data/` mounted |
 | `make build-tester` | Build `gmmreg-tester` image (depends on `gmmreg-builder`) |
 | `make build` | Shortcut: `build-builder` + `build-tester` |
 | `make run-dragon` | Run the Dragon Stand experiment inside the tester container |
@@ -85,5 +87,6 @@ Mounting `expts/` means you can edit Python scripts on the host and re-run witho
 |---|---|
 | `Dockerfile.builder` or VXL | `make build-builder` then `make compile` then `make build-tester` |
 | C++ source | `make compile` |
+| C++ tests | `make test` |
 | `Dockerfile.tester` or `requirements.txt` | `make build-tester` |
 | Python scripts in `expts/` | Nothing — changes are live via the mount |

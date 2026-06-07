@@ -257,3 +257,14 @@ target_link_libraries(gmmreg_rigid_func_test
     gmmreg_api
 )
 gtest_discover_tests(gmmreg_rigid_func_test)
+
+add_executable(rigid_registration_test tests/rigid_registration_test.cc)
+target_include_directories(rigid_registration_test PRIVATE ${VXL_VNL_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(rigid_registration_test
+    GTest::gtest_main
+    Threads::Threads
+    gmmreg_api
+)
+gtest_discover_tests(rigid_registration_test
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/testdata
+)

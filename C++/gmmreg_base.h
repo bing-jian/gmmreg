@@ -37,6 +37,20 @@ class Base {
   // Call after SetModelAndScene or after any in-place data change.
   void BuildTrees();
 
+  // Run the full registration pipeline without a config file.
+  // scales and max_func_evals must be the same length (one entry per level).
+  // Returns 0 on success, -1 on bad arguments.
+  int RunWithData(const vnl_matrix<double>& model,
+                  const vnl_matrix<double>& scene,
+                  bool normalize,
+                  const std::vector<double>& scales,
+                  const std::vector<int>& max_func_evals);
+
+  // Access the registered (and, if normalize=true, denormalized) model.
+  const vnl_matrix<double>& GetTransformedModel() const {
+    return transformed_model_;
+  }
+
   virtual void PerformTransform(const vnl_vector<double>&) = 0;
   virtual double BendingEnergy() = 0;  // serving as a regularization term
   virtual void ComputeGradient(const double lambda,

@@ -69,6 +69,38 @@ void Base::BuildTrees() {
 #endif
 }
 
+int Base::RunWithData(const vnl_matrix<double>& model,
+                      const vnl_matrix<double>& scene,
+                      bool normalize,
+                      const std::vector<double>& scales,
+                      const std::vector<int>& max_func_evals) {
+  if (scales.empty() || scales.size() != max_func_evals.size()) return -1;
+  if (SetModelAndScene(model, scene) < 0) return -1;
+
+  b_normalize_ = normalize ? 1 : 0;
+  if (b_normalize_) {
+    Normalize(model_, model_centroid_, model_scale_);
+    Normalize(scene_, scene_centroid_, scene_scale_);
+  }
+  BuildTrees();
+
+  level_ = static_cast<unsigned int>(scales.size());
+  v_scale_.assign(scales.begin(), scales.end());
+  v_func_evals_.assign(max_func_evals.begin(), max_func_evals.end());
+
+  PrepareBasisKernel();
+  SetInitParams("");  // empty filename → identity initial params
+
+  vnl_vector<double> params;
+  StartRegistration(params);
+
+  if (b_normalize_) {
+    DenormalizeAll();
+  }
+
+  return 0;
+}
+
 int Base::PrepareInput(const char* f_config) {
   char f_model[256] = {0}, f_scene[256] = {0};
   GetPrivateProfileString(common_section_, "model", NULL,

@@ -27,6 +27,16 @@ class Base {
   }
 
   void Run(const char* f_config);
+
+  // Set model and scene directly (bypasses file I/O; useful for testing).
+  // Returns 0 on success, -1 if model and scene have different column counts.
+  int SetModelAndScene(const vnl_matrix<double>& model,
+                       const vnl_matrix<double>& scene);
+
+  // (Re)build kd-trees from the current model_ and scene_.
+  // Call after SetModelAndScene or after any in-place data change.
+  void BuildTrees();
+
   virtual void PerformTransform(const vnl_vector<double>&) = 0;
   virtual double BendingEnergy() = 0;  // serving as a regularization term
   virtual void ComputeGradient(const double lambda,

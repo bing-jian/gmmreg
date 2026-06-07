@@ -69,3 +69,27 @@ target_link_libraries(normalization_utils_test
     vnl
 )
 gtest_discover_tests(normalization_utils_test)
+
+add_executable(downsample_utils_test downsample_utils_test.cc)
+target_include_directories(downsample_utils_test PRIVATE
+    ${CMAKE_SOURCE_DIR}
+    ${VXL_VNL_INCLUDE_DIR}
+)
+target_link_libraries(downsample_utils_test
+    GTest::gtest_main
+    Threads::Threads
+    vnl
+)
+gtest_discover_tests(downsample_utils_test)
+
+add_executable(match_utils_test match_utils_test.cc)
+target_include_directories(match_utils_test PRIVATE
+    ${CMAKE_SOURCE_DIR}
+    ${VXL_VNL_INCLUDE_DIR}
+)
+target_link_libraries(match_utils_test
+    GTest::gtest_main
+    Threads::Threads
+    vnl
+)
+gtest_discover_tests(match_utils_test)

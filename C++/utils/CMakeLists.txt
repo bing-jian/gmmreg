@@ -33,3 +33,39 @@ target_link_libraries(em_utils_test
     vnl
 )
 gtest_discover_tests(em_utils_test)
+
+add_executable(rotation_utils_test rotation_utils_test.cc)
+target_include_directories(rotation_utils_test PRIVATE
+    ${CMAKE_SOURCE_DIR}
+    ${VXL_VNL_INCLUDE_DIR}
+)
+target_link_libraries(rotation_utils_test
+    GTest::gtest_main
+    Threads::Threads
+    vnl
+)
+gtest_discover_tests(rotation_utils_test)
+
+add_executable(rbf_utils_test rbf_utils_test.cc)
+target_include_directories(rbf_utils_test PRIVATE
+    ${CMAKE_SOURCE_DIR}
+    ${VXL_VNL_INCLUDE_DIR}
+)
+target_link_libraries(rbf_utils_test
+    GTest::gtest_main
+    Threads::Threads
+    vnl
+)
+gtest_discover_tests(rbf_utils_test)
+
+add_executable(normalization_utils_test normalization_utils_test.cc)
+target_include_directories(normalization_utils_test PRIVATE
+    ${CMAKE_SOURCE_DIR}
+    ${VXL_VNL_INCLUDE_DIR}
+)
+target_link_libraries(normalization_utils_test
+    GTest::gtest_main
+    Threads::Threads
+    vnl
+)
+gtest_discover_tests(normalization_utils_test)

@@ -117,3 +117,15 @@ target_link_libraries(io_utils_test
     vnl
 )
 gtest_discover_tests(io_utils_test)
+
+add_executable(json_utils_test json_utils_test.cc json_utils.cc)
+target_include_directories(json_utils_test PRIVATE
+    ${CMAKE_SOURCE_DIR}
+    ${VXL_VNL_INCLUDE_DIR}
+)
+target_link_libraries(json_utils_test
+    GTest::gtest_main
+    Threads::Threads
+    vnl
+)
+gtest_discover_tests(json_utils_test)

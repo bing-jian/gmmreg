@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include "utils/io_utils.h"
+#include "utils/json_utils.h"
 #include "utils/match_utils.h"
 #include "utils/misc_utils.h"
 #include "utils/normalization_utils.h"

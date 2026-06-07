@@ -3,7 +3,10 @@
 #include <gtest/gtest.h>
 
 #include "gmmreg_api.h"
-#include "tests/fish_integration_helpers.h"
+#include "utils/io_utils.h"
+#include "utils/json_utils.h"
+
+using namespace gmmreg;
 
 class TpsKcFishTest : public ::testing::Test {
 protected:
@@ -30,8 +33,8 @@ TEST_F(TpsKcFishTest, OutputMatchesExpected) {
     for (size_t i = 0; i < ep.size(); ++i)
         EXPECT_NEAR(ap[i], ep[i], 1e-2) << "params[" << i << "] mismatch";
 
-    auto am = ParseTransformedModel(actual);
-    auto em = ParseTransformedModel(expected);
+    auto am = ParseMatrix(actual, "transformed_model");
+    auto em = ParseMatrix(expected, "transformed_model");
     ASSERT_EQ(am.size(), em.size()) << "transformed_model element count mismatch";
     for (size_t i = 0; i < em.size(); ++i)
         EXPECT_NEAR(am[i], em[i], 8.0e-4)

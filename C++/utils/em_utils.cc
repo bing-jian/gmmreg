@@ -41,7 +41,7 @@ void ComputeP(const vnl_matrix<T>& x, const vnl_matrix<T>& y, vnl_matrix<T>& P,
       E -= log(column_sum[i]);
     }
   } else {
-    P.empty();
+    P.fill(0);
   }
 }
 

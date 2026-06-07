@@ -12,8 +12,16 @@ class CoherentPointDrift : public Base {
   }
   virtual ~CoherentPointDrift() {}
 
+  // Set initial displacement params directly (no file needed).
+  // params: n x d matrix (zero = identity displacement).
+  // Call after Prepare() so that n_ and d_ are known.
+  void SetInitParams(const vnl_matrix<double>& params) {
+    param_all_ = params;
+  }
+
  private:
   void StartRegistration(vnl_vector<double>&) override;
+  void ApplyInitParams(const RegistrationInput&) override;
   void SetParam(vnl_vector<double>&);
   int SetInitParams(const char*) override;
   void SaveResults(const char*, const vnl_vector<double>&) override;

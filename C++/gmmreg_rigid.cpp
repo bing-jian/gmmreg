@@ -113,6 +113,14 @@ void RigidRegistration::StartRegistration(vnl_vector<double>& params) {
   }
 }
 
+void RigidRegistration::ApplyInitParams(const RegistrationInput& input) {
+  if (input.init_rigid.size() > 0) {
+    param_rigid_ = input.init_rigid;
+  } else {
+    SetInitRigid("");  // size + identity default based on d_
+  }
+}
+
 int RigidRegistration::SetInitParams(const char* f_config) {
   char f_init_rigid[80] = {0};
   GetPrivateProfileString(this->section_, "init_rigid", NULL, f_init_rigid, 80,

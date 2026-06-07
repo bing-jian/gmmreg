@@ -69,36 +69,54 @@ void Base::BuildTrees() {
 #endif
 }
 
-int Base::RunWithData(const vnl_matrix<double>& model,
-                      const vnl_matrix<double>& scene,
-                      bool normalize,
-                      const std::vector<double>& scales,
-                      const std::vector<int>& max_func_evals) {
-  if (scales.empty() || scales.size() != max_func_evals.size()) return -1;
-  if (SetModelAndScene(model, scene) < 0) return -1;
+int Base::Prepare(const RegistrationInput& input) {
+  if (input.scales.empty() ||
+      input.scales.size() != input.max_func_evals.size()) return -1;
+  if (SetModelAndScene(input.model, input.scene) < 0) return -1;
 
-  b_normalize_ = normalize ? 1 : 0;
+  b_normalize_ = input.normalize ? 1 : 0;
   if (b_normalize_) {
     Normalize(model_, model_centroid_, model_scale_);
     Normalize(scene_, scene_centroid_, scene_scale_);
   }
   BuildTrees();
 
-  level_ = static_cast<unsigned int>(scales.size());
-  v_scale_.assign(scales.begin(), scales.end());
-  v_func_evals_.assign(max_func_evals.begin(), max_func_evals.end());
+  if (input.ctrl_pts.rows() > 0) {
+    ctrl_pts_ = input.ctrl_pts;
+    n_ = ctrl_pts_.rows();
+    if (b_normalize_) {
+      Normalize(ctrl_pts_, model_centroid_, model_scale_);
+    }
+  } else {
+    // Default: model as ctrl_pts (already normalized above if b_normalize_).
+    SetCtrlPts("");
+  }
+
+  level_ = static_cast<unsigned int>(input.scales.size());
+  v_scale_.assign(input.scales.begin(), input.scales.end());
+  v_func_evals_.assign(input.max_func_evals.begin(), input.max_func_evals.end());
 
   PrepareBasisKernel();
-  SetInitParams("");  // empty filename → identity initial params
+  return 0;
+}
 
+int Base::RunRegistration() {
   vnl_vector<double> params;
   StartRegistration(params);
-
   if (b_normalize_) {
     DenormalizeAll();
   }
-
   return 0;
+}
+
+void Base::ApplyInitParams(const RegistrationInput& /*input*/) {
+  SetInitParams("");  // identity / zero default
+}
+
+int Base::RunWithData(const RegistrationInput& input) {
+  if (Prepare(input) < 0) return -1;
+  ApplyInitParams(input);
+  return RunRegistration();
 }
 
 int Base::PrepareInput(const char* f_config) {

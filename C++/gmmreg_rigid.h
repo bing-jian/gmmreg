@@ -16,11 +16,18 @@ class RigidRegistration: public Base {
     delete func_;
   }
 
+  // Set initial rigid params directly (no file needed).
+  // 2-D: [tx, ty, theta];  3-D: [q1, q2, q3, q4, tx, ty, tz].
+  void SetInitParams(const vnl_vector<double>& params) {
+    param_rigid_ = params;
+  }
+
  private:
   vnl_vector<double> param_rigid_;
   RigidFunc* func_;
 
   void StartRegistration(vnl_vector<double>&) override;
+  void ApplyInitParams(const RegistrationInput&) override;
   int SetInitRigid(const char*);
   void SetParam(vnl_vector<double>&);
   int SetInitParams(const char*) override;

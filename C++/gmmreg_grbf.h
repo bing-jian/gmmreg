@@ -17,6 +17,14 @@ class GrbfRegistration: public Base {
     delete func_;
   }
 
+  // Set initial GRBF params directly (no file needed).
+  // grbf: n x d matrix of zero-displacement weights.
+  // Call after Prepare() so that n_ and d_ are known.
+  void SetInitParams(const vnl_matrix<double>& grbf) {
+    param_grbf_ = grbf;
+    param_all_.set_size(n_, d_);
+  }
+
  protected:
   GaussianRadialBasisFunc *func_;
 
@@ -29,6 +37,7 @@ class GrbfRegistration: public Base {
   std::vector<int> v_affine;
 
   void StartRegistration(vnl_vector<double>&) override;
+  void ApplyInitParams(const RegistrationInput&) override;
   int SetInitGrbf(const char* filename);
   void SetParam(vnl_vector<double>& x0);
   void SetGrbf(const vnl_vector<double>&);

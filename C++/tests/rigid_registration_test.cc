@@ -164,15 +164,49 @@ class RigidRegistrationNoConfigTest
 
 TEST_P(RigidRegistrationNoConfigTest, RecoverRigidTransform) {
   gmmreg::RigidRegistration reg;
-  ASSERT_EQ(reg.RunWithData(model_, scene_,
-                             kNormalize != 0,
-                             {kSigma},
-                             {kMaxFuncEvals}), 0)
+
+  gmmreg::RegistrationInput input;
+  input.model          = model_;
+  input.scene          = scene_;
+  input.normalize      = (kNormalize != 0);
+  input.scales         = {kSigma};
+  input.max_func_evals = {kMaxFuncEvals};
+  // init_rigid left empty → identity start
+
+  ASSERT_EQ(reg.RunWithData(input), 0)
       << "RunWithData failed for " << GetParam().name;
 
   double rmse = ComputeRMSE(reg.GetTransformedModel(), scene_);
   EXPECT_LT(rmse, kRmseThreshold)
       << "RMSE = " << rmse << " for transform '" << GetParam().name << "'";
+}
+
+// Verify the Prepare + SetInitParams + RunRegistration split:
+// supply a non-identity initial guess close to the true transform.
+TEST_P(RigidRegistrationNoConfigTest, RecoverWithExplicitInitParams) {
+  const RigidParams& p = GetParam();
+  gmmreg::RigidRegistration reg;
+
+  gmmreg::RegistrationInput input;
+  input.model          = model_;
+  input.scene          = scene_;
+  input.normalize      = (kNormalize != 0);
+  input.scales         = {kSigma};
+  input.max_func_evals = {kMaxFuncEvals};
+  ASSERT_EQ(reg.Prepare(input), 0);
+
+  // Start the optimizer from a small perturbation of the true answer.
+  vnl_vector<double> init(3);
+  init[0] = p.tx * 0.8;
+  init[1] = p.ty * 0.8;
+  init[2] = p.theta * 0.8;
+  reg.SetInitParams(init);
+
+  ASSERT_EQ(reg.RunRegistration(), 0);
+
+  double rmse = ComputeRMSE(reg.GetTransformedModel(), scene_);
+  EXPECT_LT(rmse, kRmseThreshold)
+      << "RMSE = " << rmse << " for transform '" << p.name << "'";
 }
 
 INSTANTIATE_TEST_SUITE_P(

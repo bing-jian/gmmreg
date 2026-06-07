@@ -49,6 +49,14 @@ void GrbfRegistration::StartRegistration(vnl_vector<double>& params) {
   }
 }
 
+void GrbfRegistration::ApplyInitParams(const RegistrationInput& input) {
+  if (input.init_grbf.rows() > 0) {
+    SetInitParams(input.init_grbf);  // public matrix overload
+  } else {
+    SetInitParams("");  // file-based path with empty name → zero grbf params
+  }
+}
+
 int GrbfRegistration::SetInitParams(const char* f_config) {
   char f_init_grbf[80] = {0};
   GetPrivateProfileString(common_section_, "init_grbf", NULL,

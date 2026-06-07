@@ -147,6 +147,14 @@ void CoherentPointDrift::StartRegistration(vnl_vector<double>& params) {
   }
 }
 
+void CoherentPointDrift::ApplyInitParams(const RegistrationInput& input) {
+  if (input.init_params.rows() > 0) {
+    SetInitParams(input.init_params);  // public matrix overload
+  } else {
+    SetInitParams("");  // file-based path with empty name → zero displacement
+  }
+}
+
 int CoherentPointDrift::SetInitParams(const char* f_config) {
   char f_init_params[80] = {0};
   GetPrivateProfileString(common_section_, "init_params", NULL,

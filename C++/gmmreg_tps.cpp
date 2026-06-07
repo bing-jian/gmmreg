@@ -53,6 +53,14 @@ void TpsRegistration::StartRegistration(vnl_vector<double>& params) {
   }
 }
 
+void TpsRegistration::ApplyInitParams(const RegistrationInput& input) {
+  if (input.init_affine.rows() > 0 && input.init_tps.rows() > 0) {
+    SetInitParams(input.init_affine, input.init_tps);  // public matrix overload
+  } else {
+    SetInitParams("");  // file-based path with empty name → identity affine + zero tps
+  }
+}
+
 int TpsRegistration::SetInitParams(const char* f_config) {
   char f_init_affine[256] = {0}, f_init_tps[256] = {0};
   GetPrivateProfileString(common_section_, "init_affine", NULL,

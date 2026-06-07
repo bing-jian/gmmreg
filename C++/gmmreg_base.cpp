@@ -48,27 +48,94 @@ int Base::Initialize(const char* f_config) {
   return 0;
 }
 
+int Base::SetModelAndScene(const vnl_matrix<double>& model,
+                           const vnl_matrix<double>& scene) {
+  if (model.cols() != scene.cols()) return -1;
+  model_ = model;
+  scene_ = scene;
+  m_ = model_.rows();
+  d_ = model_.cols();
+  s_ = scene_.rows();
+  transformed_model_.set_size(m_, d_);
+  return 0;
+}
+
+void Base::BuildTrees() {
+#ifdef USE_KDTREE
+  scene_tree_.reset(new NanoflannTree<double>(scene_));
+  scene_tree_->tree.buildIndex();
+  model_tree_.reset(new NanoflannTree<double>(model_));
+  model_tree_->tree.buildIndex();
+#endif
+}
+
+int Base::Prepare(const RegistrationInput& input) {
+  if (input.scales.empty() ||
+      input.scales.size() != input.max_func_evals.size()) return -1;
+  if (SetModelAndScene(input.model, input.scene) < 0) return -1;
+
+  b_normalize_ = input.normalize ? 1 : 0;
+  if (b_normalize_) {
+    Normalize(model_, model_centroid_, model_scale_);
+    Normalize(scene_, scene_centroid_, scene_scale_);
+  }
+  BuildTrees();
+
+  if (input.ctrl_pts.rows() > 0) {
+    ctrl_pts_ = input.ctrl_pts;
+    n_ = ctrl_pts_.rows();
+    if (b_normalize_) {
+      Normalize(ctrl_pts_, model_centroid_, model_scale_);
+    }
+  } else {
+    // Default: model as ctrl_pts (already normalized above if b_normalize_).
+    SetCtrlPts("");
+  }
+
+  level_ = static_cast<unsigned int>(input.scales.size());
+  v_scale_.assign(input.scales.begin(), input.scales.end());
+  v_func_evals_.assign(input.max_func_evals.begin(), input.max_func_evals.end());
+
+  PrepareBasisKernel();
+  return 0;
+}
+
+int Base::RunRegistration() {
+  vnl_vector<double> params;
+  StartRegistration(params);
+  if (b_normalize_) {
+    DenormalizeAll();
+  }
+  return 0;
+}
+
+void Base::ApplyInitParams(const RegistrationInput& /*input*/) {
+  SetInitParams("");  // identity / zero default
+}
+
+int Base::RunWithData(const RegistrationInput& input) {
+  if (Prepare(input) < 0) return -1;
+  ApplyInitParams(input);
+  return RunRegistration();
+}
+
 int Base::PrepareInput(const char* f_config) {
   char f_model[256] = {0}, f_scene[256] = {0};
   GetPrivateProfileString(common_section_, "model", NULL,
       f_model, 256, f_config);
-  if (LoadMatrixFromTxt(f_model, model_) < 0) {
+  vnl_matrix<double> model;
+  if (LoadMatrixFromTxt(f_model, model) < 0) {
     return -1;
   }
 
   GetPrivateProfileString(common_section_, "scene", NULL,
       f_scene, 256, f_config);
-  if (LoadMatrixFromTxt(f_scene, scene_) < 0) {
+  vnl_matrix<double> scene;
+  if (LoadMatrixFromTxt(f_scene, scene) < 0) {
     return -1;
   }
 
-  m_ = model_.rows();
-  d_ = model_.cols();
-  transformed_model_.set_size(m_, d_);
-  s_ = scene_.rows();
-  assert(scene_.cols() == d_);
-
-  return 0;
+  return SetModelAndScene(model, scene);
 }
 
 int Base::SetCtrlPts(const char* filename) {
@@ -170,12 +237,7 @@ void Base::PrepareCommonOptions(const char* f_config) {
     Normalize(scene_, scene_centroid_, scene_scale_);
     Normalize(ctrl_pts_, model_centroid_, model_scale_);
   }
-#ifdef USE_KDTREE
-  scene_tree_.reset(new NanoflannTree<double>(scene_));
-  scene_tree_->tree.buildIndex();
-  model_tree_.reset(new NanoflannTree<double>(model_));
-  model_tree_->tree.buildIndex();
-#endif
+  BuildTrees();
 }
 
 void Base::SaveJsonOutput(const char* f_config,

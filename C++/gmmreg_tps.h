@@ -17,6 +17,18 @@ class TpsRegistration: public Base {
     delete func_;
   }
 
+  // Set initial TPS params directly (no file needed).
+  // affine: (d+1) x d;  tps: (n-d-1) x d.
+  // Call after Prepare() so that n_ and d_ are known.
+  void SetInitParams(const vnl_matrix<double>& affine,
+                     const vnl_matrix<double>& tps) {
+    param_affine_ = affine;
+    param_tps_    = tps;
+    param_all_.set_size(n_, d_);
+    param_all_.update(param_affine_);
+    param_all_.update(param_tps_, d_ + 1);
+  }
+
  protected:
   ThinPlateSplineFunc* func_;
 
@@ -33,6 +45,7 @@ class TpsRegistration: public Base {
   std::vector<int> v_affine_;
 
   void StartRegistration(vnl_vector<double>&) override;
+  void ApplyInitParams(const RegistrationInput&) override;
   int SetInitAffine(const char* filename);
   int SetInitTps(const char* filename);
   void SetParam(vnl_vector<double>& x0);

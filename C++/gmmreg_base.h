@@ -20,6 +20,31 @@
 
 namespace gmmreg {
 
+// All data needed to run a registration without a config file.
+// Unused init-param fields stay size-0 (unset); the concrete class uses its
+// own field and falls back to identity / zero when nothing is supplied.
+struct RegistrationInput {
+  // Point sets (required).
+  vnl_matrix<double> model;
+  vnl_matrix<double> scene;
+
+  // Control points (optional). Empty → use model as ctrl_pts.
+  vnl_matrix<double> ctrl_pts;
+
+  // Optimization options.
+  bool normalize = true;
+  std::vector<double> scales        = {1.0};
+  std::vector<int>    max_func_evals = {100};
+
+  // Init params: set the one field relevant to the registration method.
+  // Leave empty (size 0) to start from identity / zero displacement.
+  vnl_vector<double> init_rigid;   // RigidRegistration: [tx,ty,theta] or 7-D
+  vnl_matrix<double> init_affine;  // TpsRegistration: (d+1) x d
+  vnl_matrix<double> init_tps;     // TpsRegistration: (n-d-1) x d
+  vnl_matrix<double> init_grbf;    // GrbfRegistration: n x d
+  vnl_matrix<double> init_params;  // CoherentPointDrift: n x d
+};
+
 class Base {
  public:
   Base() {
@@ -27,6 +52,34 @@ class Base {
   }
 
   void Run(const char* f_config);
+
+  // Set model and scene directly (bypasses file I/O; useful for testing).
+  // Returns 0 on success, -1 if model and scene have different column counts.
+  int SetModelAndScene(const vnl_matrix<double>& model,
+                       const vnl_matrix<double>& scene);
+
+  // (Re)build kd-trees from the current model_ and scene_.
+  // Call after SetModelAndScene or after any in-place data change.
+  void BuildTrees();
+
+  // Prepare data and optimization options without running registration.
+  // Handles normalization, kd-trees, ctrl_pts, and basis kernel.
+  // Returns 0 on success, -1 on bad arguments.
+  int Prepare(const RegistrationInput& input);
+
+  // Run registration using whatever init params are currently set.
+  // Call Prepare() and a concrete-class SetInitParams() overload first.
+  int RunRegistration();
+
+  // Convenience: Prepare + ApplyInitParams + RunRegistration in one call.
+  // Returns 0 on success, -1 on bad arguments.
+  int RunWithData(const RegistrationInput& input);
+
+  // Access the registered (and, if normalize=true, denormalized) model.
+  const vnl_matrix<double>& GetTransformedModel() const {
+    return transformed_model_;
+  }
+
   virtual void PerformTransform(const vnl_vector<double>&) = 0;
   virtual double BendingEnergy() = 0;  // serving as a regularization term
   virtual void ComputeGradient(const double lambda,
@@ -87,6 +140,10 @@ class Base {
   virtual void SaveResults(const char* filename,
       const vnl_vector<double>&) = 0;
   virtual void StartRegistration(vnl_vector<double>& params) = 0;
+
+  // Apply init params from a RegistrationInput. Subclasses override to read
+  // their specific field; the default falls back to file-based identity init.
+  virtual void ApplyInitParams(const RegistrationInput& input);
 };
 
 }  // namespace gmmreg

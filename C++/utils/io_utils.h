@@ -3,20 +3,27 @@
 
 #include <fstream>
 #include <iostream>
+#include <string>
 
-#include <vnl/vnl_vector.h>
 #include <vnl/vnl_matrix.h>
+#include <vnl/vnl_vector.h>
 
 namespace gmmreg {
+
+// Read entire contents of a file into a string.
+inline std::string ReadAll(const char* filename) {
+  std::ifstream f(filename);
+  return {std::istreambuf_iterator<char>(f), {}};
+}
 
 template<typename T>
 int LoadMatrixFromTxt(const char* filename, vnl_matrix<T>& matrix);
 
 template<typename T>
-void SaveMatrixToAsciiFile(const char * filename, const vnl_matrix<T>& x);
+void SaveMatrixToAsciiFile(const char* filename, const vnl_matrix<T>& x);
 
 template<typename T>
-void SaveVectorToAsciiFile(const char * filename, const vnl_vector<T>& x);
+void SaveVectorToAsciiFile(const char* filename, const vnl_vector<T>& x);
 
 
 template<typename T>
@@ -37,7 +44,7 @@ int LoadMatrixFromTxt(const char* filename, vnl_matrix<T>& matrix) {
 }
 
 template<typename T>
-void SaveMatrixToAsciiFile(const char * filename, const vnl_matrix<T>& x) {
+void SaveMatrixToAsciiFile(const char* filename, const vnl_matrix<T>& x) {
   if (strlen(filename) > 0) {
     std::ofstream outfile(filename, std::ios_base::out);
     x.print(outfile);
@@ -45,7 +52,7 @@ void SaveMatrixToAsciiFile(const char * filename, const vnl_matrix<T>& x) {
 }
 
 template<typename T>
-void SaveVectorToAsciiFile(const char * filename, const vnl_vector<T>& x) {
+void SaveVectorToAsciiFile(const char* filename, const vnl_vector<T>& x) {
   if (strlen(filename) > 0) {
     std::ofstream outfile(filename, std::ios_base::out);
     outfile << x;
@@ -54,4 +61,4 @@ void SaveVectorToAsciiFile(const char * filename, const vnl_vector<T>& x) {
 
 }  // namespace gmmreg
 
-#endif // GMMREG_UTILS_IO_UTILS_H_
+#endif  // GMMREG_UTILS_IO_UTILS_H_

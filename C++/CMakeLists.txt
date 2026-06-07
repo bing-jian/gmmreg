@@ -111,6 +111,7 @@ SET(GMMREG_API_SRCS
     gmmreg_tps.cpp
     gmmreg_tps_func.cpp
     utils/misc_utils.cc
+    utils/json_utils.cc
 )
 file(GLOB_RECURSE GMMREG_API_HDRS *.h)
 
@@ -175,3 +176,51 @@ target_link_libraries(hello_gtest GTest::gtest_main)
 gtest_discover_tests(hello_gtest)
 
 add_subdirectory(utils)
+
+add_executable(tps_l2_test tests/tps_l2_test.cc)
+target_include_directories(tps_l2_test PRIVATE ${VXL_VNL_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(tps_l2_test
+    GTest::gtest_main
+    Threads::Threads
+    gmmreg_api
+)
+gtest_discover_tests(tps_l2_test
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/testdata
+    PROPERTIES RESOURCE_LOCK fish_full_testdata
+)
+
+add_executable(tps_kc_test tests/tps_kc_test.cc)
+target_include_directories(tps_kc_test PRIVATE ${VXL_VNL_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(tps_kc_test
+    GTest::gtest_main
+    Threads::Threads
+    gmmreg_api
+)
+gtest_discover_tests(tps_kc_test
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/testdata
+    PROPERTIES RESOURCE_LOCK fish_full_testdata
+)
+
+add_executable(grbf_l2_test tests/grbf_l2_test.cc)
+target_include_directories(grbf_l2_test PRIVATE ${VXL_VNL_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(grbf_l2_test
+    GTest::gtest_main
+    Threads::Threads
+    gmmreg_api
+)
+gtest_discover_tests(grbf_l2_test
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/testdata
+    PROPERTIES RESOURCE_LOCK fish_full_testdata
+)
+
+add_executable(grbf_kc_test tests/grbf_kc_test.cc)
+target_include_directories(grbf_kc_test PRIVATE ${VXL_VNL_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(grbf_kc_test
+    GTest::gtest_main
+    Threads::Threads
+    gmmreg_api
+)
+gtest_discover_tests(grbf_kc_test
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/testdata
+    PROPERTIES RESOURCE_LOCK fish_full_testdata
+)

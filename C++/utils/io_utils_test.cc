@@ -6,7 +6,7 @@
 #include <vnl/vnl_matrix.h>
 #include <vnl/vnl_vector.h>
 
-#include "io_utils.h"
+#include "utils/io_utils.h"
 
 using namespace gmmreg;
 
@@ -19,7 +19,6 @@ struct TempFile {
 
 // ── LoadMatrixFromTxt ─────────────────────────────────────────────────────────
 
-// Valid file: returns row count and fills matrix with correct values
 TEST(LoadMatrixFromTxt, ValidFileParsedCorrectly) {
     const char* path = "/tmp/gmmreg_io_load_valid.txt";
     TempFile tf(path);
@@ -40,7 +39,6 @@ TEST(LoadMatrixFromTxt, ValidFileParsedCorrectly) {
     EXPECT_NEAR(m(1, 2), 6.0, 1e-10);
 }
 
-// Single-row matrix
 TEST(LoadMatrixFromTxt, SingleRowMatrix) {
     const char* path = "/tmp/gmmreg_io_load_single.txt";
     TempFile tf(path);
@@ -52,7 +50,6 @@ TEST(LoadMatrixFromTxt, SingleRowMatrix) {
     EXPECT_NEAR(m(0, 1), 8.5, 1e-10);
 }
 
-// Scientific-notation values (format used by real project data files)
 TEST(LoadMatrixFromTxt, ScientificNotation) {
     const char* path = "/tmp/gmmreg_io_load_sci.txt";
     TempFile tf(path);
@@ -63,24 +60,21 @@ TEST(LoadMatrixFromTxt, ScientificNotation) {
     EXPECT_NEAR(m(1, 1), 6.149e-01, 1e-6);
 }
 
-// Missing file → returns -1
 TEST(LoadMatrixFromTxt, MissingFileReturnsMinusOne) {
     vnl_matrix<double> m;
     EXPECT_EQ(LoadMatrixFromTxt("/tmp/gmmreg_nonexistent_xyz.txt", m), -1);
 }
 
-// Empty file → returns -1 (read_ascii fails on empty stream)
 TEST(LoadMatrixFromTxt, EmptyFileReturnsMinusOne) {
     const char* path = "/tmp/gmmreg_io_load_empty.txt";
     TempFile tf(path);
-    { std::ofstream f(path); }  // create empty file
+    { std::ofstream f(path); }
     vnl_matrix<double> m;
     EXPECT_EQ(LoadMatrixFromTxt(path, m), -1);
 }
 
 // ── SaveMatrixToAsciiFile ─────────────────────────────────────────────────────
 
-// Round-trip: saved matrix loads back with matching values
 TEST(SaveMatrixToAsciiFile, RoundTripPreservesValues) {
     const char* path = "/tmp/gmmreg_io_save_matrix.txt";
     TempFile tf(path);
@@ -100,7 +94,6 @@ TEST(SaveMatrixToAsciiFile, RoundTripPreservesValues) {
                 << "mismatch at (" << i << ", " << d << ")";
 }
 
-// Empty filename → no crash, no file created
 TEST(SaveMatrixToAsciiFile, EmptyFilenameIsNoOp) {
     vnl_matrix<double> m(2, 2);
     m.fill(1.0);
@@ -109,7 +102,6 @@ TEST(SaveMatrixToAsciiFile, EmptyFilenameIsNoOp) {
 
 // ── SaveVectorToAsciiFile ─────────────────────────────────────────────────────
 
-// Saved vector values can be read back from file
 TEST(SaveVectorToAsciiFile, WritesReadableValues) {
     const char* path = "/tmp/gmmreg_io_save_vector.txt";
     TempFile tf(path);
@@ -129,8 +121,20 @@ TEST(SaveVectorToAsciiFile, WritesReadableValues) {
     EXPECT_NEAR(read_back[3],  3.14, 1e-5);
 }
 
-// Empty filename → no crash, no file created
 TEST(SaveVectorToAsciiFile, EmptyFilenameIsNoOp) {
     vnl_vector<double> v(3, 1.0);
     EXPECT_NO_THROW(SaveVectorToAsciiFile("", v));
+}
+
+// ── ReadAll ───────────────────────────────────────────────────────────────────
+
+TEST(ReadAll, ReadsFileContents) {
+    const char* path = "/tmp/gmmreg_io_readall.txt";
+    TempFile tf(path);
+    { std::ofstream f(path); f << "hello\nworld\n"; }
+    EXPECT_EQ(ReadAll(path), "hello\nworld\n");
+}
+
+TEST(ReadAll, MissingFileReturnsEmpty) {
+    EXPECT_TRUE(ReadAll("/tmp/gmmreg_nonexistent_readall.txt").empty());
 }

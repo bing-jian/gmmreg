@@ -5,7 +5,7 @@
 #include "gmmreg_api.h"
 #include "tests/fish_integration_helpers.h"
 
-class TpsL2FishTest : public ::testing::Test {
+class TpsKcFishTest : public ::testing::Test {
 protected:
     void TearDown() override {
         std::remove("output.json");
@@ -15,14 +15,14 @@ protected:
     }
 };
 
-TEST_F(TpsL2FishTest, OutputMatchesExpected) {
-    ASSERT_EQ(gmmreg_api("fish_full.ini", "tps_l2"), 0)
-        << "gmmreg_api returned non-zero for tps_l2";
+TEST_F(TpsKcFishTest, OutputMatchesExpected) {
+    ASSERT_EQ(gmmreg_api("fish_full.ini", "tps_kc"), 0)
+        << "gmmreg_api returned non-zero for tps_kc";
 
     std::string actual   = ReadAll("output.json");
-    std::string expected = ReadAll("expected_output/fish_full/tps_l2.json");
+    std::string expected = ReadAll("expected_output/fish_full/tps_kc.json");
     ASSERT_FALSE(actual.empty())   << "output.json was not created";
-    ASSERT_FALSE(expected.empty()) << "expected_output/fish_full/tps_l2.json not found";
+    ASSERT_FALSE(expected.empty()) << "expected_output/fish_full/tps_kc.json not found";
 
     auto ap = ParseFlatArray(actual,   "params");
     auto ep = ParseFlatArray(expected, "params");

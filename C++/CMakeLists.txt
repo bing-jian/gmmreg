@@ -185,4 +185,17 @@ target_link_libraries(tps_l2_test
 )
 gtest_discover_tests(tps_l2_test
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/testdata
+    PROPERTIES RESOURCE_LOCK fish_full_testdata
+)
+
+add_executable(tps_kc_test tests/tps_kc_test.cc)
+target_include_directories(tps_kc_test PRIVATE ${VXL_VNL_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(tps_kc_test
+    GTest::gtest_main
+    Threads::Threads
+    gmmreg_api
+)
+gtest_discover_tests(tps_kc_test
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/testdata
+    PROPERTIES RESOURCE_LOCK fish_full_testdata
 )

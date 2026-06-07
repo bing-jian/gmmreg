@@ -195,7 +195,8 @@ T FastSelfGaussTransform(const vnl_matrix<T>& pts,
   const T* A = pts.data_block();
 
   int total_edges = edges.size();
-  #pragma omp parallel for reduction(+ : cross_term)
+  // No omp parallel here: grad[i] and grad[j] are written by multiple edges
+  // sharing the same endpoint, causing a data race under parallel execution.
   for (int k = 0; k < total_edges; ++k) {
     int i = edges[k].first;
     int j = edges[k].second;

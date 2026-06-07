@@ -170,6 +170,8 @@ find_package(Threads REQUIRED)
 find_package(GTest REQUIRED)
 include(GoogleTest)
 
-add_executable(hello_gtest tests/hello_gtest.cpp)
+add_executable(hello_gtest tests/hello_gtest.cc)
 target_link_libraries(hello_gtest GTest::gtest_main)
 gtest_discover_tests(hello_gtest)
+
+add_subdirectory(utils)

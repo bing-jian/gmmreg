@@ -2,7 +2,7 @@
 #define GMMREG_UTILS_DOWNSAMPLE_UTILS_H_
 
 #include <vnl/vnl_matrix.h>
-#include "../fgt_utils.h"
+#include "fgt_utils.h"
 
 namespace gmmreg {
 

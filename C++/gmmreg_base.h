@@ -15,7 +15,7 @@
 #define USE_KDTREE
 
 #ifdef USE_KDTREE
-#include "fgt_utils.h"
+#include "utils/fgt_utils.h"
 #endif
 
 namespace gmmreg {

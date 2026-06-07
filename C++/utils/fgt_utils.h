@@ -206,8 +206,8 @@ T FastSelfGaussTransform(const vnl_matrix<T>& pts,
     }
     T cost_ij = std::exp(-dist_ij * inv_h2);
     for (int d = 0; d < dim; ++d) {
-      grad[i * dim + d] -= cost_ij * (A[i * dim + d] - A[j * dim + d]);
-      grad[j * dim + d] -= cost_ij * (A[j * dim + d] - A[i * dim + d]);
+      grad[i * dim + d] -= cost_ij * 2.0 * (A[i * dim + d] - A[j * dim + d]);
+      grad[j * dim + d] -= cost_ij * 2.0 * (A[j * dim + d] - A[i * dim + d]);
     }
     cross_term += cost_ij;
   }

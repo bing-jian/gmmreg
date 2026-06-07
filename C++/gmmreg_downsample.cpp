@@ -4,7 +4,7 @@
 
 #include <vnl/vnl_matrix.h>
 
-#include "fgt_utils.h"
+#include "utils/fgt_utils.h"
 #include "utils/downsample_utils.h"
 
 using std::cerr;

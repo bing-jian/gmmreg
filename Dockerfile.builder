@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
     cmake \
     git \
     libgomp1 \
+    libgtest-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Build VXL (provides vnl/vnl_algo/vcl)

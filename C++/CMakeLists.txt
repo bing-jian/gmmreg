@@ -1,7 +1,6 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
-IF(COMMAND cmake_policy)
-    cmake_policy(SET CMP0003 NEW)
-ENDIF(COMMAND cmake_policy)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.10...3.28)
+cmake_policy(SET CMP0003 NEW)
+cmake_policy(SET CMP0012 NEW)
 
 PROJECT(GMMREG)
 SET(CMAKE_CXX_STANDARD 17)
@@ -164,3 +163,15 @@ ADD_EXECUTABLE(gmmreg_downsample gmmreg_downsample.cpp)
 TARGET_LINK_LIBRARIES(gmmreg_downsample vnl)
 
 #ENDIF( VXL_VNL_FOUND )
+
+# Unit tests using GoogleTest
+enable_testing()
+find_package(Threads REQUIRED)
+find_package(GTest REQUIRED)
+include(GoogleTest)
+
+add_executable(hello_gtest tests/hello_gtest.cc)
+target_link_libraries(hello_gtest GTest::gtest_main)
+gtest_discover_tests(hello_gtest)
+
+add_subdirectory(utils)

@@ -248,3 +248,12 @@ gtest_discover_tests(em_grbf_test
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/testdata
     PROPERTIES RESOURCE_LOCK fish_full_testdata
 )
+
+add_executable(gmmreg_rigid_func_test tests/gmmreg_rigid_func_test.cc)
+target_include_directories(gmmreg_rigid_func_test PRIVATE ${VXL_VNL_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(gmmreg_rigid_func_test
+    GTest::gtest_main
+    Threads::Threads
+    gmmreg_api
+)
+gtest_discover_tests(gmmreg_rigid_func_test)

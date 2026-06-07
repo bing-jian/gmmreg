@@ -93,3 +93,27 @@ target_link_libraries(match_utils_test
     vnl
 )
 gtest_discover_tests(match_utils_test)
+
+# misc_utils.cc is a regular compiled file (not template header-only),
+# so it is included directly as a source rather than linked via a library.
+add_executable(misc_utils_test misc_utils_test.cc misc_utils.cc)
+target_include_directories(misc_utils_test PRIVATE
+    ${CMAKE_SOURCE_DIR}
+)
+target_link_libraries(misc_utils_test
+    GTest::gtest_main
+    Threads::Threads
+)
+gtest_discover_tests(misc_utils_test)
+
+add_executable(io_utils_test io_utils_test.cc)
+target_include_directories(io_utils_test PRIVATE
+    ${CMAKE_SOURCE_DIR}
+    ${VXL_VNL_INCLUDE_DIR}
+)
+target_link_libraries(io_utils_test
+    GTest::gtest_main
+    Threads::Threads
+    vnl
+)
+gtest_discover_tests(io_utils_test)

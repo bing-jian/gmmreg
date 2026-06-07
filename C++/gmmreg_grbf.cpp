@@ -17,7 +17,7 @@ namespace gmmreg {
 
 int GrbfRegistration::PrepareInput(const char* f_config) {
   Base::PrepareInput(f_config);
-  char f_ctrl_pts[80] = {0};
+  char f_ctrl_pts[256] = {0};
   GetPrivateProfileString(common_section_, "ctrl_pts", NULL,
       f_ctrl_pts, 80, f_config);
   if (SetCtrlPts(f_ctrl_pts) < 0) {
@@ -116,7 +116,7 @@ void GrbfRegistration::PrepareOwnOptions(const char* f_config) {
   GetPrivateProfileString(section_, "lambda", NULL, s_lambda, 255, f_config);
   utils::parse_tokens(s_lambda, delims, v_lambda);
   if (v_lambda.size() < level_) {
-    std::cerr << " too many levels " << std::endl;
+    std::cerr << " Need more 'lambda' parameters. " << std::endl;
     exit(1);
   }
 }

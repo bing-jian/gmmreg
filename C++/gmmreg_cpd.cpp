@@ -149,7 +149,7 @@ void CoherentPointDrift::StartRegistration(vnl_vector<double>& params) {
 
 int CoherentPointDrift::SetInitParams(const char* f_config) {
   char f_init_params[80] = {0};
-  GetPrivateProfileString("Files", "init_params", NULL,
+  GetPrivateProfileString(common_section_, "init_params", NULL,
       f_init_params, 80, f_config);
   if (strlen(f_init_params) == 0) {
     assert(n_ > 0);

@@ -122,17 +122,21 @@ int RigidRegistration::SetInitParams(const char* f_config) {
 }
 
 int RigidRegistration::SetInitRigid(const char* filename) {
-  // TODO(bing-jian): *really* set initial rigid parameter from given file.
   if (this->d_ == 2) {
     param_rigid_.set_size(3);
     param_rigid_.fill(0);
-    param_rigid_[0] = 0;
-    param_rigid_[1] = 0;
-    param_rigid_[2] = 0;
   } else if (this->d_ == 3) {
     param_rigid_.set_size(7);
     param_rigid_.fill(0);
     param_rigid_[3] = 1;  // q = (0, 0, 0, 1) for eye(3)
+  }
+  if (strlen(filename) > 0) {
+    std::ifstream infile(filename, std::ios_base::in);
+    if (infile.is_open()) {
+      infile >> param_rigid_;
+    } else {
+      std::cerr << "unable to open init_rigid file " << filename << std::endl;
+    }
   }
   return 0;
 }

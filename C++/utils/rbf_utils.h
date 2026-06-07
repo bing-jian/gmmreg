@@ -2,6 +2,7 @@
 #define GMMREG_UTILS_RBF_UTILS_H_
 
 #include <vnl/vnl_matrix.h>
+#include <vnl/vnl_vector.h>
 
 namespace gmmreg {
 

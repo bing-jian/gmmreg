@@ -17,7 +17,8 @@ int SelectPoints(const vnl_matrix<T>& pts,
 
 template<typename T>
 void PickIndices(const vnl_matrix<T>& dist,
-    std::vector<int>& row_index, std::vector<int>& col_index);
+    std::vector<int>& row_index, std::vector<int>& col_index,
+    const T& threshold);
 
 template<typename T>
 void FindNearestPairs(const vnl_matrix<T>& dist,

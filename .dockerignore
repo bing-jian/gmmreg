@@ -1,0 +1,5 @@
+C++/build/
+expts/tmp/
+**/__pycache__/
+**/*.pyc
+data/

@@ -25,7 +25,7 @@ def downsampled_subset(x, num):
 
 # Run pairwise rigid registration using specified binary and configuration.
 def run_rigid_pairwise(gmmreg_exe, model, scene, f_config):
-    if type(model) == type('abc'):
+    if isinstance(model, str):
         model = np.loadtxt(model)
         scene = np.loadtxt(scene)
     if model.shape[0] > 5000:

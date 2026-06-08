@@ -18,7 +18,7 @@ Usage
         --data_dir /path/to/lounge \\
         --output_dir /path/to/output \\
         [--voxel_size 0.065] \\
-        [--skip_existing]
+        [--overwrite]
 """
 
 import argparse
@@ -75,11 +75,17 @@ def downsample(pts: np.ndarray, voxel_size: float) -> np.ndarray:
 # I/O
 # ---------------------------------------------------------------------------
 
-def save_gt_poses(poses: dict, gt_dir: str) -> None:
+def save_gt_poses(poses: dict, gt_dir: str, overwrite: bool = False) -> int:
+    """Write per-frame GT pose files. Returns count of files written."""
     os.makedirs(gt_dir, exist_ok=True)
+    n_written = 0
     for idx, mat in poses.items():
         path = os.path.join(gt_dir, f'gt_pose_{idx + 1:05d}.txt')
+        if not overwrite and os.path.exists(path):
+            continue
         np.savetxt(path, mat, fmt='%.10f')
+        n_written += 1
+    return n_written
 
 
 def process_frame(depth_path: str, voxel_size: float):
@@ -104,8 +110,8 @@ def main() -> None:
                         help='Destination for pclouds/ and gt_poses/ subdirectories')
     parser.add_argument('--voxel_size', type=float, default=0.065,
                         help='Voxel down-sample size in metres (default: 0.065)')
-    parser.add_argument('--skip_existing', action='store_true',
-                        help='Skip frames whose output .txt already exists (allows resuming)')
+    parser.add_argument('--overwrite', action='store_true',
+                        help='Re-process frames even if output files already exist')
     args = parser.parse_args()
 
     pcloud_dir = os.path.join(args.output_dir, 'pclouds')
@@ -116,8 +122,9 @@ def main() -> None:
     trajectory_path = os.path.join(args.data_dir, 'lounge_trajectory.log')
     print(f'Parsing ground-truth trajectory: {trajectory_path}')
     poses = parse_trajectory(trajectory_path)
-    save_gt_poses(poses, gt_dir)
-    print(f'Wrote {len(poses)} GT poses → {gt_dir}')
+    n_gt_written = save_gt_poses(poses, gt_dir, overwrite=args.overwrite)
+    n_gt_skipped = len(poses) - n_gt_written
+    print(f'GT poses: wrote={n_gt_written}  skipped={n_gt_skipped}  → {gt_dir}')
 
     # --- Point clouds -------------------------------------------------------
     depth_dir = os.path.join(args.data_dir, 'depth')
@@ -127,7 +134,7 @@ def main() -> None:
         frame_no = i + 1                    # 1-based, matches depth filenames
         out_path = os.path.join(pcloud_dir, f'pcloud_{frame_no:05d}.txt')
 
-        if args.skip_existing and os.path.exists(out_path):
+        if not args.overwrite and os.path.exists(out_path):
             n_skipped += 1
             continue
 

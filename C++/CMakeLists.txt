@@ -112,6 +112,7 @@ SET(GMMREG_API_SRCS
     gmmreg_tps_func.cpp
     utils/misc_utils.cc
     utils/json_utils.cc
+    utils/transform_utils.cc
 )
 file(GLOB_RECURSE GMMREG_API_HDRS *.h)
 

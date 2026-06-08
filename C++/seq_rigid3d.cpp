@@ -27,7 +27,6 @@
 
 #include <algorithm>
 #include <chrono>
-#include <cmath>
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
@@ -48,6 +47,7 @@
 #include "gmmreg_rigid.h"
 #include "utils/io_utils.h"
 #include "utils/misc_utils.h"
+#include "utils/transform_utils.h"
 
 namespace fs = std::filesystem;
 
@@ -144,46 +144,6 @@ static int DetectLastFrame(const std::string& dir) {
     } catch (...) {}
   }
   return last;
-}
-
-// ── Geometry helpers ──────────────────────────────────────────────────────────
-
-// Relative transform T_tgt^{-1} * T_src for rigid T = [R | t; 0 | 1].
-// Uses R^{-1} = R^T (no general matrix inverse needed).
-static vnl_matrix<double> RelativeTransform(const vnl_matrix<double>& T_src,
-                                            const vnl_matrix<double>& T_tgt) {
-  const vnl_matrix<double> R_src = T_src.extract(3, 3, 0, 0);
-  const vnl_matrix<double> R_tgt = T_tgt.extract(3, 3, 0, 0);
-  const vnl_vector<double> t_src(T_src.get_column(3).extract(3));
-  const vnl_vector<double> t_tgt(T_tgt.get_column(3).extract(3));
-
-  const vnl_matrix<double> R_rel = R_tgt.transpose() * R_src;
-  const vnl_vector<double> t_rel = R_tgt.transpose() * (t_src - t_tgt);
-
-  vnl_matrix<double> T(4, 4, 0.0);
-  T.update(R_rel, 0, 0);
-  for (int i = 0; i < 3; ++i) T(i, 3) = t_rel[i];
-  T(3, 3) = 1.0;
-  return T;
-}
-
-// Geodesic rotation error in degrees between two 4×4 rigid transforms.
-static double RotationErrorDeg(const vnl_matrix<double>& T_est,
-                                const vnl_matrix<double>& T_ref) {
-  const vnl_matrix<double> R_est = T_est.extract(3, 3, 0, 0);
-  const vnl_matrix<double> R_ref = T_ref.extract(3, 3, 0, 0);
-  const vnl_matrix<double> R     = R_ref.transpose() * R_est;
-  double cos_theta = (R(0, 0) + R(1, 1) + R(2, 2) - 1.0) * 0.5;
-  cos_theta = std::max(-1.0, std::min(1.0, cos_theta));
-  return std::acos(cos_theta) * 180.0 / M_PI;
-}
-
-// Rotation magnitude (angle from identity) of a 4×4 rigid transform.
-static double RotationMagnitudeDeg(const vnl_matrix<double>& T) {
-  const vnl_matrix<double> R = T.extract(3, 3, 0, 0);
-  double cos_theta = (R(0, 0) + R(1, 1) + R(2, 2) - 1.0) * 0.5;
-  cos_theta = std::max(-1.0, std::min(1.0, cos_theta));
-  return std::acos(cos_theta) * 180.0 / M_PI;
 }
 
 // ── Stats helpers ─────────────────────────────────────────────────────────────
@@ -443,10 +403,10 @@ int main(int argc, char* argv[]) {
       vnl_matrix<double> gt_src, gt_tgt;
       if (gmmreg::LoadMatrixFromTxt(GtPosePath(cfg.gt_dir, src).c_str(), gt_src) > 0 &&
           gmmreg::LoadMatrixFromTxt(GtPosePath(cfg.gt_dir, tgt).c_str(), gt_tgt) > 0) {
-        const vnl_matrix<double> T_gt_rel = RelativeTransform(gt_src, gt_tgt);
-        const double rot_err = RotationErrorDeg(matrix, T_gt_rel);
+        const vnl_matrix<double> T_gt_rel = gmmreg::RelativeTransform(gt_src, gt_tgt);
+        const double rot_err = gmmreg::RotationErrorDeg(matrix, T_gt_rel);
         v_rot_errors.push_back(rot_err);
-        v_gt_diffs.push_back(RotationMagnitudeDeg(T_gt_rel));
+        v_gt_diffs.push_back(gmmreg::RotationMagnitudeDeg(T_gt_rel));
         summary << "," << std::setprecision(4) << rot_err;
       } else {
         summary << ",nan";

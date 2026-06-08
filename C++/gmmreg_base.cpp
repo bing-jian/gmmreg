@@ -87,7 +87,7 @@ int Base::Prepare(const RegistrationInput& input) {
     if (b_normalize_) {
       Normalize(ctrl_pts_, model_centroid_, model_scale_);
     }
-  } else {
+  } else if (NeedsCtrlPts()) {
     // Default: model as ctrl_pts (already normalized above if b_normalize_).
     SetCtrlPts("");
   }

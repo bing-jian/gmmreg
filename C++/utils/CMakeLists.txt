@@ -129,3 +129,17 @@ target_link_libraries(json_utils_test
     vnl
 )
 gtest_discover_tests(json_utils_test)
+
+# transform_utils.cc is a regular compiled file (non-template 4×4 rigid
+# transform utilities), so it is included directly as a source.
+add_executable(transform_utils_test transform_utils_test.cc transform_utils.cc)
+target_include_directories(transform_utils_test PRIVATE
+    ${CMAKE_SOURCE_DIR}
+    ${VXL_VNL_INCLUDE_DIR}
+)
+target_link_libraries(transform_utils_test
+    GTest::gtest_main
+    Threads::Threads
+    vnl
+)
+gtest_discover_tests(transform_utils_test)

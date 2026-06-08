@@ -22,10 +22,15 @@ class RigidRegistration: public Base {
     param_rigid_ = params;
   }
 
+  // Return the estimated rigid transform as a (d+1)×(d+1) homogeneous matrix.
+  // Call after RunWithData() or RunRegistration().
+  void GetTransformMatrix(vnl_matrix<double>* matrix) const;
+
  private:
   vnl_vector<double> param_rigid_;
   RigidFunc* func_;
 
+  bool NeedsCtrlPts() const override { return false; }
   void StartRegistration(vnl_vector<double>&) override;
   void ApplyInitParams(const RegistrationInput&) override;
   int SetInitRigid(const char*);

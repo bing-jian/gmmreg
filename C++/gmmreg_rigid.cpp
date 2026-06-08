@@ -113,6 +113,10 @@ void RigidRegistration::StartRegistration(vnl_vector<double>& params) {
   }
 }
 
+void RigidRegistration::GetTransformMatrix(vnl_matrix<double>* matrix) const {
+  ConvertRigidParamToMatrix(param_rigid_, d_, matrix);
+}
+
 void RigidRegistration::ApplyInitParams(const RegistrationInput& input) {
   if (input.init_rigid.size() > 0) {
     param_rigid_ = input.init_rigid;

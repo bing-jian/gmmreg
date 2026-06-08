@@ -42,7 +42,7 @@ run-dragon: build-tester
 		-v $(PWD)/C++/build:/workspace/C++/build:ro \
 		-v $(DATA_DIR):/workspace/data:ro \
 		$(IMAGE_TESTER) \
-		python dragon_expts.py --data_dir /workspace/data/dragon_stand $(ARGS)
+		python expts/dragon_expts.py --data_dir /workspace/data/dragon_stand $(ARGS)
 
 run-lounge: build-tester
 	docker run --rm \
@@ -50,7 +50,7 @@ run-lounge: build-tester
 		-v $(PWD)/C++/build:/workspace/C++/build:ro \
 		-v $(DATA_DIR):/workspace/data:ro \
 		$(IMAGE_TESTER) \
-		python lounge_expts.py --data_path /workspace/data/lounge $(ARGS)
+		expts/lounge/run.sh $(ARGS)
 
 shell: build-tester
 	docker run --rm -it \

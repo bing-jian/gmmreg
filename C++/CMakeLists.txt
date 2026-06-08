@@ -112,6 +112,7 @@ SET(GMMREG_API_SRCS
     gmmreg_tps_func.cpp
     utils/misc_utils.cc
     utils/json_utils.cc
+    utils/transform_utils.cc
 )
 file(GLOB_RECURSE GMMREG_API_HDRS *.h)
 
@@ -162,6 +163,10 @@ ENDIF(UNIX)
 
 ADD_EXECUTABLE(gmmreg_downsample gmmreg_downsample.cpp)
 TARGET_LINK_LIBRARIES(gmmreg_downsample vnl)
+
+ADD_EXECUTABLE(seq_rigid3d seq_rigid3d.cpp)
+TARGET_INCLUDE_DIRECTORIES(seq_rigid3d PRIVATE ${VXL_VNL_INCLUDE_DIR})
+TARGET_LINK_LIBRARIES(seq_rigid3d gmmreg_api)
 
 #ENDIF( VXL_VNL_FOUND )
 

@@ -144,6 +144,9 @@ class Base {
   // Apply init params from a RegistrationInput. Subclasses override to read
   // their specific field; the default falls back to file-based identity init.
   virtual void ApplyInitParams(const RegistrationInput& input);
+
+  // Return false to skip ctrl_pts setup in Prepare() (e.g. RigidRegistration).
+  virtual bool NeedsCtrlPts() const { return true; }
 };
 
 }  // namespace gmmreg

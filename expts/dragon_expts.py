@@ -19,9 +19,10 @@ from configparser import ConfigParser
 from scipy.spatial.transform import Rotation
 import open3d as o3d
 
-DATA_PATH = '../data/dragon_stand'
-CONFIG_FILE = './dragon_stand.ini'
-BINARY_DIR = '../C++/build'
+_HERE = os.path.dirname(os.path.abspath(__file__))
+DATA_PATH = os.path.join(_HERE, '..', 'data', 'dragon_stand')
+CONFIG_FILE = os.path.join(_HERE, 'dragon_stand.ini')
+BINARY_DIR = os.path.join(_HERE, '..', 'C++', 'build')
 GMMREG_BINARY = {'nt': r'gmmreg_demo.exe', 'posix': r'gmmreg_demo'}
 BINARY_FULLPATH = os.path.join(BINARY_DIR, GMMREG_BINARY[os.name])
 
@@ -266,7 +267,7 @@ if __name__ == "__main__":
     )
 
     parser.add_argument('--config_tmpl',
-                        default='./dragon_stand.ini',
+                        default=CONFIG_FILE,
                         required=False,
                         help='Template config file for running gmmreg.')
     parser.add_argument('--working_dir',

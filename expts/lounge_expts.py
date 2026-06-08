@@ -21,12 +21,13 @@ import open3d as o3d
 
 from common_utils import *
 
-BINARY_DIR = '../C++/build'
+_HERE = os.path.dirname(os.path.abspath(__file__))
+BINARY_DIR = os.path.join(_HERE, '..', 'C++', 'build')
 GMMREG_BINARY = {'nt': r'gmmreg_demo.exe', 'posix': r'gmmreg_demo'}
 
 BINARY_FULLPATH = os.path.join(BINARY_DIR, GMMREG_BINARY[os.name])
-TMP_PATH = './tmp'
-CONFIG_FILE = './lounge.ini'
+TMP_PATH = os.path.join(_HERE, 'tmp')
+CONFIG_FILE = os.path.join(_HERE, 'lounge.ini')
 
 if not os.path.exists(TMP_PATH):
     os.makedirs(TMP_PATH)

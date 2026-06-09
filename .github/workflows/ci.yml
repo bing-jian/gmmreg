@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [master]
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build-and-test:
     name: Build and test
@@ -17,15 +21,22 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # Builder image compiles VXL from source; cache layers to avoid
-      # rebuilding it on every push.
-      - name: Build builder image
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Builder image compiles VXL from source; push to GHCR and cache layers
+      # so subsequent runs skip the expensive VXL build.
+      - name: Build and push builder image
         uses: docker/build-push-action@v5
         with:
           context: .
           file: Dockerfile.builder
-          tags: gmmreg-builder:latest
-          load: true
+          tags: ghcr.io/bing-jian/gmmreg-builder:latest
+          push: true
           cache-from: type=gha,scope=builder
           cache-to: type=gha,mode=max,scope=builder
 
@@ -33,18 +44,18 @@ jobs:
         run: |
           docker run --rm \
             -v "${{ github.workspace }}/C++:/workspace/C++" \
-            gmmreg-builder bash -c "
+            ghcr.io/bing-jian/gmmreg-builder:latest bash -c "
               cmake -B build -S . -DCMAKE_BUILD_TYPE=Release &&
               cmake --build build --parallel \$(nproc) &&
               ctest --test-dir build --output-on-failure"
 
-      # Tester image adds Python deps on top of builder; verify it still builds.
-      - name: Build tester image
+      # Tester image layers Python deps on top of builder; verify it builds.
+      - name: Build and push tester image
         uses: docker/build-push-action@v5
         with:
           context: .
           file: Dockerfile.tester
-          tags: gmmreg-tester:latest
-          load: true
+          tags: ghcr.io/bing-jian/gmmreg-tester:latest
+          push: true
           cache-from: type=gha,scope=tester
           cache-to: type=gha,mode=max,scope=tester

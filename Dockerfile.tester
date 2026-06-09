@@ -1,4 +1,4 @@
-FROM gmmreg-builder
+FROM ghcr.io/bing-jian/gmmreg-builder:latest
 
 ENV DEBIAN_FRONTEND=noninteractive
 # Allow pip to install into the system Python in a Docker context.

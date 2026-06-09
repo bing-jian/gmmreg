@@ -18,7 +18,6 @@ protected:
     }
 };
 
-#if 0
 TEST_F(TpsL2FishTest, OutputMatchesExpected) {
     ASSERT_EQ(gmmreg_api("fish_full.ini", "tps_l2"), 0)
         << "gmmreg_api returned non-zero for tps_l2";
@@ -41,7 +40,7 @@ TEST_F(TpsL2FishTest, OutputMatchesExpected) {
         EXPECT_NEAR(am[i], em[i], 8.0e-4)
             << "transformed_model flat index " << i << " mismatch";
 }
-#endif
+
 // ── fish_partial (2-D) ───────────────────────────────────────────────────────
 
 class TpsL2FishPartialTest : public ::testing::Test {
@@ -89,7 +88,6 @@ protected:
     }
 };
 
-#if 0
 TEST_F(TpsL2FaceTest, OutputMatchesExpected) {
     ASSERT_EQ(gmmreg_api("face.ini", "tps_l2"), 0)
         << "gmmreg_api returned non-zero for face tps_l2";
@@ -112,4 +110,3 @@ TEST_F(TpsL2FaceTest, OutputMatchesExpected) {
         EXPECT_NEAR(am[i], em[i], 5.0e-3)
             << "transformed_model flat index " << i << " mismatch";
 }
-#endif

@@ -6,10 +6,6 @@ on:
   pull_request:
     branches: [master]
 
-permissions:
-  contents: read
-  packages: write
-
 jobs:
   build-and-test:
     name: Build and test
@@ -28,18 +24,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Builder image compiles VXL from source; push to GHCR and cache layers
-      # so subsequent runs skip the expensive VXL build.
-      - name: Build and push builder image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: Dockerfile.builder
-          tags: ghcr.io/bing-jian/gmmreg-builder:latest
-          push: true
-          cache-from: type=gha,scope=builder
-          cache-to: type=gha,mode=max,scope=builder
-
       - name: C++ compile and unit tests
         run: |
           docker run --rm \
@@ -49,13 +33,13 @@ jobs:
               cmake --build build --parallel \$(nproc) &&
               ctest --test-dir build --output-on-failure"
 
-      # Tester image layers Python deps on top of builder; verify it builds.
-      - name: Build and push tester image
+      # Verify the Python tester image still assembles correctly.
+      - name: Build tester image
         uses: docker/build-push-action@v5
         with:
           context: .
           file: Dockerfile.tester
-          tags: ghcr.io/bing-jian/gmmreg-tester:latest
-          push: true
+          tags: gmmreg-tester:latest
+          load: true
           cache-from: type=gha,scope=tester
           cache-to: type=gha,mode=max,scope=tester

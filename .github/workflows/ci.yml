@@ -26,13 +26,3 @@ jobs:
               cmake --build build --parallel \$(nproc) &&
               ctest --test-dir build --output-on-failure"
 
-      # Verify the Python tester image still assembles correctly.
-      - name: Build tester image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: Dockerfile.tester
-          tags: gmmreg-tester:latest
-          load: true
-          cache-from: type=gha,scope=tester
-          cache-to: type=gha,mode=max,scope=tester

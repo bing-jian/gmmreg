@@ -36,13 +36,13 @@ build-tester: build-builder
 # Build both images (does not compile C++; run 'make compile' separately).
 build: build-tester
 
-run-dragon: build-tester
+run-dragon:
 	docker run --rm \
 		-v $(PWD)/expts:/workspace/expts \
 		-v $(PWD)/C++/build:/workspace/C++/build:ro \
 		-v $(DATA_DIR):/workspace/data:ro \
 		$(IMAGE_TESTER) \
-		python expts/dragon_expts.py --data_dir /workspace/data/dragon_stand $(ARGS)
+		expts/dragon/run.sh $(ARGS)
 
 run-lounge: build-tester
 	docker run --rm \

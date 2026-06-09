@@ -1,5 +1,5 @@
-IMAGE_BUILDER ?= gmmreg-builder
-IMAGE_TESTER  ?= gmmreg-tester
+IMAGE_BUILDER ?= ghcr.io/bing-jian/gmmreg-builder:latest
+IMAGE_TESTER  ?= ghcr.io/bing-jian/gmmreg-tester:latest
 DATA_DIR      ?= $(PWD)/data
 
 .PHONY: build-builder compile test shell-builder build-tester build run-dragon run-lounge shell clean
